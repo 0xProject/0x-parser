@@ -1,0 +1,156 @@
+import { it, expect } from "vitest";
+import { parseSwap } from "../index";
+
+require("dotenv").config();
+
+const RPC_TEST_URL = process.env.RPC_TEST_URL;
+
+if (!RPC_TEST_URL) {
+  throw new Error("Missing environment variable `RPC_TEST_URL`");
+}
+
+// https://etherscan.io/tx/0x90dbdd630287a0412f88cbc98b0d751bc81c613bb285898dac461b523cd07a5a
+const txReceipt = {
+  _type: "TransactionReceipt",
+  blockHash:
+    "0xdb3566b3f589b4248c96af31bda12b719c0eef7bf27517bd262d0637dbecd0c6",
+  blockNumber: 16880470,
+  contractAddress: null,
+  cumulativeGasUsed: "290258",
+  from: "0x243706e13823949dca2283Ce5607F618d9D17c31",
+  gasPrice: "17829966893",
+  gasUsed: "212725",
+  hash: "0x90dbdd630287a0412f88cbc98b0d751bc81c613bb285898dac461b523cd07a5a",
+  index: 1,
+  logs: [
+    {
+      _type: "log",
+      address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      blockHash:
+        "0xdb3566b3f589b4248c96af31bda12b719c0eef7bf27517bd262d0637dbecd0c6",
+      blockNumber: 16880470,
+      data: "0x0000000000000000000000000000000000000000000000001ad468a035d04b8c",
+      index: 4,
+      topics: [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f5640",
+        "0x000000000000000000000000def1c0ded9bec7f1a1670819833240f027b25eff",
+      ],
+      transactionHash:
+        "0x90dbdd630287a0412f88cbc98b0d751bc81c613bb285898dac461b523cd07a5a",
+      transactionIndex: 1,
+    },
+    {
+      _type: "log",
+      address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      blockHash:
+        "0xdb3566b3f589b4248c96af31bda12b719c0eef7bf27517bd262d0637dbecd0c6",
+      blockNumber: 16880470,
+      data: "0x00000000000000000000000000000000000000000000000000000000d09dc300",
+      index: 5,
+      topics: [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x000000000000000000000000243706e13823949dca2283ce5607f618d9d17c31",
+        "0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f5640",
+      ],
+      transactionHash:
+        "0x90dbdd630287a0412f88cbc98b0d751bc81c613bb285898dac461b523cd07a5a",
+      transactionIndex: 1,
+    },
+    {
+      _type: "log",
+      address: "0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640",
+      blockHash:
+        "0xdb3566b3f589b4248c96af31bda12b719c0eef7bf27517bd262d0637dbecd0c6",
+      blockNumber: 16880470,
+      data: "0x00000000000000000000000000000000000000000000000000000000d09dc300ffffffffffffffffffffffffffffffffffffffffffffffffe52b975fca2fb4740000000000000000000000000000000000005bd451842e671653a529a49a7f9d000000000000000000000000000000000000000000000000fe4d6fabc9d42c600000000000000000000000000000000000000000000000000000000000031260",
+      index: 6,
+      topics: [
+        "0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67",
+        "0x000000000000000000000000def1c0ded9bec7f1a1670819833240f027b25eff",
+        "0x000000000000000000000000def1c0ded9bec7f1a1670819833240f027b25eff",
+      ],
+      transactionHash:
+        "0x90dbdd630287a0412f88cbc98b0d751bc81c613bb285898dac461b523cd07a5a",
+      transactionIndex: 1,
+    },
+    {
+      _type: "log",
+      address: "0xD533a949740bb3306d119CC777fa900bA034cd52",
+      blockHash:
+        "0xdb3566b3f589b4248c96af31bda12b719c0eef7bf27517bd262d0637dbecd0c6",
+      blockNumber: 16880470,
+      data: "0x0000000000000000000000000000000000000000000000bd357495a7dd57e0c7",
+      index: 7,
+      topics: [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x000000000000000000000000919fa96e88d67499339577fa202345436bcdaf79",
+        "0x000000000000000000000000243706e13823949dca2283ce5607f618d9d17c31",
+      ],
+      transactionHash:
+        "0x90dbdd630287a0412f88cbc98b0d751bc81c613bb285898dac461b523cd07a5a",
+      transactionIndex: 1,
+    },
+    {
+      _type: "log",
+      address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      blockHash:
+        "0xdb3566b3f589b4248c96af31bda12b719c0eef7bf27517bd262d0637dbecd0c6",
+      blockNumber: 16880470,
+      data: "0x0000000000000000000000000000000000000000000000001ad468a035d04b8c",
+      index: 8,
+      topics: [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x000000000000000000000000def1c0ded9bec7f1a1670819833240f027b25eff",
+        "0x000000000000000000000000919fa96e88d67499339577fa202345436bcdaf79",
+      ],
+      transactionHash:
+        "0x90dbdd630287a0412f88cbc98b0d751bc81c613bb285898dac461b523cd07a5a",
+      transactionIndex: 1,
+    },
+    {
+      _type: "log",
+      address: "0x919Fa96e88d67499339577Fa202345436bcDaf79",
+      blockHash:
+        "0xdb3566b3f589b4248c96af31bda12b719c0eef7bf27517bd262d0637dbecd0c6",
+      blockNumber: 16880470,
+      data: "0x0000000000000000000000000000000000000000000000001ad468a035d04b8cffffffffffffffffffffffffffffffffffffffffffffff42ca8b6a5822a81f39000000000000000000000000000000000000002a8aa984ad0e30aa5e15fc0992000000000000000000000000000000000000000000001f40d35fc2c8bec33fe00000000000000000000000000000000000000000000000000000000000012505",
+      index: 9,
+      topics: [
+        "0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67",
+        "0x000000000000000000000000def1c0ded9bec7f1a1670819833240f027b25eff",
+        "0x000000000000000000000000243706e13823949dca2283ce5607f618d9d17c31",
+      ],
+      transactionHash:
+        "0x90dbdd630287a0412f88cbc98b0d751bc81c613bb285898dac461b523cd07a5a",
+      transactionIndex: 1,
+    },
+  ],
+  logsBloom:
+    "0x00000000010000000000000000000000000000000000000000000000040000000000000000080000000008000000000002000000080020010000000000000000000000000000002808000008000000000000000000000000000004000000040010000000000000000000000000000040000000000000000000000010000800000000000000000000000000000000000000000000010000000000000000000000000000002000220000004000000000000000000000000000002000000018001000000002000000000000000008000000000000000000000000000000000200000000200000000000000010000000000000000000000000000000000200000000",
+  status: 1,
+  to: "0xDef1C0ded9bec7F1a1670819833240f027b25EfF",
+};
+
+it("parses swap for sellTokenForTokenToUniswapV3", async () => {
+  const data = await parseSwap({
+    txReceipt,
+    txDescription: {
+      name: "sellTokenForTokenToUniswapV3",
+      value: 0n,
+      args: [],
+    },
+    rpcUrl: RPC_TEST_URL,
+  });
+
+  expect(data).toEqual({
+    tokenIn: {
+      symbol: "USDC",
+      amount: "3500",
+    },
+    tokenOut: {
+      symbol: "CRV",
+      amount: "3490.286498060619473095",
+    },
+  });
+});

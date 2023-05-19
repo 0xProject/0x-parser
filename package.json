@@ -1,6 +1,6 @@
 {
   "name": "@0x/0x-parser",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Parse events from the 0x protocol",
   "keywords": [
     "logs",

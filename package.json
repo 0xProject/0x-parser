@@ -1,0 +1,55 @@
+{
+  "name": "@0x/0x-parser",
+  "version": "0.0.1",
+  "description": "Parse events from the 0x protocol",
+  "keywords": [
+    "evm",
+    "erc-20",
+    "ethereum",
+    "events",
+    "0x protocol"
+  ],
+  "author": "henryzhu.eth",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0xproject/0x-parser"
+  },
+  "bugs": {
+    "url": "https://github.com/0xproject/0x-parser/issues"
+  },
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "npm run build && cp ./dist ./public/dist",
+    "build": "npm run build:cjs && npm run build:esm && npm run types",
+    "build:esm": "esbuild src/index.ts --bundle --minify --format=esm --outfile=dist/index.esm.js",
+    "build:cjs": "esbuild src/index.ts --bundle --minify --platform=node --target=node18 --outfile=dist/index.cjs.js",
+    "build:dev": "npm run build:cjs:dev && npm run build:esm:dev && npm run types",
+    "build:esm:dev": "esbuild src/index.ts --bundle --format=esm --outfile=dist/index.esm.js",
+    "build:cjs:dev": "esbuild src/index.ts --bundle --platform=node --target=node18 --outfile=dist/index.cjs.js",
+    "types": "rm -rf ./dist/index.d.ts && tsc --emitDeclarationOnly --outDir ./dist",
+    "web:example": "npm run clean && npm run build:dev && cp ./dist/index.esm.js ./examples/web && http-server ./examples/web --port 8000 -o",
+    "node:example": "npm run clean && npm run build:dev && cp ./dist/index.cjs.js ./examples/node && node ./examples/node/index.js",
+    "clean": "rm -rf dist",
+    "test": "vitest --coverage"
+  },
+  "devDependencies": {
+    "@vitest/coverage-c8": "^0.31.0",
+    "dotenv": "^16.0.3",
+    "esbuild": "^0.17.5",
+    "ethers": "^6.2.2",
+    "http-server": "^14.1.1",
+    "typescript": "^5.0.2",
+    "vitest": "^0.31.0"
+  }
+}

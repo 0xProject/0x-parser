@@ -1,0 +1,181 @@
+import { it, expect } from "vitest";
+import { parseSwap } from "../index";
+
+require("dotenv").config();
+
+const RPC_TEST_URL = process.env.RPC_TEST_URL;
+
+if (!RPC_TEST_URL) {
+  throw new Error("Missing environment variable `RPC_TEST_URL`");
+}
+
+// https://etherscan.io/tx/0xe59ff84284d7e2ad87f1a6de55d5d6600b0b721242110687847e57b52a045b7d
+const txReceipt = {
+  _type: "TransactionReceipt",
+  blockHash:
+    "0xbea03ae9d48736539924c91e30ff82db6b351addafa6797f8c35dca3c1c78c3b",
+  blockNumber: 16594679,
+  contractAddress: null,
+  cumulativeGasUsed: "5771982",
+  from: "0x2b08A57aC855bda7F0DACD9c4E7867E625645015",
+  gasPrice: "35143058460",
+  gasUsed: "197521",
+  hash: "0xe59ff84284d7e2ad87f1a6de55d5d6600b0b721242110687847e57b52a045b7d",
+  index: 66,
+  logs: [
+    {
+      _type: "log",
+      address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      blockHash:
+        "0xbea03ae9d48736539924c91e30ff82db6b351addafa6797f8c35dca3c1c78c3b",
+      blockNumber: 16594679,
+      data: "0x0000000000000000000000000000000000000000000000008ac7230489e80000",
+      index: 101,
+      topics: [
+        "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c",
+        "0x000000000000000000000000def1c0ded9bec7f1a1670819833240f027b25eff",
+      ],
+      transactionHash:
+        "0xe59ff84284d7e2ad87f1a6de55d5d6600b0b721242110687847e57b52a045b7d",
+      transactionIndex: 66,
+    },
+    {
+      _type: "log",
+      address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      blockHash:
+        "0xbea03ae9d48736539924c91e30ff82db6b351addafa6797f8c35dca3c1c78c3b",
+      blockNumber: 16594679,
+      data: "0x0000000000000000000000000000000000000000000000006ac091172f013ac7",
+      index: 102,
+      topics: [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x000000000000000000000000def1c0ded9bec7f1a1670819833240f027b25eff",
+        "0x0000000000000000000000006033368e4a402605294c91cf5c03d72bd96e7d8d",
+      ],
+      transactionHash:
+        "0xe59ff84284d7e2ad87f1a6de55d5d6600b0b721242110687847e57b52a045b7d",
+      transactionIndex: 66,
+    },
+    {
+      _type: "log",
+      address: "0x1E4EDE388cbc9F4b5c79681B7f94d36a11ABEBC9",
+      blockHash:
+        "0xbea03ae9d48736539924c91e30ff82db6b351addafa6797f8c35dca3c1c78c3b",
+      blockNumber: 16594679,
+      data: "0x000000000000000000000000000000000000000000000eae5bc272a22c29dc9e",
+      index: 103,
+      topics: [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x0000000000000000000000006033368e4a402605294c91cf5c03d72bd96e7d8d",
+        "0x0000000000000000000000002b08a57ac855bda7f0dacd9c4e7867e625645015",
+      ],
+      transactionHash:
+        "0xe59ff84284d7e2ad87f1a6de55d5d6600b0b721242110687847e57b52a045b7d",
+      transactionIndex: 66,
+    },
+    {
+      _type: "log",
+      address: "0x6033368e4a402605294c91CF5c03d72bd96E7D8D",
+      blockHash:
+        "0xbea03ae9d48736539924c91e30ff82db6b351addafa6797f8c35dca3c1c78c3b",
+      blockNumber: 16594679,
+      data: "0x0000000000000000000000000000000000000000000d5ce8ecba2cdd291f431a0000000000000000000000000000000000000000000000614af7a5d8a43bcfb9",
+      index: 104,
+      topics: [
+        "0x1c411e9a96e071241c2f21f7726b17ae89e3cab4c78be50e062b03a9fffbbad1",
+      ],
+      transactionHash:
+        "0xe59ff84284d7e2ad87f1a6de55d5d6600b0b721242110687847e57b52a045b7d",
+      transactionIndex: 66,
+    },
+    {
+      _type: "log",
+      address: "0x6033368e4a402605294c91CF5c03d72bd96E7D8D",
+      blockHash:
+        "0xbea03ae9d48736539924c91e30ff82db6b351addafa6797f8c35dca3c1c78c3b",
+      blockNumber: 16594679,
+      data: "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006ac091172f013ac7000000000000000000000000000000000000000000000eae5bc272a22c29dc9e0000000000000000000000000000000000000000000000000000000000000000",
+      index: 105,
+      topics: [
+        "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822",
+        "0x000000000000000000000000def1c0ded9bec7f1a1670819833240f027b25eff",
+        "0x0000000000000000000000002b08a57ac855bda7f0dacd9c4e7867e625645015",
+      ],
+      transactionHash:
+        "0xe59ff84284d7e2ad87f1a6de55d5d6600b0b721242110687847e57b52a045b7d",
+      transactionIndex: 66,
+    },
+    {
+      _type: "log",
+      address: "0x1E4EDE388cbc9F4b5c79681B7f94d36a11ABEBC9",
+      blockHash:
+        "0xbea03ae9d48736539924c91e30ff82db6b351addafa6797f8c35dca3c1c78c3b",
+      blockNumber: 16594679,
+      data: "0x000000000000000000000000000000000000000000000465b8a128dfcb78fadc",
+      index: 106,
+      topics: [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x00000000000000000000000063805e5d951398bc1c1bec242d303f59fa7732e3",
+        "0x0000000000000000000000002b08a57ac855bda7f0dacd9c4e7867e625645015",
+      ],
+      transactionHash:
+        "0xe59ff84284d7e2ad87f1a6de55d5d6600b0b721242110687847e57b52a045b7d",
+      transactionIndex: 66,
+    },
+    {
+      _type: "log",
+      address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      blockHash:
+        "0xbea03ae9d48736539924c91e30ff82db6b351addafa6797f8c35dca3c1c78c3b",
+      blockNumber: 16594679,
+      data: "0x000000000000000000000000000000000000000000000000200691ed5ae6c539",
+      index: 107,
+      topics: [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x000000000000000000000000def1c0ded9bec7f1a1670819833240f027b25eff",
+        "0x00000000000000000000000063805e5d951398bc1c1bec242d303f59fa7732e3",
+      ],
+      transactionHash:
+        "0xe59ff84284d7e2ad87f1a6de55d5d6600b0b721242110687847e57b52a045b7d",
+      transactionIndex: 66,
+    },
+    {
+      _type: "log",
+      address: "0x63805e5d951398bC1C1bec242d303f59fA7732E3",
+      blockHash:
+        "0xbea03ae9d48736539924c91e30ff82db6b351addafa6797f8c35dca3c1c78c3b",
+      blockNumber: 16594679,
+      data: "0xfffffffffffffffffffffffffffffffffffffffffffffb9a475ed72034870524000000000000000000000000000000000000000000000000200691ed5ae6c539000000000000000000000000000000000000000002b0388648044944308a74bd00000000000000000000000000000000000000000000136334196b03e4610deffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe9c06",
+      index: 108,
+      topics: [
+        "0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67",
+        "0x000000000000000000000000def1c0ded9bec7f1a1670819833240f027b25eff",
+        "0x0000000000000000000000002b08a57ac855bda7f0dacd9c4e7867e625645015",
+      ],
+      transactionHash:
+        "0xe59ff84284d7e2ad87f1a6de55d5d6600b0b721242110687847e57b52a045b7d",
+      transactionIndex: 66,
+    },
+  ],
+  logsBloom:
+    "0x00200000000000000000000080000000000100000000000000000000000000000000000000000000000000000000000002000000080020000000000000000000000000000000002800000008000000200000000000010000002000008000000000000000000000000000000000000040000000000000000000000010000810000000000000000000000000000000000000000001000000080000104000000000000000000000000000004000000080000000000000000000000000080000000000000002000000000001000000000000000040001020001000020000000000010000200002000000000000000000000001000000010000400008000800000000",
+  status: 1,
+  to: "0xDef1C0ded9bec7F1a1670819833240f027b25EfF",
+};
+
+it("parses swap for multiplexBatchSellEthForToken", async () => {
+  const data = await parseSwap({
+    txReceipt,
+    txDescription: {
+      name: "multiplexBatchSellEthForToken",
+      value: 10000000000000000000n,
+      args: ["0x1E4EDE388cbc9F4b5c79681B7f94d36a11ABEBC9"],
+    },
+    rpcUrl: RPC_TEST_URL,
+  });
+
+  expect(data).toEqual({
+    tokenIn: { symbol: "WETH", amount: "10" },
+    tokenOut: { symbol: "X2Y2", amount: "90095.36724488341" },
+  });
+});

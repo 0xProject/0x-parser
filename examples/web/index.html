@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ethereum Balances</title>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script type="module">
+      import { ethers } from "https://cdnjs.cloudflare.com/ajax/libs/ethers/6.2.2/ethers.min.js";
+      import { parseSwap } from "./index.esm.js";
+      window.ethers = ethers;
+      window.parseSwap = parseSwap;
+    </script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
+    <script type="text/babel">
+      const transactions = {
+        ethereum: {
+          permitAndCall:
+            "0x5eac379185f24ddeba7fcd4414779df77ecfd1102da6ebf6dacf25b01a14b241",
+          fillLimitOrder:
+            "0xbe734b761ccd45cc60a5b4828eb83da96405d663567a46041b049627dddf347d",
+          multiplexBatchSellEthForToken:
+            "0xe59ff84284d7e2ad87f1a6de55d5d6600b0b721242110687847e57b52a045b7d",
+          multiplexBatchSellTokenForEth:
+            "0x0caebae93af96f83c4d2434816d079d1b43e9061dcaca8627bd9e2c0917a3b63",
+          multiplexMultiHopSellTokenForEth:
+            "0xba3a89b2164e5f169bc81e90a13f8946d110dffe2b53393953ea2a4fede8e81e",
+          sellToLiquidityProvider:
+            "0x2a4379d531695dd4f142730edb7720bb9d06dfb405322e0e16acbfd8ba4fcb98",
+          multiplexMultiHopSellEthForToken:
+            "0x00b191d47269265cfbbc94c77a114281ee939463b7a922e8bfbf7de8bc150c5c",
+          multiplexBatchSellTokenForToken:
+            "0xb2c5a697a3126af96d2aa20ba6dcd0daaf9ec6baa49de2a76682dfe4258d2e56",
+          multiplexMultiHopSellTokenForToken:
+            "0xf705df9127065ae8a8da3c1939d7096011ea13c81e4a2ed8c59ea1b039f7565d",
+          transformERC20:
+            "0x4db5b7168686cdfb1469b47a67f03fb6199aa81f3d2a26c4a05835b8752d152d",
+          sellToUniswap:
+            "0xd6a7aeda4a2978c80b03700e3136c6895b48d08cd9c8d4c88dfd19dee0a12795",
+          sellEthForTokenToUniswapV3:
+            "0xc552e83ef96c5d523f69494ae61b7235a6304ab439e127eb0121d33bbcdaa1ff",
+          sellTokenForTokenToUniswapV3:
+            "0x90dbdd630287a0412f88cbc98b0d751bc81c613bb285898dac461b523cd07a5a",
+          sellTokenForEthToUniswapV3:
+            "0x822d38c0746b19544cedddd9a1ebaacadd3e5da55dc293738ae135fc595e269b",
+          fillOtcOrder:
+            "0xc9579b9e3cddebd3d48ccb0a719456d7c46869b2c3a536509ea88685c7a5efbb",
+          fillTakerSignedOtcOrderForEth:
+            "0x5f0ed4396f68e0321e48d50611cc6663af68bf7cbee6bc8e74ff5c63d90f3b68",
+          fillTakerSignedOtcOrder:
+            "0x7f31ba7cacfda809ea24d4b9f87c44fb4114608666c7dd1c6553986ce88dc92b",
+          executeMetaTransaction:
+            "0xbfc411b0fd658c0a502d9830359835869c8f5614b7e0992bed4e1c2c35305450",
+          fillOtcOrderForEth:
+            "0x2c4cee137659650ef486fb46b657ec37c1b4fe18489956a5e058cf5585328fa7",
+          fillOtcOrderWithEth:
+            "0x68608bec5c30750a6a358b14eb937a07f10f72c84428bdf6eae80f52c27faf53",
+        },
+        optimism: {
+          transformERC20:
+            "0xfa5282d42d3e3ab01c23557ad8ab923c9ecee380b8fae5165852e088f2e4f4ce",
+        },
+        arbitrum: {
+          transformERC20:
+            "0xa13071a809c4ff587cd0af724c7e73cae89f492eba891c9112adda8e57559580",
+        },
+        bsc: {
+          sellToPancakeSwap:
+            "0x2076af859a54f5f0c7d4e1cd13b3906169a5e3697d8762b59062052d53466e94",
+        },
+        polygon: {
+          executeMetaTransaction:
+            "0x0c537cdfb9d1d23d16f775b49e8004a5dea6ce6bdd287bd1f6320c4f813ead9a",
+          transformERC20:
+            "0xa53a3b8e7335ba2707b478d786cfb4dc251bdd3b2678e9717d9585031d1db9cf",
+          fillLimitOrder:
+            "0x2324387b691ea78b31135fa1f031d133e88cd3a7c7625c02293e943ec7090c36",
+        },
+      };
+
+      const rpcUrls = {
+        bsc: "https://bscrpc.com",
+        arbitrum: "https://1rpc.io/arb",
+        polygon: "https://polygon-rpc.com",
+        ethereum: "https://eth.llamarpc.com",
+        optimism: "https://endpoints.omniatech.io/v1/op/mainnet/public",
+      };
+
+      async function example() {
+        const { getAddress, JsonRpcProvider, Contract } = ethers;
+        const ERC20_ABI = [
+          "function symbol() view returns (string)",
+          "function decimals() view returns (uint8)",
+        ];
+        const EXCHANGE_PROXY = "0xDef1C0ded9bec7F1a1670819833240f027b25EfF";
+        const abiUrl =
+          "https://raw.githubusercontent.com/0xProject/protocol/development/packages/contract-artifacts/artifacts/IZeroEx.json";
+        const response = await fetch(abiUrl);
+        const IZeroEx = await response.json();
+        const contract = new Contract(
+          EXCHANGE_PROXY,
+          IZeroEx.compilerOutput.abi
+        );
+        const provider = new JsonRpcProvider(rpcUrls.ethereum);
+        const [tx, txReceipt] = await Promise.all([
+          provider.getTransaction(transactions.ethereum.transformERC20),
+          provider.getTransactionReceipt(transactions.ethereum.transformERC20),
+        ]);
+        const txDescription = contract.interface.parseTransaction(tx);
+        const data = await parseSwap({
+          rpcUrl: rpcUrls.ethereum,
+          txReceipt,
+          txDescription,
+        });
+        console.log(JSON.stringify(data, null, 4));
+      }
+
+      example();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

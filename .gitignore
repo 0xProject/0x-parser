@@ -1,0 +1,18 @@
+# dependencies
+node_modules
+
+# artifacts
+dist
+
+# example artifacts
+examples/web/index.esm.js
+examples/node/index.cjs.js
+
+# coverage files
+coverage
+
+# hardhat cache
+cache
+
+# environment variables
+.env

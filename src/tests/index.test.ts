@@ -1,6 +1,7 @@
 import { it, expect } from "vitest";
 import { parseSwap } from "../index";
 import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
+import { EXCHANGE_PROXY_ABI_URL } from "../constants";
 
 require("dotenv").config();
 
@@ -32,4 +33,29 @@ it("returns null when the transaction reverted", async () => {
   });
 
   expect(data).toBe(null);
+});
+
+it("throws an error when required arguments are not passed", () => {
+  expect(async () => {
+    await parseSwap({
+      transactionHash: "0x…",
+      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
+    } as any);
+  }).rejects.toThrowError("Missing rpcUrl");
+
+  expect(async () => {
+    await parseSwap({
+      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
+      rpcUrl: ETH_MAINNET_RPC,
+    } as any);
+  }).rejects.toThrowError("Missing transaction hash");
+
+  expect(async () => {
+    await parseSwap({
+      transactionHash: "0x…",
+      rpcUrl: ETH_MAINNET_RPC,
+    });
+  }).rejects.toThrowError(
+    `Missing 0x Exchange Proxy ABI, which can be found here: ${EXCHANGE_PROXY_ABI_URL}`
+  );
 });

@@ -35,7 +35,7 @@
           multiplexMultiHopSellEthForToken:
             "0x00b191d47269265cfbbc94c77a114281ee939463b7a922e8bfbf7de8bc150c5c",
           multiplexBatchSellTokenForToken:
-            "0xb2c5a697a3126af96d2aa20ba6dcd0daaf9ec6baa49de2a76682dfe4258d2e56",
+            "0x40ab28abe8dfe01dbebb3f14eaf96960024a3c93431eb7be78311bc92aed73bc",
           multiplexMultiHopSellTokenForToken:
             "0xf705df9127065ae8a8da3c1939d7096011ea13c81e4a2ed8c59ea1b039f7565d",
           transformERC20:
@@ -92,26 +92,13 @@
       };
 
       async function example() {
-        const { getAddress, JsonRpcProvider, Contract } = ethers;
-        const EXCHANGE_PROXY = "0xDef1C0ded9bec7F1a1670819833240f027b25EfF";
-        const abiUrl =
-          "https://raw.githubusercontent.com/0xProject/protocol/development/packages/contract-artifacts/artifacts/IZeroEx.json";
+        const abiUrl = "https://raw.githubusercontent.com/0xProject/protocol/development/packages/contract-artifacts/artifacts/IZeroEx.json";
         const response = await fetch(abiUrl);
         const IZeroEx = await response.json();
-        const contract = new Contract(
-          EXCHANGE_PROXY,
-          IZeroEx.compilerOutput.abi
-        );
-        const provider = new JsonRpcProvider(rpcUrls.ethereum);
-        const [tx, txReceipt] = await Promise.all([
-          provider.getTransaction(transactions.ethereum.transformERC20),
-          provider.getTransactionReceipt(transactions.ethereum.transformERC20),
-        ]);
-        const txDescription = contract.interface.parseTransaction(tx);
         const data = await parseSwap({
+          transactionHash: transactions.ethereum.permitAndCall,
+          exchangeProxyAbi: IZeroEx.compilerOutput.abi,
           rpcUrl: rpcUrls.ethereum,
-          txReceipt,
-          txDescription,
         });
         console.log(JSON.stringify(data, null, 4));
       }

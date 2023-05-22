@@ -1,4 +1,4 @@
-import { WETH_CONTRACT_ADDRESS, ZERO_EX_EXCHANGE_PROXY } from "../constants";
+import { CONTRACTS } from "../constants";
 import { extractTokenInfo } from "../utils";
 import type { EnrichedTxReceipt, TxDescription } from "../types";
 
@@ -22,7 +22,7 @@ export function multiplexMultiHopSellTokenForEth({
 }) {
   const { logs, from } = txReceipt;
   const inputLog = logs.find((log) => from.toLowerCase() === log.from);
-  const outputLog = logs.find((log) => log.address === WETH_CONTRACT_ADDRESS);
+  const outputLog = logs.find((log) => log.address === CONTRACTS.weth);
 
   if (inputLog && outputLog) {
     return extractTokenInfo(inputLog, outputLog);
@@ -35,7 +35,7 @@ export function multiplexMultiHopSellEthForToken({
   txReceipt: EnrichedTxReceipt;
 }) {
   const { logs, from } = txReceipt;
-  const inputLog = logs.find((log) => log.address === WETH_CONTRACT_ADDRESS);
+  const inputLog = logs.find((log) => log.address === CONTRACTS.weth);
   const outputLog = logs.find((log) => log.to === from.toLowerCase());
 
   if (inputLog && outputLog) {
@@ -80,8 +80,8 @@ export function fillTakerSignedOtcOrderForEth({
   txReceipt: EnrichedTxReceipt;
 }) {
   const { logs } = txReceipt;
-  const inputLog = logs.find((log) => log.address !== WETH_CONTRACT_ADDRESS);
-  const outputLog = logs.find((log) => log.address === WETH_CONTRACT_ADDRESS);
+  const inputLog = logs.find((log) => log.address !== CONTRACTS.weth);
+  const outputLog = logs.find((log) => log.address === CONTRACTS.weth);
 
   if (inputLog && outputLog) {
     return extractTokenInfo(inputLog, outputLog);
@@ -190,7 +190,7 @@ export function multiplexBatchSellTokenForEth({
   const { from, logs } = txReceipt;
   const tokenData = {
     [from.toLowerCase()]: { amount: "0", symbol: "", address: "" },
-    [WETH_CONTRACT_ADDRESS.toLowerCase()]: {
+    [CONTRACTS.weth.toLowerCase()]: {
       amount: "0",
       symbol: "",
       address: "",
@@ -217,7 +217,7 @@ export function multiplexBatchSellTokenForEth({
 
   return {
     tokenIn: tokenData[from.toLowerCase()],
-    tokenOut: tokenData[WETH_CONTRACT_ADDRESS.toLowerCase()],
+    tokenOut: tokenData[CONTRACTS.weth.toLowerCase()],
   };
 }
 
@@ -241,7 +241,7 @@ export function multiplexBatchSellEthForToken({
   const tokenOutAmount = logs.reduce((total, log) => {
     return log.address === outputToken ? total + Number(log.amount) : total;
   }, 0);
-  const inputLog = logs.find((log) => log.address === WETH_CONTRACT_ADDRESS);
+  const inputLog = logs.find((log) => log.address === CONTRACTS.weth);
   const outputLog = logs.find((log) => log.address === outputToken);
 
   if (inputLog && outputLog) {
@@ -302,7 +302,7 @@ export function sellToPancakeSwap({
 }) {
   const from = txReceipt.from.toLowerCase();
   const { logs } = txReceipt;
-  const exchangeProxy = ZERO_EX_EXCHANGE_PROXY.toLowerCase();
+  const exchangeProxy = CONTRACTS.exchangeProxy.toLowerCase();
   let inputLog = logs.find((log) => log.from === from);
   let outputLog = logs.find((log) => log.from !== from);
 

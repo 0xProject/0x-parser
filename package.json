@@ -1,7 +1,7 @@
 {
   "name": "@0x/0x-parser",
   "version": "0.0.5",
-  "description": "Parse events from the 0x protocol",
+  "description": "🧾 Designed for 0x integrators: This parser library enables precise extraction of swap amounts from 0x transactions.",
   "keywords": [
     "logs",
     "swap",

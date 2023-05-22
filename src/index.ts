@@ -1,3 +1,5 @@
+import { Contract, JsonRpcProvider } from "ethers";
+import { abi as permitAndCallAbi } from "./abi/PermitAndCall.json";
 import {
   fillLimitOrder,
   fillOtcOrder,
@@ -21,7 +23,11 @@ import {
   sellToPancakeSwap,
   transformERC20,
 } from "./parsers";
-import { ERC20_TRANSFER_EVENT_HASH } from "./constants";
+import {
+  CONTRACTS,
+  ERC20_TRANSFER_EVENT_HASH,
+  EXCHANGE_PROXY_ABI_URL,
+} from "./constants";
 import { erc20Rpc, formatUnits, convertHexToAddress } from "./utils";
 import { TransactionStatus } from "./types";
 import type {
@@ -78,38 +84,64 @@ async function enrichTxReceipt({
 }
 
 export async function parseSwap({
-  txReceipt,
-  txDescription,
+  transactionHash,
+  exchangeProxyAbi,
   rpcUrl,
 }: ParseSwapArgs) {
-  if (txReceipt.status === TransactionStatus.REVERTED) return null;
-  const txReceiptEnriched = await enrichTxReceipt({ txReceipt, rpcUrl });
-  const logParsers: LogParsers = {
-    fillLimitOrder,
-    fillOtcOrder,
-    fillOtcOrderForEth,
-    fillOtcOrderWithEth,
-    fillTakerSignedOtcOrder,
-    fillTakerSignedOtcOrderForEth,
-    executeMetaTransaction,
-    multiplexBatchSellTokenForToken,
-    multiplexBatchSellTokenForEth,
-    multiplexBatchSellEthForToken,
-    multiplexMultiHopSellTokenForToken,
-    multiplexMultiHopSellEthForToken,
-    multiplexMultiHopSellTokenForEth,
-    permitAndCall,
-    sellToUniswap,
-    sellTokenForEthToUniswapV3,
-    sellEthForTokenToUniswapV3,
-    sellTokenForTokenToUniswapV3,
-    sellToLiquidityProvider,
-    sellToPancakeSwap,
-    transformERC20,
-  };
-  const parser = logParsers[txDescription.name];
+  if (!rpcUrl) throw new Error("Missing rpcUrl");
+  if (!transactionHash) throw new Error("Missing transaction hash");
+  if (!exchangeProxyAbi)
+    throw new Error(
+      `Missing 0x Exchange Proxy ABI, which can be found here: ${EXCHANGE_PROXY_ABI_URL}`
+    );
 
-  return parser
-    ? parser({ txDescription, txReceipt: txReceiptEnriched })
-    : null;
+  const provider = new JsonRpcProvider(rpcUrl);
+
+  const [tx, txReceipt] = await Promise.all([
+    provider.getTransaction(transactionHash),
+    provider.getTransactionReceipt(transactionHash),
+  ]);
+
+  if (tx && txReceipt) {
+    const contract =
+      txReceipt.to === CONTRACTS.exchangeProxy
+        ? new Contract(CONTRACTS.exchangeProxy, exchangeProxyAbi)
+        : new Contract(CONTRACTS.permitAndCall, permitAndCallAbi);
+
+    const txDescription = contract.interface.parseTransaction(tx);
+
+    if (txReceipt.status === TransactionStatus.REVERTED) return null;
+
+    const txReceiptEnriched = await enrichTxReceipt({ txReceipt, rpcUrl });
+
+    const logParsers: LogParsers = {
+      fillLimitOrder,
+      fillOtcOrder,
+      fillOtcOrderForEth,
+      fillOtcOrderWithEth,
+      fillTakerSignedOtcOrder,
+      fillTakerSignedOtcOrderForEth,
+      executeMetaTransaction,
+      multiplexBatchSellTokenForToken,
+      multiplexBatchSellTokenForEth,
+      multiplexBatchSellEthForToken,
+      multiplexMultiHopSellTokenForToken,
+      multiplexMultiHopSellEthForToken,
+      multiplexMultiHopSellTokenForEth,
+      permitAndCall,
+      sellToUniswap,
+      sellTokenForEthToUniswapV3,
+      sellEthForTokenToUniswapV3,
+      sellTokenForTokenToUniswapV3,
+      sellToLiquidityProvider,
+      sellToPancakeSwap,
+      transformERC20,
+    };
+
+    const parser = txDescription ? logParsers[txDescription.name] : null;
+
+    return parser && txDescription
+      ? parser({ txDescription, txReceipt: txReceiptEnriched })
+      : null;
+  }
 }

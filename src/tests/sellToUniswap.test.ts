@@ -1,5 +1,6 @@
 import { it, expect } from "vitest";
 import { parseSwap } from "../index";
+import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
 
 require("dotenv").config();
 
@@ -10,96 +11,11 @@ if (!RPC_TEST_URL) {
 }
 
 // https://etherscan.io/tx/0xd6a7aeda4a2978c80b03700e3136c6895b48d08cd9c8d4c88dfd19dee0a12795
-const txReceipt = {
-  _type: "TransactionReceipt",
-  blockHash:
-    "0x431121dedb84415dfa7686d356f58fa2bc029aebfed0b4cecf330c822439007d",
-  blockNumber: 16877633,
-  contractAddress: null,
-  cumulativeGasUsed: "4524989",
-  from: "0xcb5dFfB24C8f642946D52BFEb6e3AA5f450dCf30",
-  gasPrice: "22007828429",
-  gasUsed: "129033",
-  hash: "0xd6a7aeda4a2978c80b03700e3136c6895b48d08cd9c8d4c88dfd19dee0a12795",
-  index: 63,
-  logs: [
-    {
-      _type: "log",
-      address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      blockHash:
-        "0x431121dedb84415dfa7686d356f58fa2bc029aebfed0b4cecf330c822439007d",
-      blockNumber: 16877633,
-      data: "0x000000000000000000000000000000000000000000000000003be492fb270d77",
-      index: 126,
-      topics: [
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
-        "0x000000000000000000000000cb5dffb24c8f642946d52bfeb6e3aa5f450dcf30",
-        "0x00000000000000000000000006da0fd433c1a5d7a4faa01111c044910a184553",
-      ],
-      transactionHash:
-        "0xd6a7aeda4a2978c80b03700e3136c6895b48d08cd9c8d4c88dfd19dee0a12795",
-      transactionIndex: 63,
-    },
-    {
-      _type: "log",
-      address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-      blockHash:
-        "0x431121dedb84415dfa7686d356f58fa2bc029aebfed0b4cecf330c822439007d",
-      blockNumber: 16877633,
-      data: "0x0000000000000000000000000000000000000000000000000000000001cc0d6f",
-      index: 127,
-      topics: [
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
-        "0x00000000000000000000000006da0fd433c1a5d7a4faa01111c044910a184553",
-        "0x000000000000000000000000cb5dffb24c8f642946d52bfeb6e3aa5f450dcf30",
-      ],
-      transactionHash:
-        "0xd6a7aeda4a2978c80b03700e3136c6895b48d08cd9c8d4c88dfd19dee0a12795",
-      transactionIndex: 63,
-    },
-    {
-      _type: "log",
-      address: "0x06da0fd433C1A5d7a4faa01111c044910A184553",
-      blockHash:
-        "0x431121dedb84415dfa7686d356f58fa2bc029aebfed0b4cecf330c822439007d",
-      blockNumber: 16877633,
-      data: "0x00000000000000000000000000000000000000000000017ee5999123c5d780d700000000000000000000000000000000000000000000000000000b85f8d74301",
-      index: 128,
-      topics: [
-        "0x1c411e9a96e071241c2f21f7726b17ae89e3cab4c78be50e062b03a9fffbbad1",
-      ],
-      transactionHash:
-        "0xd6a7aeda4a2978c80b03700e3136c6895b48d08cd9c8d4c88dfd19dee0a12795",
-      transactionIndex: 63,
-    },
-    {
-      _type: "log",
-      address: "0x06da0fd433C1A5d7a4faa01111c044910A184553",
-      blockHash:
-        "0x431121dedb84415dfa7686d356f58fa2bc029aebfed0b4cecf330c822439007d",
-      blockNumber: 16877633,
-      data: "0x000000000000000000000000000000000000000000000000003be492fb270d77000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001cc0d6f",
-      index: 129,
-      topics: [
-        "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822",
-        "0x000000000000000000000000def1c0ded9bec7f1a1670819833240f027b25eff",
-        "0x000000000000000000000000cb5dffb24c8f642946d52bfeb6e3aa5f450dcf30",
-      ],
-      transactionHash:
-        "0xd6a7aeda4a2978c80b03700e3136c6895b48d08cd9c8d4c88dfd19dee0a12795",
-      transactionIndex: 63,
-    },
-  ],
-  logsBloom:
-    "0x00200000000000000000000080000000000000000000080000010000000000000000000000000000000000000000010002000000080000000000000000000000000000000000002000000008000000200000000000000000080000400000000000000000000000000000000000000040000000000000000000000010000000000000000000000000000000000000000000000000200000080000004000100000000000000000000000004080000000000000000000020000000001000000000000400002000000000000000000000000000000000000001000000000002000000000200000000000000000000000000000000000000000000000000000000000",
-  status: 1,
-  to: "0xDef1C0ded9bec7F1a1670819833240f027b25EfF",
-};
-
 it("parses swap for sellToUniswap", async () => {
   const data = await parseSwap({
-    txReceipt,
-    txDescription: { name: "sellToUniswap", value: 0n, args: [] },
+    transactionHash:
+      "0xd6a7aeda4a2978c80b03700e3136c6895b48d08cd9c8d4c88dfd19dee0a12795",
+    exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
     rpcUrl: RPC_TEST_URL,
   });
 
@@ -107,12 +23,12 @@ it("parses swap for sellToUniswap", async () => {
     tokenIn: {
       symbol: "WETH",
       amount: "0.016858343555927415",
-      address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+      address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
     },
     tokenOut: {
       symbol: "USDT",
       amount: "30.149999",
-      address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+      address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
     },
   });
 });

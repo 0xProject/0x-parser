@@ -51,8 +51,10 @@ export interface TxDescription {
 }
 
 export interface ParseSwapArgs {
-  txReceipt: TransactionReceipt;
-  txDescription: TxDescription;
+  transactionHash: string;
+  exchangeProxyAbi?: any;
+  // txReceipt: TransactionReceipt;
+  // txDescription: TxDescription;
   rpcUrl: string;
 }
 

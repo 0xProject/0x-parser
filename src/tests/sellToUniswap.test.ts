@@ -4,10 +4,10 @@ import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
 
 require("dotenv").config();
 
-const RPC_TEST_URL = process.env.RPC_TEST_URL;
+const ETH_MAINNET_RPC = process.env.ETH_MAINNET_RPC;
 
-if (!RPC_TEST_URL) {
-  throw new Error("Missing environment variable `RPC_TEST_URL`");
+if (!ETH_MAINNET_RPC) {
+  throw new Error("Missing environment variable `ETH_MAINNET_RPC`");
 }
 
 // https://etherscan.io/tx/0xd6a7aeda4a2978c80b03700e3136c6895b48d08cd9c8d4c88dfd19dee0a12795
@@ -16,7 +16,7 @@ it("parses swap for sellToUniswap", async () => {
     transactionHash:
       "0xd6a7aeda4a2978c80b03700e3136c6895b48d08cd9c8d4c88dfd19dee0a12795",
     exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-    rpcUrl: RPC_TEST_URL,
+    rpcUrl: ETH_MAINNET_RPC,
   });
 
   expect(data).toEqual({

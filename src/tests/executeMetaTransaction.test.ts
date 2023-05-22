@@ -2,7 +2,7 @@ import { it, expect } from "vitest";
 import { parseSwap } from "../index";
 import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
 
-const RPC_TEST_URL = "https://polygon-rpc.com";
+const ETH_MAINNET_RPC = "https://polygon-rpc.com";
 
 // https://polygonscan.com/tx/0xaa61b2058fafae1532565b6acadf47a8fe604518185f535e2780dd28d626e0ef
 it("parses swap for executeMetaTransaction", async () => {
@@ -10,7 +10,7 @@ it("parses swap for executeMetaTransaction", async () => {
     transactionHash:
       "0xaa61b2058fafae1532565b6acadf47a8fe604518185f535e2780dd28d626e0ef",
     exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-    rpcUrl: RPC_TEST_URL,
+    rpcUrl: ETH_MAINNET_RPC,
   });
 
   expect(data).toEqual({

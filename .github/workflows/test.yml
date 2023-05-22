@@ -12,7 +12,7 @@ jobs:
       - run: npm run build
       - run: npm test --coverage
         env:
-          RPC_TEST_URL: "https://rpc.flashbots.net"
+          ETH_MAINNET_RPC: ${{ secrets.ETH_MAINNET_RPC }}
       - uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

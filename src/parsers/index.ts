@@ -146,13 +146,14 @@ export function transformERC20({
   const { logs } = txReceipt;
   const { value } = txDescription;
 
-  let inputLog = logs.find((log) => log.from === txReceipt.from.toLowerCase()); // doesn't exist if user sends ETH
+  let inputLog = logs.find((log) => log.from === txReceipt.from.toLowerCase());
   const outputLog = logs.find((log) => log.to === txReceipt.from.toLowerCase());
 
   if (inputLog && outputLog) {
     return extractTokenInfo(inputLog, outputLog);
   }
 
+  // if the user sends eth, then the inputLog is undefined
   if (txDescription.value && outputLog) {
     // Convert to ether
     const divisor = 1000000000000000000n; // 1e18, for conversion from wei to ether
@@ -302,7 +303,7 @@ export function sellToPancakeSwap({
 }) {
   const from = txReceipt.from.toLowerCase();
   const { logs } = txReceipt;
-  const exchangeProxy = CONTRACTS.exchangeProxy.toLowerCase();
+  const exchangeProxy = CONTRACTS.exchangeProxy.bsc.toLowerCase();
   let inputLog = logs.find((log) => log.from === from);
   let outputLog = logs.find((log) => log.from !== from);
 

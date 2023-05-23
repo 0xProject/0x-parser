@@ -104,9 +104,9 @@ export async function parseSwap({
 
   if (tx && txReceipt) {
     const contract =
-      txReceipt.to === CONTRACTS.exchangeProxy
-        ? new Contract(CONTRACTS.exchangeProxy, exchangeProxyAbi)
-        : new Contract(CONTRACTS.permitAndCall, permitAndCallAbi);
+      txReceipt.to === CONTRACTS.permitAndCall
+        ? new Contract(CONTRACTS.permitAndCall, permitAndCallAbi)
+        : new Contract(CONTRACTS.exchangeProxy.ethereum, exchangeProxyAbi);
 
     const txDescription = contract.interface.parseTransaction(tx);
 

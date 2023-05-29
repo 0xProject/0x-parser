@@ -48,7 +48,7 @@
     "@vitest/coverage-c8": "^0.31.0",
     "dotenv": "^16.0.3",
     "esbuild": "^0.17.5",
-    "ethers": "^6.2.2",
+    "ethers": "^6.4.0",
     "http-server": "^14.1.1",
     "typescript": "^5.0.2",
     "vitest": "^0.31.0"

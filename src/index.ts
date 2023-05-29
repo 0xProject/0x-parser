@@ -31,6 +31,7 @@ import {
 import { erc20Rpc, formatUnits, convertHexToAddress } from "./utils";
 import { TransactionStatus } from "./types";
 import type {
+  Mtx,
   Log,
   LogParsers,
   EnrichedTxReceipt,
@@ -112,6 +113,10 @@ export async function parseSwap({
 
     if (txReceipt.status === TransactionStatus.REVERTED) return null;
 
+    if (txDescription === null) {
+      return null;
+    }
+
     const txReceiptEnriched = await enrichTxReceipt({ txReceipt, rpcUrl });
 
     const logParsers: LogParsers = {
@@ -138,10 +143,27 @@ export async function parseSwap({
       transformERC20,
     };
 
-    const parser = txDescription ? logParsers[txDescription.name] : null;
+    const parser = logParsers[txDescription.name];
 
-    return parser && txDescription
-      ? parser({ txDescription, txReceipt: txReceiptEnriched })
-      : null;
+    if (txDescription.name === "executeMetaTransactionV2") {
+      const [mtx] = txDescription.args;
+      const { 0: signer, 4: data, 6: fees } = mtx as Mtx;
+      const [recipient] = fees[0];
+      const { logs } = txReceiptEnriched;
+      const filteredLogs = logs.filter(
+        (log) => log.to !== recipient.toLowerCase()
+      );
+      const mtxV2Description = contract.interface.parseTransaction({ data });
+
+      if (mtxV2Description) {
+        const parser = logParsers[mtxV2Description.name];
+        return parser({
+          txDescription: mtxV2Description,
+          txReceipt: { from: signer, logs: filteredLogs },
+        });
+      }
+    }
+
+    return parser({ txDescription, txReceipt: txReceiptEnriched });
   }
 }

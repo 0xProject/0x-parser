@@ -18,6 +18,8 @@
     <script type="text/babel">
       const transactions = {
         ethereum: {
+          executeMetaTransactionV2:
+            "0xf4752f8499f62e10218fae55adfa5e4009839900a74f165b80015c1823bacb10",
           permitAndCall:
             "0x5eac379185f24ddeba7fcd4414779df77ecfd1102da6ebf6dacf25b01a14b241",
           fillLimitOrder:
@@ -94,7 +96,7 @@
         const response = await fetch(abiUrl);
         const IZeroEx = await response.json();
         const data = await parseSwap({
-          transactionHash: transactions.ethereum.permitAndCall,
+          transactionHash: transactions.ethereum.executeMetaTransactionV2,
           exchangeProxyAbi: IZeroEx.compilerOutput.abi,
           rpcUrl: rpcUrls.ethereum,
         });

@@ -1,3 +1,15 @@
+import { type Contract } from "ethers";
+
+export type Mtx = [
+  signer: string,
+  sender: string,
+  expirationTimeSeconds: bigint,
+  salt: bigint,
+  calldata: string,
+  feeToken: string,
+  fees: [[recipient: string]],
+]
+
 export interface ProcessedLog {
   to: string;
   from: string;
@@ -47,7 +59,7 @@ export interface TxDescription {
   args: (string | bigint)[] | (string | bigint)[][];
   fragment?: {
     inputs: readonly any[];
-  }
+  };
 }
 
 export interface ParseSwapArgs {
@@ -58,13 +70,21 @@ export interface ParseSwapArgs {
   rpcUrl: string;
 }
 
-type ParserFunction = (params: {
+type TxParams = {
   txDescription: TxDescription;
   txReceipt: EnrichedTxReceipt;
-}) => {
-  tokenIn: { symbol: string; amount: string };
-  tokenOut: { symbol: string; amount: string };
-} | undefined;
+  contract?: Contract;
+};
+
+type TokenTransaction = { tokenIn: Token; tokenOut: Token } | undefined;
+
+type Token = {
+  symbol: string;
+  amount: string;
+};
+
+type ParserFunction = (params: TxParams) => TokenTransaction;
+
 
 export interface LogParsers {
   [key: string]: ParserFunction;

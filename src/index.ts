@@ -25,7 +25,7 @@ import {
 } from "./parsers";
 import {
   CONTRACTS,
-  ERC20_TRANSFER_EVENT_HASH,
+  EVENT_SIGNATURES,
   EXCHANGE_PROXY_ABI_URL,
 } from "./constants";
 import { erc20Rpc, formatUnits, convertHexToAddress } from "./utils";
@@ -74,7 +74,7 @@ async function enrichTxReceipt({
   rpcUrl: string;
 }): Promise<EnrichedTxReceipt> {
   const isERC20TransferEvent = (log: Log) =>
-    log.topics[0] === ERC20_TRANSFER_EVENT_HASH;
+    log.topics[0] === EVENT_SIGNATURES.Transfer;
   const filteredLogs = txReceipt.logs.filter(isERC20TransferEvent);
   const enrichedLogs = await Promise.all(
     filteredLogs.map((log) => enrichLog({ log, rpcUrl }))
@@ -104,6 +104,7 @@ export async function parseSwap({
   ]);
 
   if (tx && txReceipt) {
+    const chainId = Number(tx.chainId);
     const contract =
       txReceipt.to === CONTRACTS.permitAndCall
         ? new Contract(CONTRACTS.permitAndCall, permitAndCallAbi)
@@ -140,7 +141,6 @@ export async function parseSwap({
       sellTokenForTokenToUniswapV3,
       sellToLiquidityProvider,
       sellToPancakeSwap,
-      transformERC20,
     };
 
     const parser = logParsers[txDescription.name];
@@ -153,17 +153,38 @@ export async function parseSwap({
       const filteredLogs = logs.filter(
         (log) => log.to !== recipient.toLowerCase()
       );
+
       const mtxV2Description = contract.interface.parseTransaction({ data });
 
       if (mtxV2Description) {
         const parser = logParsers[mtxV2Description.name];
-        return parser({
-          txDescription: mtxV2Description,
-          txReceipt: { from: signer, logs: filteredLogs },
-        });
+
+        return mtxV2Description.name === "transformERC20"
+          ? transformERC20({
+              rpcUrl,
+              chainId,
+              contract,
+              transactionReceipt: txReceipt,
+            })
+          : parser({
+              txDescription: mtxV2Description,
+              txReceipt: { from: signer, logs: filteredLogs },
+            });
       }
     }
 
-    return parser({ txDescription, txReceipt: txReceiptEnriched });
+    if (txDescription.name === "transformERC20") {
+      return transformERC20({
+        rpcUrl,
+        chainId,
+        contract,
+        transactionReceipt: txReceipt,
+      });
+    }
+
+    return parser({
+      txDescription,
+      txReceipt: txReceiptEnriched,
+    });
   }
 }

@@ -79,9 +79,8 @@ it("parses swap for executeMetaTransactionV2 which wraps multiplexBatchSellToken
   });
 });
 
-// TODO: Implement me
 // https://etherscan.io/tx/0xee3ffb65f6c8e07b46471cc610cf721affeefed87098c7db30a8147d50eb2a65
-it.skip("parses swap for executeMetaTransactionV2 which wraps transformERC20", async () => {
+it("parses swap for executeMetaTransactionV2 which wraps transformERC20", async () => {
   const data = await parseSwap({
     transactionHash:
       "0xee3ffb65f6c8e07b46471cc610cf721affeefed87098c7db30a8147d50eb2a65",
@@ -91,14 +90,14 @@ it.skip("parses swap for executeMetaTransactionV2 which wraps transformERC20", a
 
   expect(data).toEqual({
     tokenIn: {
-      amount: "399.99",
+      amount: "399.98912868386398826",
       symbol: "cbETH",
       address: "0xBe9895146f7AF43049ca1c1AE358B0541Ea49704",
     },
     tokenOut: {
-      amount: "410.72390482871083",
-      symbol: "WETH",
-      address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      amount: "410.723904828710787856",
+      symbol: "ETH",
+      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     },
   });
 });

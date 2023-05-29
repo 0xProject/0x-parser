@@ -1,6 +1,17 @@
-import { CONTRACTS } from "../constants";
-import { extractTokenInfo } from "../utils";
-import type { EnrichedTxReceipt, TxDescription } from "../types";
+import { formatUnits } from "ethers";
+import { erc20Rpc, extractTokenInfo } from "../utils";
+import {
+  CONTRACTS,
+  NATIVE_ASSET,
+  EVENT_SIGNATURES,
+  NATIVE_SYMBOL_BY_CHAIN_ID,
+} from "../constants";
+import type { Contract, TransactionReceipt } from "ethers";
+import type {
+  TxDescription,
+  EnrichedTxReceipt,
+  TransformERC20EventData,
+} from "../types";
 
 export function sellToLiquidityProvider({
   txReceipt,
@@ -136,36 +147,75 @@ export function sellToUniswap({ txReceipt }: { txReceipt: EnrichedTxReceipt }) {
   return extractTokenInfo(inputLog, outputLog);
 }
 
-export function transformERC20({
-  txReceipt,
-  txDescription,
+export async function transformERC20({
+  rpcUrl,
+  chainId,
+  contract,
+  transactionReceipt,
 }: {
-  txReceipt: EnrichedTxReceipt;
-  txDescription: TxDescription;
+  rpcUrl: string;
+  chainId: number;
+  contract: Contract;
+  transactionReceipt: TransactionReceipt;
 }) {
-  const { logs } = txReceipt;
-  const { value } = txDescription;
+  const nativeSymbol = NATIVE_SYMBOL_BY_CHAIN_ID[chainId];
 
-  let inputLog = logs.find((log) => log.from === txReceipt.from.toLowerCase());
-  const outputLog = logs.find((log) => log.to === txReceipt.from.toLowerCase());
+  for (const log of transactionReceipt.logs) {
+    const { topics, data } = log;
+    const [eventHash] = topics;
+    if (eventHash === EVENT_SIGNATURES.TransformedERC20) {
+      const logDescription = contract.interface.parseLog({
+        data,
+        topics: [...log.topics],
+      });
+      const {
+        1: inputToken,
+        2: outputToken,
+        3: inputTokenAmount,
+        4: outputTokenAmount,
+      } = logDescription!.args as unknown as TransformERC20EventData;
 
-  if (inputLog && outputLog) {
-    return extractTokenInfo(inputLog, outputLog);
-  }
+      let inputSymbol: string;
+      let inputDecimal: number;
+      let outputSymbol: string;
+      let outputDecimal: number;
 
-  // if the user sends eth, then the inputLog is undefined
-  if (txDescription.value && outputLog) {
-    // Convert to ether
-    const divisor = 1000000000000000000n; // 1e18, for conversion from wei to ether
-    const etherBigInt = value / divisor;
-    const remainderBigInt = value % divisor;
-    const ether =
-      Number(etherBigInt) + Number(remainderBigInt) / Number(divisor);
+      if (inputToken === NATIVE_ASSET) {
+        inputSymbol = nativeSymbol;
+        inputDecimal = 18;
+      } else {
+        [inputSymbol, inputDecimal] = await Promise.all([
+          erc20Rpc.getSymbol(inputToken, rpcUrl),
+          erc20Rpc.getDecimals(inputToken, rpcUrl),
+        ]);
+      }
 
-    return {
-      tokenIn: { symbol: "ETH", amount: ether.toString() },
-      tokenOut: { symbol: outputLog.symbol, amount: outputLog.amount },
-    };
+      if (outputToken === NATIVE_ASSET) {
+        outputSymbol = nativeSymbol;
+        outputDecimal = 18;
+      } else {
+        [outputSymbol, outputDecimal] = await Promise.all([
+          erc20Rpc.getSymbol(outputToken, rpcUrl),
+          erc20Rpc.getDecimals(outputToken, rpcUrl),
+        ]);
+      }
+
+      const inputAmount = formatUnits(inputTokenAmount, inputDecimal);
+      const outputAmount = formatUnits(outputTokenAmount, outputDecimal);
+
+      return {
+        tokenIn: {
+          address: inputToken,
+          amount: inputAmount,
+          symbol: inputSymbol,
+        },
+        tokenOut: {
+          address: outputToken,
+          amount: outputAmount,
+          symbol: outputToken === NATIVE_ASSET ? nativeSymbol : outputSymbol,
+        },
+      };
+    }
   }
 }
 

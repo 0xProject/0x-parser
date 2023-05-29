@@ -1,4 +1,7 @@
-import { type Contract } from "ethers";
+import {
+  type Contract,
+  type TransactionReceipt as EthersTransactionReceipt,
+} from "ethers";
 
 export type Mtx = [
   signer: string,
@@ -7,8 +10,8 @@ export type Mtx = [
   salt: bigint,
   calldata: string,
   feeToken: string,
-  fees: [[recipient: string]],
-]
+  fees: [[recipient: string]]
+];
 
 export interface ProcessedLog {
   to: string;
@@ -65,27 +68,41 @@ export interface TxDescription {
 export interface ParseSwapArgs {
   transactionHash: string;
   exchangeProxyAbi?: any;
-  // txReceipt: TransactionReceipt;
-  // txDescription: TxDescription;
   rpcUrl: string;
 }
-
-type TxParams = {
-  txDescription: TxDescription;
-  txReceipt: EnrichedTxReceipt;
-  contract?: Contract;
-};
-
-type TokenTransaction = { tokenIn: Token; tokenOut: Token } | undefined;
 
 type Token = {
   symbol: string;
   amount: string;
 };
 
+type TokenTransaction = {
+  tokenIn: Token;
+  tokenOut: Token;
+} | undefined;
+
+type DetailedTokenTransaction = {
+  tokenIn: Token & { address: string };
+  tokenOut: Token & { address: string };
+} | undefined;
+
+type TxParams = {
+  txDescription: TxDescription;
+  txReceipt: EnrichedTxReceipt;
+};
+
+interface TxParamsFull extends TxParams {
+  transactionReceipt?: EthersTransactionReceipt;
+  contract?: Contract;
+  rpcUrl?: string;
+};
+
 type ParserFunction = (params: TxParams) => TokenTransaction;
 
+type AsyncParserFunction = (params: TxParamsFull) => Promise<DetailedTokenTransaction>;
 
 export interface LogParsers {
-  [key: string]: ParserFunction;
+  [key: string]: ParserFunction | AsyncParserFunction;
 }
+
+export type TransformERC20EventData = [string, string, string, bigint, bigint];

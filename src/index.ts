@@ -1,4 +1,4 @@
-import { Contract, JsonRpcProvider } from "ethers";
+import { Contract, JsonRpcProvider, TransactionDescription } from "ethers";
 import { abi as permitAndCallAbi } from "./abi/PermitAndCall.json";
 import {
   fillLimitOrder,
@@ -14,7 +14,6 @@ import {
   multiplexMultiHopSellTokenForToken,
   multiplexMultiHopSellEthForToken,
   multiplexMultiHopSellTokenForEth,
-  permitAndCall,
   sellToUniswap,
   sellTokenForEthToUniswapV3,
   sellEthForTokenToUniswapV3,
@@ -30,6 +29,7 @@ import {
 } from "./constants";
 import { erc20Rpc, formatUnits, convertHexToAddress } from "./utils";
 import { TransactionStatus } from "./types";
+import type { TransactionReceipt } from "ethers";
 import type {
   Mtx,
   Log,
@@ -38,7 +38,6 @@ import type {
   EnrichedLogWithoutAmount,
   ParseSwapArgs,
   ProcessedLog,
-  TransactionReceipt,
 } from "./types";
 
 async function enrichLog({
@@ -140,7 +139,6 @@ export async function parseSwap({
       multiplexMultiHopSellTokenForToken,
       multiplexMultiHopSellEthForToken,
       multiplexMultiHopSellTokenForEth,
-      permitAndCall,
       sellToUniswap,
       sellTokenForEthToUniswapV3,
       sellEthForTokenToUniswapV3,
@@ -153,65 +151,34 @@ export async function parseSwap({
 
     if (txDescription.name === "permitAndCall") {
       const calldataFromPermitAndCall = txDescription.args[7];
-      const internalTxDescription =
+      const permitAndCallDescription =
         exchangeProxyContract.interface.parseTransaction({
           data: calldataFromPermitAndCall,
         });
-      const [mtx] = internalTxDescription!.args;
-      const { 0: signer, 4: data, 6: fees } = mtx as Mtx;
-      const [recipient] = fees[0];
-      const { logs } = txReceiptEnriched;
-      const filteredLogs = logs.filter(
-        (log) => log.to !== recipient.toLowerCase()
-      );
-      const mtxV2Description = exchangeProxyContract.interface.parseTransaction(
-        { data }
-      );
 
-      if (mtxV2Description) {
-        const parser = logParsers[mtxV2Description.name];
-
-        return mtxV2Description.name === "transformERC20"
-          ? transformERC20({
-              rpcUrl,
-              chainId,
-              contract: exchangeProxyContract,
-              transactionReceipt: txReceipt,
-            })
-          : parser({
-              txDescription: mtxV2Description,
-              txReceipt: { from: signer, logs: filteredLogs },
-            });
+      if (permitAndCallDescription) {
+        return parseTx({
+          rpcUrl,
+          chainId,
+          txReceipt,
+          logParsers,
+          txReceiptEnriched,
+          exchangeProxyContract,
+          transactionDescription: permitAndCallDescription,
+        });
       }
     }
 
     if (txDescription.name === "executeMetaTransactionV2") {
-      const [mtx] = txDescription.args;
-      const { 0: signer, 4: data, 6: fees } = mtx as Mtx;
-      const [recipient] = fees[0];
-      const { logs } = txReceiptEnriched;
-      const filteredLogs = logs.filter(
-        (log) => log.to !== recipient.toLowerCase()
-      );
-      const mtxV2Description = exchangeProxyContract.interface.parseTransaction(
-        { data }
-      );
-
-      if (mtxV2Description) {
-        const parser = logParsers[mtxV2Description.name];
-
-        return mtxV2Description.name === "transformERC20"
-          ? transformERC20({
-              rpcUrl,
-              chainId,
-              contract: exchangeProxyContract,
-              transactionReceipt: txReceipt,
-            })
-          : parser({
-              txDescription: mtxV2Description,
-              txReceipt: { from: signer, logs: filteredLogs },
-            });
-      }
+      return parseTx({
+        rpcUrl,
+        chainId,
+        txReceipt,
+        logParsers,
+        txReceiptEnriched,
+        exchangeProxyContract,
+        transactionDescription: txDescription,
+      });
     }
 
     if (txDescription.name === "transformERC20") {
@@ -228,4 +195,53 @@ export async function parseSwap({
       txReceipt: txReceiptEnriched,
     });
   }
+}
+
+function parseTx({
+  rpcUrl,
+  chainId,
+  logParsers,
+  txReceipt,
+  txReceiptEnriched,
+  exchangeProxyContract,
+  transactionDescription,
+}: {
+  rpcUrl: string;
+  chainId: number;
+  logParsers: LogParsers;
+  txReceipt: TransactionReceipt;
+  txReceiptEnriched: EnrichedTxReceipt;
+  exchangeProxyContract: Contract;
+  transactionDescription: TransactionDescription;
+}) {
+  const [mtx] = transactionDescription.args;
+  const { 0: signer, 4: data, 6: fees } = mtx as Mtx;
+  const [recipient] = fees[0];
+  const { logs } = txReceiptEnriched;
+  const filteredLogs = logs.filter((log) => log.to !== recipient.toLowerCase());
+  const mtxV2Description = exchangeProxyContract.interface.parseTransaction({
+    data,
+  });
+
+  let parser = logParsers[transactionDescription.name];
+  if (mtxV2Description) {
+    const parser = logParsers[mtxV2Description.name];
+
+    return mtxV2Description.name === "transformERC20"
+      ? transformERC20({
+          rpcUrl,
+          chainId,
+          contract: exchangeProxyContract,
+          transactionReceipt: txReceipt,
+        })
+      : parser({
+          txDescription: mtxV2Description,
+          txReceipt: { from: signer, logs: filteredLogs },
+        });
+  }
+
+  return parser({
+    txDescription: transactionDescription,
+    txReceipt: { from: signer, logs: filteredLogs },
+  });
 }

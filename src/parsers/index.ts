@@ -430,20 +430,3 @@ export function fillLimitOrder({
     }
   }
 }
-
-export function permitAndCall({
-  txReceipt,
-  txDescription,
-}: {
-  txReceipt: EnrichedTxReceipt;
-  txDescription: TxDescription;
-}) {
-  const logs = txReceipt.logs;
-  const taker = txDescription.args[1] as string;
-  const inputLog = logs.find((log) => log.from === taker.toLowerCase());
-  const outputLog = logs.find((log) => log.to === taker.toLowerCase());
-
-  if (inputLog && outputLog) {
-    return extractTokenInfo(inputLog, outputLog);
-  }
-}

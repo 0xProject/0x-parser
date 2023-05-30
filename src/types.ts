@@ -1,7 +1,4 @@
-import {
-  type Contract,
-  type TransactionReceipt as EthersTransactionReceipt,
-} from "ethers";
+import type { Contract, TransactionReceipt } from "ethers";
 
 export type Mtx = [
   signer: string,
@@ -49,13 +46,6 @@ export interface EnrichedLogWithoutAmount extends Log {
   from?: string;
 }
 
-export interface TransactionReceipt {
-  logs: readonly Log[];
-  from: string;
-  status: number | null;
-}
-
-// generic here.
 export interface TxDescription {
   value: bigint;
   name: string;
@@ -92,10 +82,10 @@ type TxParams = {
 };
 
 interface TxParamsFull extends TxParams {
-  transactionReceipt?: EthersTransactionReceipt;
+  transactionReceipt?: TransactionReceipt;
   contract?: Contract;
   rpcUrl?: string;
-};
+}
 
 type ParserFunction = (params: TxParams) => TokenTransaction;
 

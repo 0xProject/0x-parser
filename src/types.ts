@@ -1,4 +1,4 @@
-import type { Contract, TransactionReceipt } from "ethers";
+import type { Contract, TransactionReceipt, TransactionDescription } from "ethers";
 
 export type Mtx = [
   signer: string,
@@ -96,3 +96,13 @@ export interface LogParsers {
 }
 
 export type TransformERC20EventData = [string, string, string, bigint, bigint];
+
+export interface ParseGaslessTxArgs {
+  rpcUrl: string;
+  chainId: number;
+  logParsers: LogParsers;
+  txReceipt: TransactionReceipt;
+  txReceiptEnriched: EnrichedTxReceipt;
+  exchangeProxyContract: Contract;
+  transactionDescription: TransactionDescription;
+}

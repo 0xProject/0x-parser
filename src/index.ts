@@ -1,4 +1,4 @@
-import { Contract, JsonRpcProvider, TransactionDescription } from "ethers";
+import { Contract, JsonRpcProvider } from "ethers";
 import { abi as permitAndCallAbi } from "./abi/PermitAndCall.json";
 import {
   fillLimitOrder,
@@ -36,6 +36,7 @@ import type {
   LogParsers,
   EnrichedTxReceipt,
   EnrichedLogWithoutAmount,
+  ParseGaslessTxArgs,
   ParseSwapArgs,
   ProcessedLog,
 } from "./types";
@@ -157,7 +158,7 @@ export async function parseSwap({
         });
 
       if (permitAndCallDescription) {
-        return parseTx({
+        return parseGaslessTx({
           rpcUrl,
           chainId,
           txReceipt,
@@ -170,7 +171,7 @@ export async function parseSwap({
     }
 
     if (txDescription.name === "executeMetaTransactionV2") {
-      return parseTx({
+      return parseGaslessTx({
         rpcUrl,
         chainId,
         txReceipt,
@@ -197,7 +198,7 @@ export async function parseSwap({
   }
 }
 
-function parseTx({
+function parseGaslessTx({
   rpcUrl,
   chainId,
   logParsers,
@@ -205,15 +206,7 @@ function parseTx({
   txReceiptEnriched,
   exchangeProxyContract,
   transactionDescription,
-}: {
-  rpcUrl: string;
-  chainId: number;
-  logParsers: LogParsers;
-  txReceipt: TransactionReceipt;
-  txReceiptEnriched: EnrichedTxReceipt;
-  exchangeProxyContract: Contract;
-  transactionDescription: TransactionDescription;
-}) {
+}: ParseGaslessTxArgs) {
   const [mtx] = transactionDescription.args;
   const { 0: signer, 4: data, 6: fees } = mtx as Mtx;
   const [recipient] = fees[0];

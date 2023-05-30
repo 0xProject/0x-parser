@@ -50,8 +50,8 @@ it("parses swap for executeMetaTransactionV2 which wraps multiplexBatchSellToken
     },
     tokenOut: {
       amount: "2.6043201133029994",
-      symbol: "WETH",
-      address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      symbol: "ETH",
+      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     },
   });
 });

@@ -243,8 +243,8 @@ export function multiplexBatchSellTokenForEth({
     [from.toLowerCase()]: { amount: "0", symbol: "", address: "" },
     [CONTRACTS.weth.toLowerCase()]: {
       amount: "0",
-      symbol: "",
-      address: "",
+      symbol: "ETH",
+      address: NATIVE_ASSET,
     },
   };
 
@@ -254,8 +254,6 @@ export function multiplexBatchSellTokenForEth({
       tokenData[erc20Address].amount = String(
         Number(tokenData[erc20Address].amount) + Number(amount)
       );
-      tokenData[erc20Address].symbol = symbol;
-      tokenData[erc20Address].address = address;
     }
     if (tokenData[from]) {
       tokenData[from].amount = String(
@@ -440,14 +438,12 @@ export function permitAndCall({
   txReceipt: EnrichedTxReceipt;
   txDescription: TxDescription;
 }) {
-  const { 1: owner } = txDescription.args;
-  const { logs } = txReceipt;
-  if (typeof owner === "string") {
-    const inputLog = logs.find((log) => log.from === owner.toLowerCase());
-    const outputLog = logs.find((log) => log.to === owner.toLowerCase());
+  const logs = txReceipt.logs;
+  const taker = txDescription.args[1] as string;
+  const inputLog = logs.find((log) => log.from === taker.toLowerCase());
+  const outputLog = logs.find((log) => log.to === taker.toLowerCase());
 
-    if (inputLog && outputLog) {
-      return extractTokenInfo(inputLog, outputLog);
-    }
+  if (inputLog && outputLog) {
+    return extractTokenInfo(inputLog, outputLog);
   }
 }

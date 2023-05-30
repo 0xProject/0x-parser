@@ -26,9 +26,9 @@ it("parses swap for multiplexBatchSellTokenForEth", async () => {
       address: "0xBC19712FEB3a26080eBf6f2F7849b417FdD792CA",
     },
     tokenOut: {
-      symbol: "WETH",
+      symbol: "ETH",
       amount: "0.48027902546177326",
-      address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     },
   });
 });

@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@vitest/coverage-c8": "^0.31.0",
+    "abitype": "^0.8.6",
     "dotenv": "^16.0.3",
     "esbuild": "^0.17.5",
     "ethers": "^6.4.0",

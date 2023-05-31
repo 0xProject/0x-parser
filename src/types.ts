@@ -1,4 +1,12 @@
-import type { Contract, TransactionReceipt, TransactionDescription } from "ethers";
+import { narrow } from "abitype";
+import IZeroEx from "./abi/IZeroEx.json";
+import type {
+  Contract,
+  TransactionReceipt,
+  TransactionDescription,
+} from "ethers";
+
+export const exchangeProxyAbi = narrow(IZeroEx.compilerOutput.abi);
 
 export type Mtx = [
   signer: string,
@@ -46,18 +54,9 @@ export interface EnrichedLogWithoutAmount extends Log {
   from?: string;
 }
 
-export interface TxDescription {
-  value: bigint;
-  name: string;
-  args: (string | bigint)[] | (string | bigint)[][];
-  fragment?: {
-    inputs: readonly any[];
-  };
-}
-
 export interface ParseSwapArgs {
   transactionHash: string;
-  exchangeProxyAbi?: any;
+  exchangeProxyAbi?: typeof exchangeProxyAbi;
   rpcUrl: string;
 }
 
@@ -77,8 +76,8 @@ type DetailedTokenTransaction = {
 } | undefined;
 
 type TxParams = {
-  txDescription: TxDescription;
   txReceipt: EnrichedTxReceipt;
+  txDescription: TransactionDescription;
 };
 
 interface TxParamsFull extends TxParams {
@@ -89,7 +88,9 @@ interface TxParamsFull extends TxParams {
 
 type ParserFunction = (params: TxParams) => TokenTransaction;
 
-type AsyncParserFunction = (params: TxParamsFull) => Promise<DetailedTokenTransaction>;
+type AsyncParserFunction = (
+  params: TxParamsFull
+) => Promise<DetailedTokenTransaction>;
 
 export interface LogParsers {
   [key: string]: ParserFunction | AsyncParserFunction;

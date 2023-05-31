@@ -6,12 +6,12 @@ import {
   EVENT_SIGNATURES,
   NATIVE_SYMBOL_BY_CHAIN_ID,
 } from "../constants";
-import type { Contract, TransactionReceipt } from "ethers";
 import type {
-  TxDescription,
-  EnrichedTxReceipt,
-  TransformERC20EventData,
-} from "../types";
+  Contract,
+  TransactionReceipt,
+  TransactionDescription,
+} from "ethers";
+import type { EnrichedTxReceipt, TransformERC20EventData } from "../types";
 
 export function sellToLiquidityProvider({
   txReceipt,
@@ -59,7 +59,7 @@ export function fillTakerSignedOtcOrder({
   txDescription,
 }: {
   txReceipt: EnrichedTxReceipt;
-  txDescription: TxDescription;
+  txDescription: TransactionDescription;
 }) {
   const [order] = txDescription.args;
   const { logs } = txReceipt;
@@ -275,7 +275,7 @@ export function multiplexBatchSellEthForToken({
   txDescription,
 }: {
   txReceipt: EnrichedTxReceipt;
-  txDescription: TxDescription;
+  txDescription: TransactionDescription;
 }) {
   const { logs } = txReceipt;
   const { args, value } = txDescription;
@@ -314,7 +314,7 @@ export function multiplexBatchSellTokenForToken({
   txReceipt,
 }: {
   txReceipt: EnrichedTxReceipt;
-  txDescription: TxDescription;
+  txDescription: TransactionDescription;
 }) {
   const [inputContractAddress, outputContractAddress] = txDescription.args;
 
@@ -370,7 +370,7 @@ export function executeMetaTransaction({
   txDescription,
 }: {
   txReceipt: EnrichedTxReceipt;
-  txDescription: TxDescription;
+  txDescription: TransactionDescription;
 }) {
   const [metaTransaction] = txDescription.args;
   const [from] = metaTransaction as string[];
@@ -389,7 +389,7 @@ export function fillOtcOrderForEth({
   txDescription,
 }: {
   txReceipt: EnrichedTxReceipt;
-  txDescription: TxDescription;
+  txDescription: TransactionDescription;
 }) {
   const { logs } = txReceipt;
   const [order] = txDescription.args;
@@ -407,7 +407,7 @@ export function fillOtcOrderWithEth({
   txDescription,
 }: {
   txReceipt: EnrichedTxReceipt;
-  txDescription: TxDescription;
+  txDescription: TransactionDescription;
 }) {
   return fillOtcOrderForEth({ txReceipt, txDescription });
 }
@@ -417,7 +417,7 @@ export function fillLimitOrder({
   txDescription,
 }: {
   txReceipt: EnrichedTxReceipt;
-  txDescription: TxDescription;
+  txDescription: TransactionDescription;
 }) {
   const [order] = txDescription.args;
   const { 5: maker, 6: taker } = order as string[];

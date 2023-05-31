@@ -13,5 +13,5 @@
     "skipLibCheck": true,
     "emitDeclarationOnly": true
   },
-  "exclude": ["dist", "examples", "node_modules", "src/**/*.test.ts"]
+  "exclude": ["dist", "examples", "node_modules"]
 }

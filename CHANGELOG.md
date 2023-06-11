@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/0xProject/0x-parser/compare/v0.2.0...v0.3.0) (2023-06-11)
+
+
+### Features
+
+* export core types ([5751674](https://github.com/0xProject/0x-parser/commit/5751674a15ba2d7e4f037e44bf6dc4235e830e01))
+
 ## [0.2.0](https://github.com/0xProject/0x-parser/compare/v0.1.0...v0.2.0) (2023-05-30)
 
 

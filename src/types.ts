@@ -70,7 +70,7 @@ type TokenTransaction = {
   tokenOut: Token;
 } | undefined;
 
-type DetailedTokenTransaction = {
+export type DetailedTokenTransaction = {
   tokenIn: Token & { address: string };
   tokenOut: Token & { address: string };
 } | undefined;
@@ -80,20 +80,10 @@ type TxParams = {
   txDescription: TransactionDescription;
 };
 
-interface TxParamsFull extends TxParams {
-  transactionReceipt?: TransactionReceipt;
-  contract?: Contract;
-  rpcUrl?: string;
-}
-
 type ParserFunction = (params: TxParams) => TokenTransaction;
 
-type AsyncParserFunction = (
-  params: TxParamsFull
-) => Promise<DetailedTokenTransaction>;
-
 export interface LogParsers {
-  [key: string]: ParserFunction | AsyncParserFunction;
+  [key: string]: ParserFunction;
 }
 
 export type TransformERC20EventData = [string, string, string, bigint, bigint];
@@ -107,3 +97,5 @@ export interface ParseGaslessTxArgs {
   exchangeProxyContract: Contract;
   transactionDescription: TransactionDescription;
 }
+
+export type ParseSwap = (args: ParseSwapArgs) => Promise<DetailedTokenTransaction>;

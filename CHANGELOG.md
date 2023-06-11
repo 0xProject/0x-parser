@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/0xProject/0x-parser/compare/v0.3.0...v0.3.1) (2023-06-11)
+
+
+### Build System
+
+* fix location of type declarations ([b38e8d5](https://github.com/0xProject/0x-parser/commit/b38e8d5bb637ad18fb04a00ae45f2c35877e154d))
+
 ## [0.3.0](https://github.com/0xProject/0x-parser/compare/v0.2.0...v0.3.0) (2023-06-11)
 
 

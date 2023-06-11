@@ -1,7 +1,7 @@
 {
   "name": "@0x/0x-parser",
   "version": "0.3.0",
-  "description": "🧾 Designed for 0x integrators: This parser library enables precise extraction of swap amounts from 0x transactions.",
+  "description": "🧾 Designed for 0x integrators: This parser library decodes swap details from 0x transactions on Ethereum.",
   "keywords": [
     "logs",
     "swap",
@@ -13,6 +13,7 @@
   ],
   "author": "henryzhu.eth",
   "license": "MIT",
+  "homepage": "https://github.com/0xproject/0x-parser",
   "repository": {
     "type": "git",
     "url": "https://github.com/0xproject/0x-parser"
@@ -22,7 +23,7 @@
   },
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/types.d.ts",
   "sideEffects": false,
   "files": [
     "dist",

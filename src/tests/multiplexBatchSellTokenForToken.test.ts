@@ -12,7 +12,7 @@ if (!ETH_MAINNET_RPC) {
 
 // https://etherscan.io/tx/0xb2c5a697a3126af96d2aa20ba6dcd0daaf9ec6baa49de2a76682dfe4258d2e56
 
-it("parses swap for multiplexBatchSellTokenForToken", async () => {
+it("parses swap from multiplexBatchSellTokenForToken", async () => {
   const data = await parseSwap({
     exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
     transactionHash:

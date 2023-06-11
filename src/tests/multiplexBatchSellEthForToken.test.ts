@@ -11,7 +11,7 @@ if (!ETH_MAINNET_RPC) {
 }
 
 // https://etherscan.io/tx/0xe59ff84284d7e2ad87f1a6de55d5d6600b0b721242110687847e57b52a045b7d
-it("parses swap for multiplexBatchSellEthForToken", async () => {
+it("parses swap from multiplexBatchSellEthForToken", async () => {
   const data = await parseSwap({
     transactionHash:
       "0xe59ff84284d7e2ad87f1a6de55d5d6600b0b721242110687847e57b52a045b7d",

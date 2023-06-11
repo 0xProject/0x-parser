@@ -6,7 +6,7 @@ const BSC_RPC = "https://bsc-dataseed.binance.org";
 
 // https://bscscan.com/tx/0x2076af859a54f5f0c7d4e1cd13b3906169a5e3697d8762b59062052d53466e94
 describe("sellToPancakeSwap tx: 0x2076af859a54f5f0c7d4e1cd13b3906169a5e3697d8762b59062052d53466e94", () => {
-  it("parses swap for sellToPancakeSwap", async () => {
+  it("parses swap from sellToPancakeSwap", async () => {
     const data = await parseSwap({
       transactionHash:
         "0x2076af859a54f5f0c7d4e1cd13b3906169a5e3697d8762b59062052d53466e94",
@@ -31,7 +31,7 @@ describe("sellToPancakeSwap tx: 0x2076af859a54f5f0c7d4e1cd13b3906169a5e3697d8762
 
 // https://bscscan.com/tx/0x595b1684b8accec5fdd536dbdd9acb4ddcae9cfc21afcd65245d0a51a0e3582b
 describe("sellToPancakeSwap tx: 0x595b1684b8accec5fdd536dbdd9acb4ddcae9cfc21afcd65245d0a51a0e3582b", () => {
-  it("parses swap for sellToPancakeSwap", async () => {
+  it("parses swap from sellToPancakeSwap", async () => {
     const data = await parseSwap({
       transactionHash:
         "0x595b1684b8accec5fdd536dbdd9acb4ddcae9cfc21afcd65245d0a51a0e3582b",

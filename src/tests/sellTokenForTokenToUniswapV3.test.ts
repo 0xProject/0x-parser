@@ -11,7 +11,7 @@ if (!ETH_MAINNET_RPC) {
 }
 
 // https://etherscan.io/tx/0x90dbdd630287a0412f88cbc98b0d751bc81c613bb285898dac461b523cd07a5a
-it("parses swap for sellTokenForTokenToUniswapV3", async () => {
+it("parses swap from sellTokenForTokenToUniswapV3", async () => {
   const data = await parseSwap({
     transactionHash:
       "0x90dbdd630287a0412f88cbc98b0d751bc81c613bb285898dac461b523cd07a5a",

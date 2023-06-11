@@ -11,7 +11,7 @@ if (!ETH_MAINNET_RPC) {
 }
 
 // https://etherscan.io/tx/0xc552e83ef96c5d523f69494ae61b7235a6304ab439e127eb0121d33bbcdaa1ff
-it("parses swap for sellEthForTokenToUniswapV3", async () => {
+it("parses swap from sellEthForTokenToUniswapV3", async () => {
   const data = await parseSwap({
     transactionHash: '0xc552e83ef96c5d523f69494ae61b7235a6304ab439e127eb0121d33bbcdaa1ff',
     exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,

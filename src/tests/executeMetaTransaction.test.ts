@@ -5,7 +5,7 @@ import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
 const ETH_MAINNET_RPC = "https://polygon-rpc.com";
 
 // https://polygonscan.com/tx/0xaa61b2058fafae1532565b6acadf47a8fe604518185f535e2780dd28d626e0ef
-it("parses swap for executeMetaTransaction", async () => {
+it("parses swap from executeMetaTransaction", async () => {
   const data = await parseSwap({
     transactionHash:
       "0xaa61b2058fafae1532565b6acadf47a8fe604518185f535e2780dd28d626e0ef",

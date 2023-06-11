@@ -11,7 +11,7 @@ if (!ETH_MAINNET_RPC) {
 }
 
 // https://etherscan.io/tx/0x2a4379d531695dd4f142730edb7720bb9d06dfb405322e0e16acbfd8ba4fcb98
-it("parses swap for sellToLiquidityProvider", async () => {
+it("parses swap from sellToLiquidityProvider", async () => {
   const data = await parseSwap({
     transactionHash:
       "0x2a4379d531695dd4f142730edb7720bb9d06dfb405322e0e16acbfd8ba4fcb98",

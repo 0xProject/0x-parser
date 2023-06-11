@@ -15,7 +15,7 @@ if (!ETH_MAINNET_RPC) {
 
 describe("transformERC20 with native input asset", () => {
   // https://etherscan.io/tx/0x30d015e87dd5481609eec1c54433b8d4679fe641034971baf648d4528a9b0a35
-  it("parses swap for transformERC20", async () => {
+  it("parses swap from transformERC20", async () => {
     const data = await parseSwap({
       transactionHash:
         "0x30d015e87dd5481609eec1c54433b8d4679fe641034971baf648d4528a9b0a35",
@@ -40,7 +40,7 @@ describe("transformERC20 with native input asset", () => {
 
 describe("transformERC20 with erc20 input asset", () => {
   // https://etherscan.io/tx/0x4db5b7168686cdfb1469b47a67f03fb6199aa81f3d2a26c4a05835b8752d152d
-  it("parses swap for transformERC20", async () => {
+  it("parses swap from transformERC20", async () => {
     const data = await parseSwap({
       transactionHash:
         "0x4db5b7168686cdfb1469b47a67f03fb6199aa81f3d2a26c4a05835b8752d152d",

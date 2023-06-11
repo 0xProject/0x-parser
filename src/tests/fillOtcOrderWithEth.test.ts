@@ -11,7 +11,7 @@ if (!ETH_MAINNET_RPC) {
 }
 
 // https://etherscan.io/tx/0x68608bec5c30750a6a358b14eb937a07f10f72c84428bdf6eae80f52c27faf53
-it("parses swap for fillOtcOrderWithEth", async () => {
+it("parses swap from fillOtcOrderWithEth", async () => {
   const data = await parseSwap({
     transactionHash:
       "0x68608bec5c30750a6a358b14eb937a07f10f72c84428bdf6eae80f52c27faf53",

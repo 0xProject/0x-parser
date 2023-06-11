@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/0xProject/0x-parser/compare/v0.3.2...v0.3.3) (2023-06-11)
+
+
+### Build System
+
+* update type declarations ([68f609a](https://github.com/0xProject/0x-parser/commit/68f609adb15e4e1c3f54b5a79ae2d97d804d318f))
+
 ## [0.3.2](https://github.com/0xProject/0x-parser/compare/v0.3.1...v0.3.2) (2023-06-11)
 
 

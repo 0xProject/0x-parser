@@ -60,27 +60,25 @@ export interface ParseSwapArgs {
   rpcUrl: string;
 }
 
-type Token = {
+export type Token = {
   symbol: string;
   amount: string;
+  address: string;
 };
 
-type TokenTransaction = {
-  tokenIn: Token;
-  tokenOut: Token;
-} | undefined;
-
-export type DetailedTokenTransaction = {
-  tokenIn: Token & { address: string };
-  tokenOut: Token & { address: string };
-} | undefined;
+export type TokenTransaction =
+  | {
+      tokenIn: Token;
+      tokenOut: Token;
+    }
+  | undefined;
 
 type TxParams = {
   txReceipt: EnrichedTxReceipt;
   txDescription: TransactionDescription;
 };
 
-type ParserFunction = (params: TxParams) => TokenTransaction;
+export type ParserFunction = (params: TxParams) => TokenTransaction;
 
 export interface LogParsers {
   [key: string]: ParserFunction;
@@ -98,4 +96,6 @@ export interface ParseGaslessTxArgs {
   transactionDescription: TransactionDescription;
 }
 
-export type ParseSwap = (args: ParseSwapArgs) => Promise<DetailedTokenTransaction>;
+export type ParseSwap = (
+  args: ParseSwapArgs
+) => Promise<TokenTransaction | null>;

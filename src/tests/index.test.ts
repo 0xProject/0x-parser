@@ -56,6 +56,6 @@ it("throws an error when required arguments are not passed", () => {
       rpcUrl: ETH_MAINNET_RPC,
     });
   }).rejects.toThrowError(
-    `Missing 0x Exchange Proxy ABI, which can be found here: ${EXCHANGE_PROXY_ABI_URL}`
+    `Missing 0x Exchange Proxy ABI: ${EXCHANGE_PROXY_ABI_URL}`
   );
 });

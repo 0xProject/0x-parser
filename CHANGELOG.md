@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/0xProject/0x-parser/compare/v0.3.3...v0.3.4) (2023-06-12)
+
+
+### Build System
+
+* update esbuild minification for nextjs ([26764e1](https://github.com/0xProject/0x-parser/commit/26764e1cbb7fb0dce5a14052ac02f0feafb13017))
+
 ## [0.3.3](https://github.com/0xProject/0x-parser/compare/v0.3.2...v0.3.3) (2023-06-11)
 
 

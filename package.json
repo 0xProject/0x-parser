@@ -35,8 +35,8 @@
   "scripts": {
     "start": "npm run build && cp ./dist ./public/dist",
     "build": "npm run build:cjs && npm run build:esm && npm run types",
-    "build:esm": "esbuild src/index.ts --bundle --minify --format=esm --outfile=dist/index.esm.js",
-    "build:cjs": "esbuild src/index.ts --bundle --minify --platform=node --target=node18 --outfile=dist/index.cjs.js",
+    "build:esm": "esbuild src/index.ts --bundle --minify-whitespace --minify-identifiers --format=esm --target=esnext --outfile=dist/index.esm.js",
+    "build:cjs": "esbuild src/index.ts --bundle --minify-whitespace --minify-identifiers --platform=node --target=node18 --outfile=dist/index.cjs.js",
     "build:dev": "npm run build:cjs:dev && npm run build:esm:dev && npm run types",
     "build:esm:dev": "esbuild src/index.ts --bundle --format=esm --outfile=dist/index.esm.js",
     "build:cjs:dev": "esbuild src/index.ts --bundle --platform=node --target=node18 --outfile=dist/index.cjs.js",

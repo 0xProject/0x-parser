@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.5](https://github.com/0xProject/0x-parser/compare/v0.3.4...v0.3.5) (2023-06-13)
+
+
+### Build System
+
+* expand node support & update deps ([48f3d24](https://github.com/0xProject/0x-parser/commit/48f3d24616172a8c435a847c3e70952a15cf2563))
+
 ## [0.3.4](https://github.com/0xProject/0x-parser/compare/v0.3.3...v0.3.4) (2023-06-12)
 
 

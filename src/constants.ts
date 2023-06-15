@@ -39,7 +39,7 @@ export const NATIVE_SYMBOL_BY_CHAIN_ID: { [chainId: number]: string } = {
   1: "ETH", // Ethereum
   5: "ETH", // Goerli
   10: "ETH", // Optimism
-  56: "BNB", // BSC
+  56: "BNB", // BNB Chain
   137: "MATIC", // Polygon
   250: "FTM", // Fantom
   8453: "ETH", // Base

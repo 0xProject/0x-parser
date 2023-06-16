@@ -84,6 +84,29 @@ describe("transformERC20 on various networks", () => {
     });
   });
 
+  // https://arbiscan.io/tx/0x3e48c1d1d3596ecfc1f9feb9e9613f5f5fc002b76743251c31eca8bc0aa30e21
+  it("parse a swap on Arbitrum", async () => {
+    const data = await parseSwap({
+      transactionHash:
+        "0x3e48c1d1d3596ecfc1f9feb9e9613f5f5fc002b76743251c31eca8bc0aa30e21",
+      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
+      rpcUrl: "https://1rpc.io/arb",
+    });
+
+    expect(data).toEqual({
+      tokenIn: {
+        address: "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
+        amount: "36834.421293958495524657",
+        symbol: "GMX",
+      },
+      tokenOut: {
+        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        amount: "1189.251717722346544033",
+        symbol: "ETH",
+      },
+    });
+  });
+
   // https://optimistic.etherscan.io/tx/0x0d8125a0d77af877c5efd475e0b2a8aa7451c2b5b95e2918387f8a038aacd718
   it("parse a swap on Optimism", async () => {
     const data = await parseSwap({

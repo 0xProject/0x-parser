@@ -6,6 +6,7 @@ import type {
   EnrichedTxReceipt,
   EnrichedTxReceiptArgs,
   EnrichedLogWithoutAmount,
+  TryBlockAndAggregate,
 } from "../types";
 
 export function convertHexToAddress(hexString: string): string {
@@ -37,55 +38,21 @@ export function formatUnits(data: string, decimals: number) {
     : wholePart.toString();
 }
 
-async function rpcCall({
-  rpcUrl,
-  method,
-  params = [],
-}: {
-  rpcUrl: string;
-  method: string;
-  params?: unknown[];
-}) {
-  const response = await fetch(rpcUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method,
-      params,
-    }),
-  });
+export async function fetchSymbolAndDecimal(
+  address: string,
+  tryBlockAndAggregate: TryBlockAndAggregate
+): Promise<[string, number]> {
+  const calls = [
+    { target: address, callData: ERC20_FUNCTION_HASHES.symbol },
+    { target: address, callData: ERC20_FUNCTION_HASHES.decimals },
+  ];
+  const { 2: results } = await tryBlockAndAggregate.staticCall(false, calls);
+  const [symbolResult, decimalsResult] = results;
+  const symbol = parseHexDataToString(symbolResult.returnData);
+  const decimals = Number(BigInt(decimalsResult.returnData));
 
-  return await response.json();
+  return [symbol, decimals];
 }
-
-export const erc20Rpc = {
-  getSymbol: async function (contractAddress: string, rpcUrl: string) {
-    const { result } = await rpcCall({
-      rpcUrl,
-      method: "eth_call",
-      params: [
-        { to: contractAddress, data: ERC20_FUNCTION_HASHES.symbol },
-        "latest",
-      ],
-    });
-
-    return parseHexDataToString(result);
-  },
-  getDecimals: async function (contractAddress: string, rpcUrl: string) {
-    const { result } = await rpcCall({
-      rpcUrl,
-      method: "eth_call",
-      params: [
-        { to: contractAddress, data: ERC20_FUNCTION_HASHES.decimals },
-        "latest",
-      ],
-    });
-
-    return Number(BigInt(result));
-  },
-};
 
 function processLog(log: EnrichedLogWithoutAmount): ProcessedLog {
   const { topics, data, decimals, symbol, address } = log;
@@ -111,10 +78,7 @@ export async function enrichTxReceipt({
     { target: log.address, callData: ERC20_FUNCTION_HASHES.decimals },
   ]);
 
-  const { 2: results } = (await tryBlockAndAggregate.staticCall(
-    false,
-    calls
-  )) as AggregateResponse;
+  const { 2: results } = await tryBlockAndAggregate.staticCall(false, calls);
 
   const enrichedLogs = filteredLogs.map((log, i) => {
     const symbolResult = results[i * 2];

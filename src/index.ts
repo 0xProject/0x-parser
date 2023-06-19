@@ -114,7 +114,6 @@ export async function parseSwap({
 
       if (permitAndCallDescription) {
         return parseGaslessTx({
-          rpcUrl,
           chainId,
           logParsers,
           tryBlockAndAggregate,
@@ -127,7 +126,6 @@ export async function parseSwap({
 
     if (transactionDescription.name === "executeMetaTransactionV2") {
       return parseGaslessTx({
-        rpcUrl,
         chainId,
         logParsers,
         exchangeProxyContract,
@@ -139,9 +137,9 @@ export async function parseSwap({
 
     if (transactionDescription.name === "transformERC20") {
       return transformERC20({
-        rpcUrl,
         chainId,
         transactionReceipt,
+        tryBlockAndAggregate,
         contract: exchangeProxyContract,
       });
     }
@@ -159,7 +157,6 @@ export async function parseSwap({
 }
 
 async function parseGaslessTx({
-  rpcUrl,
   chainId,
   logParsers,
   exchangeProxyContract,
@@ -177,9 +174,9 @@ async function parseGaslessTx({
   if (mtxV2Description) {
     if (mtxV2Description.name === "transformERC20") {
       return transformERC20({
-        rpcUrl,
         chainId,
         transactionReceipt,
+        tryBlockAndAggregate,
         contract: exchangeProxyContract,
       });
     } else {

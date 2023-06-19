@@ -47,7 +47,7 @@ export interface EnrichedTxReceipt {
   from: string;
 }
 
-type TryBlockAndAggregate = BaseContractMethod<
+export type TryBlockAndAggregate = BaseContractMethod<
   [boolean, Call[]],
   AggregateResponse
 >;
@@ -121,7 +121,6 @@ export interface LogParsers {
 export type TransformERC20EventData = [string, string, string, bigint, bigint];
 
 export interface ParseGaslessTxArgs {
-  rpcUrl: string;
   chainId: number;
   logParsers: LogParsers;
   transactionReceipt: TransactionReceipt;

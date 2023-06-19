@@ -1,5 +1,5 @@
 import { formatUnits } from "ethers";
-import { erc20Rpc, extractTokenInfo } from "../utils";
+import { extractTokenInfo, fetchSymbolAndDecimal } from "../utils";
 import {
   CONTRACTS,
   NATIVE_ASSET,
@@ -11,7 +11,7 @@ import type {
   TransactionReceipt,
   TransactionDescription,
 } from "ethers";
-import type { EnrichedTxReceipt, TransformERC20EventData } from "../types";
+import type { EnrichedTxReceipt, TransformERC20EventData, TryBlockAndAggregate } from "../types";
 
 export function sellToLiquidityProvider({
   txReceipt,
@@ -148,15 +148,15 @@ export function sellToUniswap({ txReceipt }: { txReceipt: EnrichedTxReceipt }) {
 }
 
 export async function transformERC20({
-  rpcUrl,
   chainId,
   contract,
   transactionReceipt,
+  tryBlockAndAggregate,
 }: {
-  rpcUrl: string;
   chainId: number;
   contract: Contract;
   transactionReceipt: TransactionReceipt;
+  tryBlockAndAggregate: TryBlockAndAggregate;
 }) {
   const nativeSymbol = NATIVE_SYMBOL_BY_CHAIN_ID[chainId];
 
@@ -184,20 +184,20 @@ export async function transformERC20({
         inputSymbol = nativeSymbol;
         inputDecimal = 18;
       } else {
-        [inputSymbol, inputDecimal] = await Promise.all([
-          erc20Rpc.getSymbol(inputToken, rpcUrl),
-          erc20Rpc.getDecimals(inputToken, rpcUrl),
-        ]);
+        [inputSymbol, inputDecimal] = await fetchSymbolAndDecimal(
+          inputToken,
+          tryBlockAndAggregate
+        );
       }
 
       if (outputToken === NATIVE_ASSET) {
         outputSymbol = nativeSymbol;
         outputDecimal = 18;
       } else {
-        [outputSymbol, outputDecimal] = await Promise.all([
-          erc20Rpc.getSymbol(outputToken, rpcUrl),
-          erc20Rpc.getDecimals(outputToken, rpcUrl),
-        ]);
+        [outputSymbol, outputDecimal] = await fetchSymbolAndDecimal(
+          outputToken,
+          tryBlockAndAggregate
+        );
       }
 
       const inputAmount = formatUnits(inputTokenAmount, inputDecimal);

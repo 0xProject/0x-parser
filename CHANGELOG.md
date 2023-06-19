@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.6](https://github.com/0xProject/0x-parser/compare/v0.3.5...v0.3.6) (2023-06-19)
+
+
+### Bug Fixes
+
+* reduce rpc call for transformERC20 by one ([7803fb5](https://github.com/0xProject/0x-parser/commit/7803fb5d617811452091dbd1be43241f446a0b2b))
+* reduce rpc calls for multiplexBatchSellTokenForToken by 80% ([03c0a04](https://github.com/0xProject/0x-parser/commit/03c0a0411567d0330b6e94fbc09e42799ed1252f))
+* use exchange proxy address by chain id ([b3bbb88](https://github.com/0xProject/0x-parser/commit/b3bbb88c2f866c04090144c7081ae24e04c61f93))
+
 ## [0.3.5](https://github.com/0xProject/0x-parser/compare/v0.3.4...v0.3.5) (2023-06-13)
 
 

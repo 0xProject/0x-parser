@@ -1,6 +1,6 @@
 {
   "name": "@0x/0x-parser",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "🧾 Designed for 0x integrators: This parser library decodes swap details from 0x transactions on Ethereum.",
   "keywords": [
     "logs",

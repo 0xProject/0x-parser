@@ -98,10 +98,11 @@ function processLog(log: EnrichedLogWithoutAmount): ProcessedLog {
 }
 
 export async function enrichTxReceipt({
-  txReceipt,
+  transactionReceipt,
   tryBlockAndAggregate,
 }: EnrichedTxReceiptArgs): Promise<EnrichedTxReceipt> {
-  const filteredLogs = txReceipt.logs.filter(
+  const { from, logs } = transactionReceipt;
+  const filteredLogs = logs.filter(
     (log) => log.topics[0] === EVENT_SIGNATURES.Transfer
   );
 
@@ -127,7 +128,7 @@ export async function enrichTxReceipt({
     return processLog(enrichedLog);
   });
 
-  return { logs: enrichedLogs, from: txReceipt.from };
+  return { from, logs: enrichedLogs };
 }
 
 export function extractTokenInfo(

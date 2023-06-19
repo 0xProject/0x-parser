@@ -31,6 +31,7 @@ import type {
   LogParsers,
   ParseSwapArgs,
   ParseGaslessTxArgs,
+  ProcessReceiptArgs,
 } from "./types";
 
 export * from "./types";
@@ -47,13 +48,13 @@ export async function parseSwap({
 
   const provider = new JsonRpcProvider(rpcUrl);
 
-  const [tx, txReceipt] = await Promise.all([
+  const [tx, transactionReceipt] = await Promise.all([
     provider.getTransaction(transactionHash),
     provider.getTransactionReceipt(transactionHash),
   ]);
 
-  if (tx && txReceipt) {
-    if (txReceipt.status === TransactionStatus.REVERTED) return null;
+  if (tx && transactionReceipt) {
+    if (transactionReceipt.status === TransactionStatus.REVERTED) return null;
 
     const chainId = Number(tx.chainId);
     const exchangeProxyContract = new Contract(
@@ -64,12 +65,12 @@ export async function parseSwap({
       CONTRACTS.permitAndCall,
       permitAndCallAbi
     );
-    const txDescription =
-      txReceipt.to === CONTRACTS.permitAndCall
+    const transactionDescription =
+      transactionReceipt.to === CONTRACTS.permitAndCall
         ? permitAndCallContract.interface.parseTransaction(tx)
         : exchangeProxyContract.interface.parseTransaction(tx);
 
-    if (txDescription === null) {
+    if (transactionDescription === null) {
       return null;
     }
 
@@ -79,11 +80,6 @@ export async function parseSwap({
       multicall[
         "tryBlockAndAggregate(bool requireSuccess, tuple(address target, bytes callData)[] calls)"
       ];
-
-    const txReceiptEnriched = await enrichTxReceipt({
-      txReceipt,
-      tryBlockAndAggregate,
-    });
 
     const logParsers: LogParsers = {
       fillLimitOrder,
@@ -107,10 +103,10 @@ export async function parseSwap({
       sellToPancakeSwap,
     };
 
-    const parser = logParsers[txDescription.name];
+    const parser = logParsers[transactionDescription.name];
 
-    if (txDescription.name === "permitAndCall") {
-      const calldataFromPermitAndCall = txDescription.args[7];
+    if (transactionDescription.name === "permitAndCall") {
+      const calldataFromPermitAndCall = transactionDescription.args[7];
       const permitAndCallDescription =
         exchangeProxyContract.interface.parseTransaction({
           data: calldataFromPermitAndCall,
@@ -120,77 +116,113 @@ export async function parseSwap({
         return parseGaslessTx({
           rpcUrl,
           chainId,
-          txReceipt,
           logParsers,
-          txReceiptEnriched,
+          tryBlockAndAggregate,
           exchangeProxyContract,
+          transactionReceipt,
           transactionDescription: permitAndCallDescription,
         });
       }
     }
 
-    if (txDescription.name === "executeMetaTransactionV2") {
+    if (transactionDescription.name === "executeMetaTransactionV2") {
       return parseGaslessTx({
         rpcUrl,
         chainId,
-        txReceipt,
         logParsers,
-        txReceiptEnriched,
         exchangeProxyContract,
-        transactionDescription: txDescription,
+        tryBlockAndAggregate,
+        transactionReceipt,
+        transactionDescription,
       });
     }
 
-    if (txDescription.name === "transformERC20") {
+    if (transactionDescription.name === "transformERC20") {
       return transformERC20({
         rpcUrl,
         chainId,
+        transactionReceipt,
         contract: exchangeProxyContract,
-        transactionReceipt: txReceipt,
       });
     }
 
+    const txReceiptEnriched = await enrichTxReceipt({
+      transactionReceipt,
+      tryBlockAndAggregate,
+    });
+
     return parser({
-      txDescription,
+      txDescription: transactionDescription,
       txReceipt: txReceiptEnriched,
     });
   }
 }
 
-function parseGaslessTx({
+async function parseGaslessTx({
   rpcUrl,
   chainId,
   logParsers,
-  txReceipt,
-  txReceiptEnriched,
   exchangeProxyContract,
+  tryBlockAndAggregate,
+  transactionReceipt,
   transactionDescription,
 }: ParseGaslessTxArgs) {
   const [mtx] = transactionDescription.args;
   const { 0: signer, 4: data, 6: fees } = mtx as Mtx;
   const [recipient] = fees[0];
-  const { logs } = txReceiptEnriched;
-  const filteredLogs = logs.filter((log) => log.to !== recipient.toLowerCase());
   const mtxV2Description = exchangeProxyContract.interface.parseTransaction({
     data,
   });
 
-  let parser = logParsers[transactionDescription.name];
   if (mtxV2Description) {
-    const parser = logParsers[mtxV2Description.name];
+    if (mtxV2Description.name === "transformERC20") {
+      return transformERC20({
+        rpcUrl,
+        chainId,
+        transactionReceipt,
+        contract: exchangeProxyContract,
+      });
+    } else {
+      const parser = logParsers[mtxV2Description.name];
 
-    return mtxV2Description.name === "transformERC20"
-      ? transformERC20({
-          rpcUrl,
-          chainId,
-          contract: exchangeProxyContract,
-          transactionReceipt: txReceipt,
-        })
-      : parser({
-          txDescription: mtxV2Description,
-          txReceipt: { from: signer, logs: filteredLogs },
-        });
+      return processReceipt({
+        signer,
+        parser,
+        recipient,
+        tryBlockAndAggregate,
+        transactionReceipt,
+        transactionDescription: mtxV2Description,
+      });
+    }
   }
+
+  const parser = logParsers[transactionDescription.name];
+
+  return processReceipt({
+    signer,
+    parser,
+    recipient,
+    tryBlockAndAggregate,
+    transactionReceipt,
+    transactionDescription,
+  });
+}
+
+async function processReceipt({
+  signer,
+  parser,
+  recipient,
+  tryBlockAndAggregate,
+  transactionReceipt,
+  transactionDescription,
+}: ProcessReceiptArgs) {
+  const enrichedTxReceipt = await enrichTxReceipt({
+    transactionReceipt,
+    tryBlockAndAggregate,
+  });
+
+  const { logs } = enrichedTxReceipt;
+  const filteredLogs = logs.filter((log) => log.to !== recipient.toLowerCase());
 
   return parser({
     txDescription: transactionDescription,

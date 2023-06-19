@@ -47,12 +47,23 @@ export interface EnrichedTxReceipt {
   from: string;
 }
 
+type TryBlockAndAggregate = BaseContractMethod<
+  [boolean, Call[]],
+  AggregateResponse
+>;
+
 export interface EnrichedTxReceiptArgs {
-  txReceipt: TransactionReceipt;
-  tryBlockAndAggregate: BaseContractMethod<
-    [boolean, Call[]],
-    AggregateResponse
-  >;
+  transactionReceipt: TransactionReceipt;
+  tryBlockAndAggregate: TryBlockAndAggregate;
+}
+
+export interface ProcessReceiptArgs {
+  signer: string;
+  recipient: string;
+  parser: ParserFunction;
+  transactionReceipt: TransactionReceipt;
+  tryBlockAndAggregate: TryBlockAndAggregate;
+  transactionDescription: TransactionDescription;
 }
 
 export enum TransactionStatus {
@@ -113,9 +124,9 @@ export interface ParseGaslessTxArgs {
   rpcUrl: string;
   chainId: number;
   logParsers: LogParsers;
-  txReceipt: TransactionReceipt;
-  txReceiptEnriched: EnrichedTxReceipt;
+  transactionReceipt: TransactionReceipt;
   exchangeProxyContract: Contract;
+  tryBlockAndAggregate: TryBlockAndAggregate;
   transactionDescription: TransactionDescription;
 }
 

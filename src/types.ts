@@ -2,9 +2,24 @@ import { narrow } from "abitype";
 import IZeroEx from "./abi/IZeroEx.json";
 import type {
   Contract,
+  BaseContractMethod,
   TransactionReceipt,
   TransactionDescription,
 } from "ethers";
+
+export interface CallResult {
+  success: boolean;
+  returnData: string;
+}
+
+interface Call {
+  target: string;
+  callData: string;
+}
+
+type BlockHash = string;
+
+export type AggregateResponse = [bigint, BlockHash, CallResult[]];
 
 export const exchangeProxyAbi = narrow(IZeroEx.compilerOutput.abi);
 
@@ -30,6 +45,14 @@ export interface ProcessedLog {
 export interface EnrichedTxReceipt {
   logs: ProcessedLog[];
   from: string;
+}
+
+export interface EnrichedTxReceiptArgs {
+  txReceipt: TransactionReceipt;
+  tryBlockAndAggregate: BaseContractMethod<
+    [boolean, Call[]],
+    AggregateResponse
+  >;
 }
 
 export enum TransactionStatus {

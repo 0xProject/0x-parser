@@ -13,10 +13,17 @@ export const EVENT_SIGNATURES = {
     "0x0f6672f78a59ba8e5e5b5d38df3ebc67f3c792e2c9259b8d97d7f00dd78ba1b3",
 };
 
+export const ERC20_FUNCTION_HASHES = {
+  symbol: "0x95d89b41",
+  decimals: "0x313ce567",
+};
+
 export const EXCHANGE_PROXY_ABI_URL =
   "https://raw.githubusercontent.com/0xProject/protocol/development/packages/contract-artifacts/artifacts/IZeroEx.json";
 
 const CONONICAL_EXCHANGE_PROXY = "0xdef1c0ded9bec7f1a1670819833240f027b25eff";
+
+export const MULTICALL3 = "0xcA11bde05977b3631167028862bE2a173976CA11";
 
 export const CONTRACTS = {
   weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",

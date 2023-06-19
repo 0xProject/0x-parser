@@ -1,9 +1,10 @@
-import { EVENT_SIGNATURES } from "../constants";
-import type { TransactionReceipt } from "ethers";
+import { EVENT_SIGNATURES, ERC20_FUNCTION_HASHES } from "../constants";
+
 import type {
-  Log,
   ProcessedLog,
+  AggregateResponse,
   EnrichedTxReceipt,
+  EnrichedTxReceiptArgs,
   EnrichedLogWithoutAmount,
 } from "../types";
 
@@ -61,41 +62,30 @@ async function rpcCall({
 
 export const erc20Rpc = {
   getSymbol: async function (contractAddress: string, rpcUrl: string) {
-    const SYMBOL_FUNCTION_HASH = "0x95d89b41";
     const { result } = await rpcCall({
       rpcUrl,
       method: "eth_call",
-      params: [{ to: contractAddress, data: SYMBOL_FUNCTION_HASH }, "latest"],
+      params: [
+        { to: contractAddress, data: ERC20_FUNCTION_HASHES.symbol },
+        "latest",
+      ],
     });
 
     return parseHexDataToString(result);
   },
   getDecimals: async function (contractAddress: string, rpcUrl: string) {
-    const DECIMALS_FUNCTION_HASH = "0x313ce567";
     const { result } = await rpcCall({
       rpcUrl,
       method: "eth_call",
-      params: [{ to: contractAddress, data: DECIMALS_FUNCTION_HASH }, "latest"],
+      params: [
+        { to: contractAddress, data: ERC20_FUNCTION_HASHES.decimals },
+        "latest",
+      ],
     });
 
     return Number(BigInt(result));
   },
 };
-
-async function enrichLog({
-  log,
-  rpcUrl,
-}: {
-  log: Log;
-  rpcUrl: string;
-}): Promise<EnrichedLogWithoutAmount> {
-  const [symbol, decimals] = await Promise.all([
-    erc20Rpc.getSymbol(log.address, rpcUrl),
-    erc20Rpc.getDecimals(log.address, rpcUrl),
-  ]);
-
-  return { ...log, symbol, decimals };
-}
 
 function processLog(log: EnrichedLogWithoutAmount): ProcessedLog {
   const { topics, data, decimals, symbol, address } = log;
@@ -109,20 +99,35 @@ function processLog(log: EnrichedLogWithoutAmount): ProcessedLog {
 
 export async function enrichTxReceipt({
   txReceipt,
-  rpcUrl,
-}: {
-  txReceipt: TransactionReceipt;
-  rpcUrl: string;
-}): Promise<EnrichedTxReceipt> {
-  const isERC20TransferEvent = (log: Log) =>
-    log.topics[0] === EVENT_SIGNATURES.Transfer;
-  const filteredLogs = txReceipt.logs.filter(isERC20TransferEvent);
-  const enrichedLogs = await Promise.all(
-    filteredLogs.map((log) => enrichLog({ log, rpcUrl }))
+  tryBlockAndAggregate,
+}: EnrichedTxReceiptArgs): Promise<EnrichedTxReceipt> {
+  const filteredLogs = txReceipt.logs.filter(
+    (log) => log.topics[0] === EVENT_SIGNATURES.Transfer
   );
-  const logs = enrichedLogs.map(processLog);
 
-  return { logs, from: txReceipt.from };
+  const calls = filteredLogs.flatMap((log) => [
+    { target: log.address, callData: ERC20_FUNCTION_HASHES.symbol },
+    { target: log.address, callData: ERC20_FUNCTION_HASHES.decimals },
+  ]);
+
+  const { 2: results } = (await tryBlockAndAggregate.staticCall(
+    false,
+    calls
+  )) as AggregateResponse;
+
+  const enrichedLogs = filteredLogs.map((log, i) => {
+    const symbolResult = results[i * 2];
+    const decimalsResult = results[i * 2 + 1];
+    const enrichedLog = {
+      ...log,
+      symbol: parseHexDataToString(symbolResult.returnData),
+      decimals: Number(BigInt(decimalsResult.returnData)),
+    };
+
+    return processLog(enrichedLog);
+  });
+
+  return { logs: enrichedLogs, from: txReceipt.from };
 }
 
 export function extractTokenInfo(

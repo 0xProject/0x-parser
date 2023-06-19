@@ -43,7 +43,7 @@
     "types": "rm -rf ./dist/index.d.ts && tsc --emitDeclarationOnly --outDir ./dist",
     "web:example": "npm run clean && npm run build:dev && cp ./dist/index.esm.js ./examples/web && http-server ./examples/web --port 8000 -o",
     "clean": "rm -rf dist",
-    "test": "vitest --coverage"
+    "test": "vitest --coverage --test-timeout=10000"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^0.32.0",

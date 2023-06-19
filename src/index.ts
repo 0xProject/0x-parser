@@ -1,6 +1,7 @@
 import { Contract, JsonRpcProvider } from "ethers";
 import { abi as permitAndCallAbi } from "./abi/PermitAndCall.json";
-import { CONTRACTS, EXCHANGE_PROXY_ABI_URL } from "./constants";
+import multicall3Abi from "./abi/Multicall3.json";
+import { CONTRACTS, EXCHANGE_PROXY_ABI_URL, MULTICALL3 } from "./constants";
 import {
   fillLimitOrder,
   fillOtcOrder,
@@ -42,9 +43,7 @@ export async function parseSwap({
   if (!rpcUrl) throw new Error("Missing rpcUrl");
   if (!transactionHash) throw new Error("Missing transaction hash");
   if (!exchangeProxyAbi)
-    throw new Error(
-      `Missing 0x Exchange Proxy ABI: ${EXCHANGE_PROXY_ABI_URL}`
-    );
+    throw new Error(`Missing 0x Exchange Proxy ABI: ${EXCHANGE_PROXY_ABI_URL}`);
 
   const provider = new JsonRpcProvider(rpcUrl);
 
@@ -54,6 +53,8 @@ export async function parseSwap({
   ]);
 
   if (tx && txReceipt) {
+    if (txReceipt.status === TransactionStatus.REVERTED) return null;
+
     const chainId = Number(tx.chainId);
     const exchangeProxyContract = new Contract(
       CONTRACTS.exchangeProxy.ethereum,
@@ -68,13 +69,21 @@ export async function parseSwap({
         ? permitAndCallContract.interface.parseTransaction(tx)
         : exchangeProxyContract.interface.parseTransaction(tx);
 
-    if (txReceipt.status === TransactionStatus.REVERTED) return null;
-
     if (txDescription === null) {
       return null;
     }
 
-    const txReceiptEnriched = await enrichTxReceipt({ txReceipt, rpcUrl });
+    const multicall = new Contract(MULTICALL3, multicall3Abi, provider);
+
+    const tryBlockAndAggregate =
+      multicall[
+        "tryBlockAndAggregate(bool requireSuccess, tuple(address target, bytes callData)[] calls)"
+      ];
+
+    const txReceiptEnriched = await enrichTxReceipt({
+      txReceipt,
+      tryBlockAndAggregate,
+    });
 
     const logParsers: LogParsers = {
       fillLimitOrder,

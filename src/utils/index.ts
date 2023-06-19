@@ -1,8 +1,11 @@
-import { EVENT_SIGNATURES, ERC20_FUNCTION_HASHES } from "../constants";
+import {
+  EVENT_SIGNATURES,
+  ERC20_FUNCTION_HASHES,
+} from "../constants";
 
 import type {
   ProcessedLog,
-  AggregateResponse,
+  SupportedChainId,
   EnrichedTxReceipt,
   EnrichedTxReceiptArgs,
   EnrichedLogWithoutAmount,
@@ -11,6 +14,12 @@ import type {
 
 export function convertHexToAddress(hexString: string): string {
   return `0x${hexString.slice(-40)}`;
+}
+
+export function isChainIdSupported(
+  chainId: number
+): chainId is SupportedChainId {
+  return [1, 5, 10, 56, 137, 250, 42220, 43114, 42161].includes(chainId);
 }
 
 export function parseHexDataToString(hexData: string) {

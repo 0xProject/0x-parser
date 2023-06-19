@@ -16,7 +16,7 @@ if (!ETH_MAINNET_RPC) {
 describe("transformERC20", () => {
   it("returns undefined when TransformedERC20 topic is not found in logs", async () => {
     const contract = new Contract(
-      CONTRACTS.exchangeProxy.ethereum,
+      CONTRACTS.exchangeProxyByChainId[1],
       EXCHANGE_PROXY_ABI.compilerOutput.abi
     );
 

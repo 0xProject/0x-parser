@@ -11,7 +11,12 @@ import type {
   TransactionReceipt,
   TransactionDescription,
 } from "ethers";
-import type { EnrichedTxReceipt, TransformERC20EventData, TryBlockAndAggregate } from "../types";
+import type {
+  SupportedChainId,
+  EnrichedTxReceipt,
+  TryBlockAndAggregate,
+  TransformERC20EventData,
+} from "../types";
 
 export function sellToLiquidityProvider({
   txReceipt,
@@ -153,8 +158,8 @@ export async function transformERC20({
   transactionReceipt,
   tryBlockAndAggregate,
 }: {
-  chainId: number;
   contract: Contract;
+  chainId: SupportedChainId;
   transactionReceipt: TransactionReceipt;
   tryBlockAndAggregate: TryBlockAndAggregate;
 }) {
@@ -351,7 +356,7 @@ export function sellToPancakeSwap({
 }) {
   const from = txReceipt.from.toLowerCase();
   const { logs } = txReceipt;
-  const exchangeProxy = CONTRACTS.exchangeProxy.bsc.toLowerCase();
+  const exchangeProxy = CONTRACTS.exchangeProxyByChainId[56].toLowerCase();
   let inputLog = logs.find((log) => log.from === from);
   let outputLog = logs.find((log) => log.from !== from);
 

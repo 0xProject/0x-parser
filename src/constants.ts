@@ -1,3 +1,5 @@
+import { SupportedChainId } from "./types";
+
 export const EVENT_SIGNATURES = {
   LimitOrderFilled:
     "0xab614d2b738543c0ea21f56347cf696a3a0c42a7cbec3212a5ca22a4dcff2124",
@@ -28,30 +30,29 @@ export const MULTICALL3 = "0xcA11bde05977b3631167028862bE2a173976CA11";
 export const CONTRACTS = {
   weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   permitAndCall: "0x1291C02D288de3De7dC25353459489073D11E1Ae",
-  exchangeProxy: {
-    arbitrum: CONONICAL_EXCHANGE_PROXY,
-    avalanche: CONONICAL_EXCHANGE_PROXY,
-    bsc: CONONICAL_EXCHANGE_PROXY,
-    celo: CONONICAL_EXCHANGE_PROXY,
-    ethereum: CONONICAL_EXCHANGE_PROXY,
-    fantom: "0xdef189deaef76e379df891899eb5a00a94cbc250",
-    optimism: "0xdef1abe32c034e558cdd535791643c58a13acc10",
-    polygon: CONONICAL_EXCHANGE_PROXY,
+  exchangeProxyByChainId: {
+    1: CONONICAL_EXCHANGE_PROXY,
+    5: "0xf91bb752490473b8342a3e964e855b9f9a2a668e",
+    10: "0xdef1abe32c034e558cdd535791643c58a13acc10",
+    56: CONONICAL_EXCHANGE_PROXY,
+    137: CONONICAL_EXCHANGE_PROXY,
+    250: "0xdef189deaef76e379df891899eb5a00a94cbc250",
+    42161: CONONICAL_EXCHANGE_PROXY,
+    42220: CONONICAL_EXCHANGE_PROXY,
+    43114: CONONICAL_EXCHANGE_PROXY,
   },
 };
 
 export const NATIVE_ASSET = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 
-export const NATIVE_SYMBOL_BY_CHAIN_ID: { [chainId: number]: string } = {
+export const NATIVE_SYMBOL_BY_CHAIN_ID: Record<SupportedChainId, string> = {
   1: "ETH", // Ethereum
   5: "ETH", // Goerli
   10: "ETH", // Optimism
   56: "BNB", // BNB Chain
   137: "MATIC", // Polygon
   250: "FTM", // Fantom
-  8453: "ETH", // Base
   42161: "ETH", // Arbitrum One
   42220: "CELO", // Celo
   43114: "AVAX", // Avalanche
-  84531: "ETH", // Base Goerli
 };

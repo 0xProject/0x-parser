@@ -24,7 +24,7 @@ import {
   sellToPancakeSwap,
   transformERC20,
 } from "./parsers";
-import { enrichTxReceipt } from "./utils";
+import { enrichTxReceipt, isChainIdSupported } from "./utils";
 import { TransactionStatus } from "./types";
 import type {
   Mtx,
@@ -57,10 +57,18 @@ export async function parseSwap({
     if (transactionReceipt.status === TransactionStatus.REVERTED) return null;
 
     const chainId = Number(tx.chainId);
+
+    if (!isChainIdSupported(chainId)) {
+      throw new Error(`chainId ${chainId} is unsupported.`);
+    }
+
+    const { exchangeProxyByChainId } = CONTRACTS;
+
     const exchangeProxyContract = new Contract(
-      CONTRACTS.exchangeProxy.ethereum,
+      exchangeProxyByChainId[chainId],
       exchangeProxyAbi
     );
+
     const permitAndCallContract = new Contract(
       CONTRACTS.permitAndCall,
       permitAndCallAbi

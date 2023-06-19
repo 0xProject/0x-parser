@@ -7,6 +7,8 @@ import type {
   TransactionDescription,
 } from "ethers";
 
+export type SupportedChainId = 1 | 5 | 10 | 56 | 137 | 250 | 42220 | 43114 | 42161;
+
 export interface CallResult {
   success: boolean;
   returnData: string;
@@ -121,11 +123,11 @@ export interface LogParsers {
 export type TransformERC20EventData = [string, string, string, bigint, bigint];
 
 export interface ParseGaslessTxArgs {
-  chainId: number;
   logParsers: LogParsers;
-  transactionReceipt: TransactionReceipt;
+  chainId: SupportedChainId;
   exchangeProxyContract: Contract;
   tryBlockAndAggregate: TryBlockAndAggregate;
+  transactionReceipt: TransactionReceipt;
   transactionDescription: TransactionDescription;
 }
 

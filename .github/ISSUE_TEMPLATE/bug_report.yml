@@ -1,0 +1,55 @@
+name: Bug Report
+description: File an issue
+title: '[bug] <replace this with a title>'
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report. Please provide thorough context of the issue.
+
+  - type: input
+    attributes:
+      label: 0x-parser version
+      description: What version of 0x-parser are you using?
+      placeholder: 0.0.x
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Unexpected behavior
+      description: A thorough description of the unexpected behavior. You can also attach images, videos, code snippets below.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: A thorough description of the expected behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: Steps to reproduce the unexpected behavior.
+    validations:
+      required: false
+
+  - type: input
+    attributes:
+      label: Minimal reproducible demo of issue
+      description: |
+        A link to a demo makes investigating the issue easier. Demos can be hosted on CodeSandbox or GitHub.
+      placeholder: https://codesandbox.io
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Anything else?
+      description: |
+        Anything that will provide more context about the issue. You can also attach images, videos, code snippets below.
+
+    validations:
+      required: false

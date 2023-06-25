@@ -1,14 +1,16 @@
 {
   "name": "@0x/0x-parser",
   "version": "0.3.6",
-  "description": "🧾 Designed for 0x integrators: This parser library decodes swap details from 0x transactions on Ethereum.",
+  "description": "🧾 Designed for 0x integrators: This library parses 0x transactions on EVM blockchains into a format that is both user-friendly and easy to understand.",
   "keywords": [
+    "0x",
     "logs",
     "swap",
     "erc-20",
     "events",
     "ethereum",
     "0x protocol",
+    "transactions",
     "exchange proxy"
   ],
   "author": "henryzhu.eth",

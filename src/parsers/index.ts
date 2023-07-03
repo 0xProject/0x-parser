@@ -171,7 +171,7 @@ export async function transformERC20({
     if (eventHash === EVENT_SIGNATURES.TransformedERC20) {
       const logDescription = contract.interface.parseLog({
         data,
-        topics: [...log.topics],
+        topics: [...topics],
       });
       const {
         1: inputToken,
@@ -285,13 +285,10 @@ export function multiplexBatchSellEthForToken({
   const { logs } = txReceipt;
   const { args, value } = txDescription;
   const { 0: outputToken } = args;
-  // Convert to ether
-  // TODO: pull into util
   const divisor = 1000000000000000000n; // 1e18, for conversion from wei to ether
   const etherBigInt = value / divisor;
   const remainderBigInt = value % divisor;
   const ether = Number(etherBigInt) + Number(remainderBigInt) / Number(divisor);
-
   const tokenOutAmount = logs.reduce((total, log) => {
     return log.address === outputToken ? total + Number(log.amount) : total;
   }, 0);
@@ -302,7 +299,7 @@ export function multiplexBatchSellEthForToken({
     return {
       tokenIn: {
         symbol: inputLog.symbol,
-        amount: Number(ether).toString(),
+        amount: ether.toString(),
         address: inputLog.address,
       },
       tokenOut: {

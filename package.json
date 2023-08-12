@@ -48,13 +48,13 @@
     "test": "vitest --coverage --test-timeout=10000"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^0.32.2",
-    "abitype": "^0.8.11",
+    "@vitest/coverage-v8": "^0.34.1",
+    "abitype": "^0.9.6",
     "dotenv": "^16.3.1",
-    "esbuild": "^0.18.11",
-    "ethers": "^6.6.2",
+    "esbuild": "^0.19.1",
+    "ethers": "^6.7.0",
     "http-server": "^14.1.1",
     "typescript": "^5.1.6",
-    "vitest": "^0.32.2"
+    "vitest": "^0.34.1"
   }
 }

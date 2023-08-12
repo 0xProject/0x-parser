@@ -90,7 +90,7 @@ describe("transformERC20 on various networks", () => {
       transactionHash:
         "0x3e48c1d1d3596ecfc1f9feb9e9613f5f5fc002b76743251c31eca8bc0aa30e21",
       exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-      rpcUrl: "https://1rpc.io/arb",
+      rpcUrl: "https://arb1.arbitrum.io/rpc",
     });
 
     expect(data).toEqual({

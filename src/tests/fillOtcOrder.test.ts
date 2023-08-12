@@ -40,7 +40,7 @@ describe("fillOtcOrder", () => {
       transactionHash:
         "0xae78f94319844585bd9e8d4ecfefa2eb70e0cd0d49f76695ee7e4783bad4c1fc",
       exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-      rpcUrl: "https://1rpc.io/arb",
+      rpcUrl: "https://arb1.arbitrum.io/rpc",
     });
 
     expect(data).toEqual({

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/0xProject/0x-parser/compare/v0.4.0...v0.5.0) (2023-08-13)
+
+
+### Features
+
+* add new addresses for permitandcall ([4cc8f86](https://github.com/0xProject/0x-parser/commit/4cc8f862267319f7ff0ad3351350a3cb94bff4ce))
+
 ## [0.4.0](https://github.com/0xProject/0x-parser/compare/v0.3.6...v0.4.0) (2023-08-13)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/0xProject/0x-parser/compare/v0.3.6...v0.4.0) (2023-08-13)
+
+
+### Features
+
+* add base support ([c4f9f4d](https://github.com/0xProject/0x-parser/commit/c4f9f4dafc791ab193c53e56a2b273922f0041e3))
+
 ## [0.3.6](https://github.com/0xProject/0x-parser/compare/v0.3.5...v0.3.6) (2023-06-19)
 
 

@@ -1,7 +1,12 @@
 import { Contract, JsonRpcProvider } from "ethers";
 import { abi as permitAndCallAbi } from "./abi/PermitAndCall.json";
 import multicall3Abi from "./abi/Multicall3.json";
-import { CONTRACTS, EXCHANGE_PROXY_ABI_URL, MULTICALL3 } from "./constants";
+import {
+  MULTICALL3,
+  EXCHANGE_PROXY_ABI_URL,
+  EXCHANGE_PROXY_BY_CHAIN_ID,
+  PERMIT_AND_CALL_BY_CHAIN_ID,
+} from "./constants";
 import {
   fillLimitOrder,
   fillOtcOrder,
@@ -24,7 +29,11 @@ import {
   sellToPancakeSwap,
   transformERC20,
 } from "./parsers";
-import { enrichTxReceipt, isChainIdSupported } from "./utils";
+import {
+  enrichTxReceipt,
+  isChainIdSupported,
+  isPermitAndCallChainId,
+} from "./utils";
 import { TransactionStatus } from "./types";
 import type {
   Mtx,
@@ -62,25 +71,25 @@ export async function parseSwap({
       throw new Error(`chainId ${chainId} is unsupported.`);
     }
 
-    const { exchangeProxyByChainId } = CONTRACTS;
-
     const exchangeProxyContract = new Contract(
-      exchangeProxyByChainId[chainId],
+      EXCHANGE_PROXY_BY_CHAIN_ID[chainId],
       exchangeProxyAbi
     );
 
-    const permitAndCallContract = new Contract(
-      CONTRACTS.permitAndCall,
-      permitAndCallAbi
-    );
+    const permitAndCallAddress = isPermitAndCallChainId(chainId)
+      ? PERMIT_AND_CALL_BY_CHAIN_ID[chainId]
+      : undefined;
+
+    const permitAndCallContract = permitAndCallAddress
+      ? new Contract(permitAndCallAddress, permitAndCallAbi)
+      : undefined;
+
     const transactionDescription =
-      transactionReceipt.to === CONTRACTS.permitAndCall
-        ? permitAndCallContract.interface.parseTransaction(tx)
+      transactionReceipt.to === permitAndCallAddress
+        ? permitAndCallContract?.interface.parseTransaction(tx)
         : exchangeProxyContract.interface.parseTransaction(tx);
 
-    if (transactionDescription === null) {
-      return null;
-    }
+    if (!transactionDescription) return null;
 
     const multicall = new Contract(MULTICALL3, multicall3Abi, provider);
 

@@ -1,11 +1,9 @@
-import {
-  EVENT_SIGNATURES,
-  ERC20_FUNCTION_HASHES,
-} from "../constants";
+import { EVENT_SIGNATURES, ERC20_FUNCTION_HASHES } from "../constants";
 
 import type {
   ProcessedLog,
   SupportedChainId,
+  PermitAndCallChainIds,
   EnrichedTxReceipt,
   EnrichedTxReceiptArgs,
   EnrichedLogWithoutAmount,
@@ -22,10 +20,16 @@ export function isChainIdSupported(
   return [1, 5, 10, 56, 137, 250, 8453, 42220, 43114, 42161].includes(chainId);
 }
 
+export function isPermitAndCallChainId(
+  chainId: number
+): chainId is PermitAndCallChainIds {
+  return [1, 137, 8453].includes(chainId);
+}
+
 export function parseHexDataToString(hexData: string) {
   const dataLength = parseInt(hexData.slice(66, 130), 16);
   const data = hexData.slice(130, 130 + dataLength * 2);
-  const bytes: Uint8Array = new Uint8Array(
+  const bytes = new Uint8Array(
     data.match(/.{1,2}/g)?.map((byte: string) => parseInt(byte, 16)) ?? []
   );
   const textDecoder = new TextDecoder();

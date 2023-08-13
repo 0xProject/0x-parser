@@ -5,6 +5,7 @@ import {
   NATIVE_ASSET,
   EVENT_SIGNATURES,
   NATIVE_SYMBOL_BY_CHAIN_ID,
+  EXCHANGE_PROXY_BY_CHAIN_ID,
 } from "../constants";
 import type {
   Contract,
@@ -353,7 +354,7 @@ export function sellToPancakeSwap({
 }) {
   const from = txReceipt.from.toLowerCase();
   const { logs } = txReceipt;
-  const exchangeProxy = CONTRACTS.exchangeProxyByChainId[56].toLowerCase();
+  const exchangeProxy = EXCHANGE_PROXY_BY_CHAIN_ID[56].toLowerCase();
   let inputLog = logs.find((log) => log.from === from);
   let outputLog = logs.find((log) => log.from !== from);
 

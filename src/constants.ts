@@ -13,12 +13,12 @@ export const EVENT_SIGNATURES = {
     "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
   TransformedERC20:
     "0x0f6672f78a59ba8e5e5b5d38df3ebc67f3c792e2c9259b8d97d7f00dd78ba1b3",
-};
+} as const;
 
 export const ERC20_FUNCTION_HASHES = {
   symbol: "0x95d89b41",
   decimals: "0x313ce567",
-};
+} as const;
 
 export const EXCHANGE_PROXY_ABI_URL =
   "https://raw.githubusercontent.com/0xProject/protocol/development/packages/contract-artifacts/artifacts/IZeroEx.json";
@@ -27,22 +27,28 @@ const CONONICAL_EXCHANGE_PROXY = "0xdef1c0ded9bec7f1a1670819833240f027b25eff";
 
 export const MULTICALL3 = "0xcA11bde05977b3631167028862bE2a173976CA11";
 
+export const PERMIT_AND_CALL_BY_CHAIN_ID = {
+  1: "0x1291C02D288de3De7dC25353459489073D11E1Ae",
+  137: "0x2ddd30fe5c12fc4cd497526f14bf3d1fcd3d5db4",
+  8453: "0x3CA53031Ad0B86a304845e83644983Be3340895f"
+} as const
+
+export const EXCHANGE_PROXY_BY_CHAIN_ID = {
+  1: CONONICAL_EXCHANGE_PROXY,
+  5: "0xf91bb752490473b8342a3e964e855b9f9a2a668e",
+  10: "0xdef1abe32c034e558cdd535791643c58a13acc10",
+  56: CONONICAL_EXCHANGE_PROXY,
+  137: CONONICAL_EXCHANGE_PROXY,
+  250: "0xdef189deaef76e379df891899eb5a00a94cbc250",
+  8453: CONONICAL_EXCHANGE_PROXY,
+  42161: CONONICAL_EXCHANGE_PROXY,
+  42220: CONONICAL_EXCHANGE_PROXY,
+  43114: CONONICAL_EXCHANGE_PROXY,
+} as const
+
 export const CONTRACTS = {
   weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  permitAndCall: "0x1291C02D288de3De7dC25353459489073D11E1Ae",
-  exchangeProxyByChainId: {
-    1: CONONICAL_EXCHANGE_PROXY,
-    5: "0xf91bb752490473b8342a3e964e855b9f9a2a668e",
-    10: "0xdef1abe32c034e558cdd535791643c58a13acc10",
-    56: CONONICAL_EXCHANGE_PROXY,
-    137: CONONICAL_EXCHANGE_PROXY,
-    250: "0xdef189deaef76e379df891899eb5a00a94cbc250",
-    8453: CONONICAL_EXCHANGE_PROXY,
-    42161: CONONICAL_EXCHANGE_PROXY,
-    42220: CONONICAL_EXCHANGE_PROXY,
-    43114: CONONICAL_EXCHANGE_PROXY,
-  },
-};
+} as const;
 
 export const NATIVE_ASSET = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 
@@ -57,4 +63,4 @@ export const NATIVE_SYMBOL_BY_CHAIN_ID: Record<SupportedChainId, string> = {
   42161: "ETH", // Arbitrum One
   42220: "CELO", // Celo
   43114: "AVAX", // Avalanche
-};
+} as const;

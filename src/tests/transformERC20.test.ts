@@ -1,7 +1,7 @@
 import { Contract } from "ethers";
 import { it, expect, describe } from "vitest";
 import { parseSwap } from "../index";
-import { CONTRACTS } from "../constants";
+import { EXCHANGE_PROXY_BY_CHAIN_ID } from "../constants";
 import { transformERC20 } from "../parsers";
 import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
 
@@ -16,7 +16,7 @@ if (!ETH_MAINNET_RPC) {
 describe("transformERC20", () => {
   it("returns undefined when TransformedERC20 topic is not found in logs", async () => {
     const contract = new Contract(
-      CONTRACTS.exchangeProxyByChainId[1],
+      EXCHANGE_PROXY_BY_CHAIN_ID[1],
       EXCHANGE_PROXY_ABI.compilerOutput.abi
     );
 

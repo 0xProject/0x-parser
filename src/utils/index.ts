@@ -19,7 +19,7 @@ export function convertHexToAddress(hexString: string): string {
 export function isChainIdSupported(
   chainId: number
 ): chainId is SupportedChainId {
-  return [1, 5, 10, 56, 137, 250, 42220, 43114, 42161].includes(chainId);
+  return [1, 5, 10, 56, 137, 250, 8453, 42220, 43114, 42161].includes(chainId);
 }
 
 export function parseHexDataToString(hexData: string) {

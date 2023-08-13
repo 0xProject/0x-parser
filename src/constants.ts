@@ -37,6 +37,7 @@ export const CONTRACTS = {
     56: CONONICAL_EXCHANGE_PROXY,
     137: CONONICAL_EXCHANGE_PROXY,
     250: "0xdef189deaef76e379df891899eb5a00a94cbc250",
+    8453: CONONICAL_EXCHANGE_PROXY,
     42161: CONONICAL_EXCHANGE_PROXY,
     42220: CONONICAL_EXCHANGE_PROXY,
     43114: CONONICAL_EXCHANGE_PROXY,
@@ -52,6 +53,7 @@ export const NATIVE_SYMBOL_BY_CHAIN_ID: Record<SupportedChainId, string> = {
   56: "BNB", // BNB Chain
   137: "MATIC", // Polygon
   250: "FTM", // Fantom
+  8453: "ETH", // Base
   42161: "ETH", // Arbitrum One
   42220: "CELO", // Celo
   43114: "AVAX", // Avalanche

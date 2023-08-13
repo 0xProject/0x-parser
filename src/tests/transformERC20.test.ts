@@ -222,3 +222,26 @@ it("parse a swap on Celo", async () => {
     },
   });
 });
+
+// https://basescan.org/tx/0x26ca796e654a3667957c25e7714c5d6d5de1fc845ebf98d8ee217f9f5e2c5f34
+it("parse a swap on Base", async () => {
+  const data = await parseSwap({
+    transactionHash:
+      "0x26ca796e654a3667957c25e7714c5d6d5de1fc845ebf98d8ee217f9f5e2c5f34",
+    exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
+    rpcUrl: "https://mainnet.base.org",
+  });
+
+  expect(data).toEqual({
+    tokenIn: {
+      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      amount: "0.005446885313391051",
+      symbol: "ETH",
+    },
+    tokenOut: {
+      address: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
+      amount: "10.049999",
+      symbol: "USDbC",
+    },
+  });
+});

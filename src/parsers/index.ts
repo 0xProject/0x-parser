@@ -217,7 +217,7 @@ export async function transformERC20({
         tokenOut: {
           address: outputToken,
           amount: outputAmount,
-          symbol: outputToken === NATIVE_ASSET ? nativeSymbol : outputSymbol,
+          symbol: outputSymbol,
         },
       };
     }

@@ -7,7 +7,7 @@ import type {
   TransactionDescription,
 } from "ethers";
 
-export type SupportedChainId = 1 | 5 | 10 | 56 | 137 | 250 | 42220 | 43114 | 42161;
+export type SupportedChainId = 1 | 5 | 10 | 56 | 137 | 250 | 8453 | 42220 | 43114 | 42161;
 
 export interface CallResult {
   success: boolean;

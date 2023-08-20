@@ -1,20 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Ethereum Balances</title>
+    <title>0x-parser</title>
+    <link href="./favicon.png" rel="shortcut icon" type="image/x-icon">
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script type="module">
       import { parseSwap } from "./index.esm.js";
       window.parseSwap = parseSwap;
     </script>
-    <script
-      crossorigin
-      src="https://unpkg.com/react@18/umd/react.development.js"
-    ></script>
-    <script
-      crossorigin
-      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
-    ></script>
     <script type="text/babel">
       const rpcUrls = {
         arbitrum: "https://1rpc.io/arb",
@@ -29,26 +22,33 @@
       };
 
       // Try other transaction hashes from 0x Exchange Proxy
-      // See: https://etherscan.io/address/0xdef1c0ded9bec7f1a1670819833240f027b25eff
-      const transactionHash =
-        "0xf4752f8499f62e10218fae55adfa5e4009839900a74f165b80015c1823bacb10";
+      // See Exchange Proxy: https://etherscan.io/address/0xdef1c0ded9bec7f1a1670819833240f027b25eff
+      const transactionHash = "0xf4752f8499f62e10218fae55adfa5e4009839900a74f165b80015c1823bacb10";
 
       async function example() {
-        const abiUrl =
-          "https://raw.githubusercontent.com/0xProject/protocol/development/packages/contract-artifacts/artifacts/IZeroEx.json";
+        const abiUrl = "https://raw.githubusercontent.com/0xProject/protocol/development/packages/contract-artifacts/artifacts/IZeroEx.json";
         const response = await fetch(abiUrl);
         const IZeroEx = await response.json();
         const data = await parseSwap({
           transactionHash,
-          exchangeProxyAbi: IZeroEx.compilerOutput.abi,
           rpcUrl: rpcUrls.ethereum,
+          exchangeProxyAbi: IZeroEx.compilerOutput.abi,
         });
         console.log(JSON.stringify(data, null, 4));
       }
       example();
     </script>
   </head>
-  <body>
-    <div id="root"></div>
+  <body style="font-family: monospace; font-size: 18px; padding: 0 24px;">
+    <h1>0x-parser</h1>
+    <p>Open the JavaScript console to see the parsed swap data.</p>
+    <p>
+      For more info, see the blog post
+      <a
+        style="font-weight: bold; font-size: 20px"
+        href="https://medium.com/@henballs/0x-parser-parsing-dex-transactions-9f9a6579d489"
+        >0x-parser: Parsing DEX Transactions</a
+      >.
+    </p>
   </body>
 </html>

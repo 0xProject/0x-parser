@@ -13,10 +13,10 @@
 
 ## Overview
 
-This library is specifically designed for [0x integrators](https://0x.org/docs/introduction/introduction-to-0x), and it simplifies the complex task of parsing [0x transactions](https://etherscan.io/address/0xdef1c0ded9bec7f1a1670819833240f027b25eff) into a format that is both user-friendly and easy to understand. One of the challenges in these trades is that they can experience [slippage](https://0x.org/post/what-is-slippage) through [Automated Market Makers](<[AMMs](https://0x.org/post/what-is-an-automated-market-maker-amm)>) (AMMs), making the final swap amounts difficult to predict prior to executing the trade. However, this library overcomes that challenge by accepting a transaction hash as input and parsing the receipt and event logs to accurately identify the final swap amounts. Try the demo [here](https://0x-parser-demo.vercel.app).
+This library is designed for [0x integrators](https://0x.org/docs/introduction/introduction-to-0x), and it simplifies the complex task of parsing [0x transactions](https://etherscan.io/address/0xdef1c0ded9bec7f1a1670819833240f027b25eff) into a format that is both user-friendly and easy to understand. One of the challenges when swapping tokens is that the trade can experience [slippage](https://0x.org/post/what-is-slippage) through [Automated Market Makers](<[AMMs](https://0x.org/post/what-is-an-automated-market-maker-amm)>) (AMMs), making the final swap amounts difficult to predict prior to executing the trade. However, this library overcomes that challenge by parsing the transaction receipt and event logs to accurately identify the final swap amounts. Try the demo [here](https://0x-parser-demo.vercel.app).
 
 <p align="center">
-  <img style="" src="https://raw.githubusercontent.com/hzhu/yo/main/react-demo.png" alt="React demo app for 0x-parser" width="650"/>
+  <img src="https://raw.githubusercontent.com/hzhu/yo/main/react-demo.png" alt="Screenshot of demo app using 0x-parser" width="650"/>
 </p>
 
 ## Installation

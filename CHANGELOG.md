@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/0xProject/0x-parser/compare/v0.5.0...v0.5.1) (2023-08-21)
+
+
+### Bug Fixes
+
+* support multihop for sellToUniswap ([5128e75](https://github.com/0xProject/0x-parser/commit/5128e754eaec4755361a12a75c2d7c2a6b779f17))
+
 ## [0.5.0](https://github.com/0xProject/0x-parser/compare/v0.4.0...v0.5.0) (2023-08-13)
 
 

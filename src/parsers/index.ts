@@ -148,7 +148,9 @@ export function sellEthForTokenToUniswapV3({
 }
 
 export function sellToUniswap({ txReceipt }: { txReceipt: EnrichedTxReceipt }) {
-  const [inputLog, outputLog] = txReceipt.logs;
+  const { logs } = txReceipt;
+  const inputLog = logs[0];
+  const outputLog = logs[logs.length - 1];
 
   return extractTokenInfo(inputLog, outputLog);
 }

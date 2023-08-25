@@ -1,5 +1,11 @@
-import { formatUnits } from "ethers";
-import { extractTokenInfo, fetchSymbolAndDecimal } from "../utils";
+import {
+  getAddress,
+  formatUnits,
+  decodeEventLog,
+  decodeFunctionData,
+} from "viem";
+import { extractTokenInfo } from "../utils";
+import { minimalERC20Abi } from "../abi/MinimalERC20";
 import {
   CONTRACTS,
   NATIVE_ASSET,
@@ -7,16 +13,20 @@ import {
   NATIVE_SYMBOL_BY_CHAIN_ID,
   EXCHANGE_PROXY_BY_CHAIN_ID,
 } from "../constants";
+import type { PublicClient, Transaction, TransactionReceipt } from "viem";
 import type {
-  Contract,
-  TransactionReceipt,
-  TransactionDescription,
-} from "ethers";
-import type {
+  LogParsers,
   SupportedChainId,
   EnrichedTxReceipt,
-  TryBlockAndAggregate,
-  TransformERC20EventData,
+  TransformERC20Args,
+  FillLimitOrderArgs,
+  FillOtcOrderForEthArgs,
+  ExecuteMetaTransactionArgs,
+  FillTakerSignedOtcOrderArgs,
+  MultiplexBatchSellEthForTokenArgs,
+  MultiplexBatchSellTokenForEthArgs,
+  MultiplexBatchSellTokenForTokenArgs,
+  exchangeProxyAbi as exchangeProxyAbiValue,
 } from "../types";
 
 export function sellToLiquidityProvider({
@@ -25,8 +35,8 @@ export function sellToLiquidityProvider({
   txReceipt: EnrichedTxReceipt;
 }) {
   const { logs, from } = txReceipt;
-  const inputLog = logs.find((log) => from.toLowerCase() === log.from);
-  const outputLog = logs.find((log) => from.toLowerCase() === log.to);
+  const inputLog = logs.find((log) => from === log.from);
+  const outputLog = logs.find((log) => from === log.to);
   if (inputLog && outputLog) {
     return extractTokenInfo(inputLog, outputLog);
   }
@@ -38,7 +48,7 @@ export function multiplexMultiHopSellTokenForEth({
   txReceipt: EnrichedTxReceipt;
 }) {
   const { logs, from } = txReceipt;
-  const inputLog = logs.find((log) => from.toLowerCase() === log.from);
+  const inputLog = logs.find((log) => from === log.from);
   const outputLog = logs.find((log) => log.address === CONTRACTS.weth);
 
   if (inputLog && outputLog) {
@@ -53,7 +63,7 @@ export function multiplexMultiHopSellEthForToken({
 }) {
   const { logs, from } = txReceipt;
   const inputLog = logs.find((log) => log.address === CONTRACTS.weth);
-  const outputLog = logs.find((log) => log.to === from.toLowerCase());
+  const outputLog = logs.find((log) => log.to === from);
 
   if (inputLog && outputLog) {
     return extractTokenInfo(inputLog, outputLog);
@@ -62,27 +72,31 @@ export function multiplexMultiHopSellEthForToken({
 
 export function fillTakerSignedOtcOrder({
   txReceipt,
-  txDescription,
+  exchangeProxyAbi,
+  callData,
 }: {
   txReceipt: EnrichedTxReceipt;
-  txDescription: TransactionDescription;
+  exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  callData: `0x${string}`;
 }) {
-  const [order] = txDescription.args;
+  const { args } = decodeFunctionData({
+    abi: exchangeProxyAbi,
+    data: callData,
+  });
+  const [order] = args as FillTakerSignedOtcOrderArgs;
   const { logs } = txReceipt;
-  const { 4: maker, 5: taker } = order as string[];
-  if (typeof maker === "string" && typeof taker === "string") {
-    const inputLog = logs.find((log) => log.from === taker.toLowerCase());
-    const outputLog = logs.find((log) => log.from === maker.toLowerCase());
+  const { maker, taker } = order;
+  const inputLog = logs.find((log) => log.from === taker);
+  const outputLog = logs.find((log) => log.from === maker);
 
-    if (inputLog && outputLog) {
-      return extractTokenInfo(inputLog, outputLog);
-    }
+  if (inputLog && outputLog) {
+    return extractTokenInfo(inputLog, outputLog);
   }
 }
 
 export function fillOtcOrder({ txReceipt }: { txReceipt: EnrichedTxReceipt }) {
   const { logs, from } = txReceipt;
-  const fromAddress = from.toLowerCase();
+  const fromAddress = from;
   const inputLog = logs.find((log) => log.from === fromAddress);
   const outputLog = logs.find((log) => log.to === fromAddress);
 
@@ -111,8 +125,8 @@ export function sellTokenForEthToUniswapV3({
   txReceipt: EnrichedTxReceipt;
 }) {
   const { logs, from } = txReceipt;
-  const inputLog = logs.find((log) => log.from === from.toLowerCase());
-  const outputLog = logs.find((log) => log.from !== from.toLowerCase());
+  const inputLog = logs.find((log) => log.from === from);
+  const outputLog = logs.find((log) => log.from !== from);
 
   if (inputLog && outputLog) {
     return extractTokenInfo(inputLog, outputLog);
@@ -125,8 +139,8 @@ export function sellTokenForTokenToUniswapV3({
   txReceipt: EnrichedTxReceipt;
 }) {
   const { logs, from } = txReceipt;
-  const inputLog = logs.find((log) => from.toLowerCase() === log.from);
-  const outputLog = logs.find((log) => from.toLowerCase() === log.to);
+  const inputLog = logs.find((log) => from === log.from);
+  const outputLog = logs.find((log) => from === log.to);
 
   if (inputLog && outputLog) {
     return extractTokenInfo(inputLog, outputLog);
@@ -139,8 +153,8 @@ export function sellEthForTokenToUniswapV3({
   txReceipt: EnrichedTxReceipt;
 }) {
   const { logs, from } = txReceipt;
-  const inputLog = logs.find((log) => from.toLowerCase() !== log.to);
-  const outputLog = logs.find((log) => from.toLowerCase() === log.to);
+  const inputLog = logs.find((log) => from !== log.to);
+  const outputLog = logs.find((log) => from === log.to);
 
   if (inputLog && outputLog) {
     return extractTokenInfo(inputLog, outputLog);
@@ -157,59 +171,86 @@ export function sellToUniswap({ txReceipt }: { txReceipt: EnrichedTxReceipt }) {
 
 export async function transformERC20({
   chainId,
-  contract,
   transactionReceipt,
-  tryBlockAndAggregate,
+  exchangeProxyAbi,
+  publicClient,
 }: {
-  contract: Contract;
   chainId: SupportedChainId;
   transactionReceipt: TransactionReceipt;
-  tryBlockAndAggregate: TryBlockAndAggregate;
+  exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  publicClient: PublicClient;
 }) {
   const nativeSymbol = NATIVE_SYMBOL_BY_CHAIN_ID[chainId];
 
   for (const log of transactionReceipt.logs) {
     const { topics, data } = log;
     const [eventHash] = topics;
-    if (eventHash === EVENT_SIGNATURES.TransformedERC20) {
-      const logDescription = contract.interface.parseLog({
-        data,
-        topics: [...topics],
-      });
-      const {
-        1: inputToken,
-        2: outputToken,
-        3: inputTokenAmount,
-        4: outputTokenAmount,
-      } = logDescription!.args as unknown as TransformERC20EventData;
 
-      let inputSymbol: string;
-      let inputDecimal: number;
-      let outputSymbol: string;
-      let outputDecimal: number;
+    if (eventHash === EVENT_SIGNATURES.TransformedERC20) {
+      let inputSymbol: undefined | string;
+      let inputDecimal: undefined | number;
+      let outputSymbol: undefined | string;
+      let outputDecimal: undefined | number;
+
+      const logDescriptionViem = decodeEventLog({
+        abi: exchangeProxyAbi,
+        data,
+        topics,
+      });
+      const { inputToken, outputToken, inputTokenAmount, outputTokenAmount } =
+        logDescriptionViem.args as TransformERC20Args;
+
+      const inputContract = {
+        address: inputToken,
+        abi: minimalERC20Abi,
+      } as const;
+
+      const outputContract = {
+        address: outputToken,
+        abi: minimalERC20Abi,
+      } as const;
 
       if (inputToken === NATIVE_ASSET) {
         inputSymbol = nativeSymbol;
         inputDecimal = 18;
       } else {
-        [inputSymbol, inputDecimal] = await fetchSymbolAndDecimal(
-          inputToken,
-          tryBlockAndAggregate
-        );
+        [{ result: inputSymbol }, { result: inputDecimal }] =
+          await publicClient.multicall({
+            contracts: [
+              {
+                ...inputContract,
+                functionName: "symbol",
+              },
+              {
+                ...inputContract,
+                functionName: "decimals",
+              },
+            ],
+          });
       }
 
       if (outputToken === NATIVE_ASSET) {
         outputSymbol = nativeSymbol;
         outputDecimal = 18;
       } else {
-        [outputSymbol, outputDecimal] = await fetchSymbolAndDecimal(
-          outputToken,
-          tryBlockAndAggregate
-        );
+        [{ result: outputSymbol }, { result: outputDecimal }] =
+          await publicClient.multicall({
+            contracts: [
+              {
+                ...outputContract,
+                functionName: "symbol",
+              },
+              {
+                ...outputContract,
+                functionName: "decimals",
+              },
+            ],
+          });
       }
 
-      const inputAmount = formatUnits(inputTokenAmount, inputDecimal);
-      const outputAmount = formatUnits(outputTokenAmount, outputDecimal);
+      // 0x-parser expects decimals to be present. If you find a transaction where this is not the case, please open an issue.
+      const inputAmount = formatUnits(inputTokenAmount, inputDecimal!);
+      const outputAmount = formatUnits(outputTokenAmount, outputDecimal!);
 
       return {
         tokenIn: {
@@ -233,8 +274,8 @@ export function multiplexMultiHopSellTokenForToken({
   txReceipt: EnrichedTxReceipt;
 }) {
   const { logs, from } = txReceipt;
-  const inputLog = logs.find((log) => from.toLowerCase() === log.from);
-  const outputLog = logs.find((log) => from.toLowerCase() === log.to);
+  const inputLog = logs.find((log) => from === log.from);
+  const outputLog = logs.find((log) => from === log.to);
 
   if (inputLog && outputLog) {
     return extractTokenInfo(inputLog, outputLog);
@@ -243,51 +284,75 @@ export function multiplexMultiHopSellTokenForToken({
 
 export function multiplexBatchSellTokenForEth({
   txReceipt,
+  exchangeProxyAbi,
+  callData,
 }: {
   txReceipt: EnrichedTxReceipt;
+  exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  callData: `0x${string}`;
 }) {
-  const { from, logs } = txReceipt;
-  const tokenData = {
-    [from.toLowerCase()]: { amount: "0", symbol: "", address: "" },
-    [CONTRACTS.weth.toLowerCase()]: {
-      amount: "0",
-      symbol: "ETH",
-      address: NATIVE_ASSET,
-    },
-  };
-
-  logs.forEach(({ address, symbol, amount, from }) => {
-    const erc20Address = address.toLowerCase();
-    if (tokenData[erc20Address]) {
-      tokenData[erc20Address].amount = String(
-        Number(tokenData[erc20Address].amount) + Number(amount)
-      );
-    }
-    if (tokenData[from]) {
-      tokenData[from].amount = String(
-        Number(tokenData[from].amount) + Number(amount)
-      );
-      tokenData[from].symbol = symbol;
-      tokenData[from].address = address;
-    }
+  const { logs } = txReceipt;
+  const { args } = decodeFunctionData({
+    abi: exchangeProxyAbi,
+    data: callData,
   });
+  const [inputTokenAddress] = args as MultiplexBatchSellTokenForEthArgs;
 
-  return {
-    tokenIn: tokenData[from.toLowerCase()],
-    tokenOut: tokenData[CONTRACTS.weth.toLowerCase()],
-  };
+  return logs.reduce(
+    (acc, curr) => {
+      const { symbol, amount, address } = curr;
+
+      if (address === CONTRACTS.weth) {
+        return {
+          ...acc,
+          tokenOut: {
+            ...acc.tokenOut,
+            amount: (Number(acc.tokenOut.amount) + Number(amount)).toString(),
+          },
+        };
+      } else if (address === inputTokenAddress) {
+        return {
+          ...acc,
+          tokenIn: {
+            ...acc.tokenIn,
+            symbol,
+            address,
+            amount: (Number(acc.tokenIn.amount) + Number(amount)).toString(),
+          },
+        };
+      } else {
+        return acc;
+      }
+    },
+    {
+      tokenIn: { address: "", amount: "", symbol: "" },
+      tokenOut: {
+        amount: "",
+        symbol: "ETH",
+        address: NATIVE_ASSET,
+      },
+    }
+  );
 }
 
 export function multiplexBatchSellEthForToken({
   txReceipt,
-  txDescription,
+  transaction,
+  exchangeProxyAbi,
+  callData,
 }: {
   txReceipt: EnrichedTxReceipt;
-  txDescription: TransactionDescription;
+  transaction: Transaction;
+  exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  callData: `0x${string}`;
 }) {
+  const { value } = transaction;
+  const { args } = decodeFunctionData({
+    abi: exchangeProxyAbi,
+    data: callData,
+  });
   const { logs } = txReceipt;
-  const { args, value } = txDescription;
-  const { 0: outputToken } = args;
+  const { 0: outputToken } = args as MultiplexBatchSellEthForTokenArgs;
   const divisor = 1000000000000000000n; // 1e18, for conversion from wei to ether
   const etherBigInt = value / divisor;
   const remainderBigInt = value % divisor;
@@ -315,29 +380,47 @@ export function multiplexBatchSellEthForToken({
 }
 
 export function multiplexBatchSellTokenForToken({
-  txDescription,
   txReceipt,
+  exchangeProxyAbi,
+  callData,
 }: {
   txReceipt: EnrichedTxReceipt;
-  txDescription: TransactionDescription;
+  exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  callData: `0x${string}`;
 }) {
-  const [inputContractAddress, outputContractAddress] = txDescription.args;
+  let inputContractAddress;
+  let outputContractAddress;
+  const { args } = decodeFunctionData({
+    abi: exchangeProxyAbi,
+    data: callData,
+  });
+
+  [inputContractAddress, outputContractAddress] =
+    args as MultiplexBatchSellTokenForTokenArgs;
 
   if (
     typeof inputContractAddress === "string" &&
     typeof outputContractAddress === "string"
   ) {
     const tokenData = {
-      [inputContractAddress]: { amount: "0", symbol: "", address: "" },
-      [outputContractAddress]: { amount: "0", symbol: "", address: "" },
+      [inputContractAddress]: {
+        amount: "0",
+        symbol: "",
+        address: "",
+      },
+      [outputContractAddress]: {
+        amount: "0",
+        symbol: "",
+        address: "",
+      },
     };
 
-    txReceipt.logs.forEach(({ address, symbol, amount }) => {
-      if (address in tokenData) {
-        tokenData[address].address = address;
-        tokenData[address].symbol = symbol;
-        tokenData[address].amount = (
-          Number(tokenData[address].amount) + Number(amount)
+    txReceipt.logs.forEach(({ address, symbol, amount, to }) => {
+      if (getAddress(address) in tokenData) {
+        tokenData[getAddress(address)].address = getAddress(address);
+        tokenData[getAddress(address)].symbol = symbol;
+        tokenData[getAddress(address)].amount = (
+          Number(tokenData[getAddress(address)].amount) + Number(amount)
         ).toString();
       }
     });
@@ -354,9 +437,9 @@ export function sellToPancakeSwap({
 }: {
   txReceipt: EnrichedTxReceipt;
 }) {
-  const from = txReceipt.from.toLowerCase();
+  const from = txReceipt.from;
   const { logs } = txReceipt;
-  const exchangeProxy = EXCHANGE_PROXY_BY_CHAIN_ID[56].toLowerCase();
+  const exchangeProxy = getAddress(EXCHANGE_PROXY_BY_CHAIN_ID[56]);
   let inputLog = logs.find((log) => log.from === from);
   let outputLog = logs.find((log) => log.from !== from);
 
@@ -372,17 +455,23 @@ export function sellToPancakeSwap({
 
 export function executeMetaTransaction({
   txReceipt,
-  txDescription,
+  exchangeProxyAbi,
+  callData,
 }: {
   txReceipt: EnrichedTxReceipt;
-  txDescription: TransactionDescription;
+  exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  callData: `0x${string}`;
 }) {
-  const [metaTransaction] = txDescription.args;
-  const [from] = metaTransaction as string[];
+  const { args } = decodeFunctionData({
+    abi: exchangeProxyAbi,
+    data: callData,
+  });
+  const [metaTransaction] = args as ExecuteMetaTransactionArgs;
+  const { signer } = metaTransaction;
   const { logs } = txReceipt;
-  if (typeof from === "string") {
-    const inputLog = logs.find((log) => log.from === from.toLowerCase());
-    const outputLog = logs.find((log) => log.to === from.toLowerCase());
+  if (typeof signer === "string") {
+    const inputLog = logs.find((log) => log.from === signer);
+    const outputLog = logs.find((log) => log.to === signer);
     if (inputLog && outputLog) {
       return extractTokenInfo(inputLog, outputLog);
     }
@@ -391,14 +480,20 @@ export function executeMetaTransaction({
 
 export function fillOtcOrderForEth({
   txReceipt,
-  txDescription,
+  exchangeProxyAbi,
+  callData,
 }: {
   txReceipt: EnrichedTxReceipt;
-  txDescription: TransactionDescription;
+  exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  callData: `0x${string}`;
 }) {
+  const { args } = decodeFunctionData({
+    abi: exchangeProxyAbi,
+    data: callData,
+  });
   const { logs } = txReceipt;
-  const [order] = txDescription.args;
-  const [makerToken, takerToken] = order as string[];
+  const [order] = args as FillOtcOrderForEthArgs;
+  const { makerToken, takerToken } = order;
   const inputLog = logs.find((log) => log.address === takerToken);
   const outputLog = logs.find((log) => log.address === makerToken);
 
@@ -407,31 +502,58 @@ export function fillOtcOrderForEth({
   }
 }
 
-export function fillOtcOrderWithEth({
-  txReceipt,
-  txDescription,
-}: {
+export function fillOtcOrderWithEth(args: {
   txReceipt: EnrichedTxReceipt;
-  txDescription: TransactionDescription;
+  transaction: Transaction;
+  exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  callData: `0x${string}`;
 }) {
-  return fillOtcOrderForEth({ txReceipt, txDescription });
+  return fillOtcOrderForEth(args);
 }
 
 export function fillLimitOrder({
   txReceipt,
-  txDescription,
+  exchangeProxyAbi,
+  callData,
 }: {
   txReceipt: EnrichedTxReceipt;
-  txDescription: TransactionDescription;
+  exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  callData: `0x${string}`;
 }) {
-  const [order] = txDescription.args;
-  const { 5: maker, 6: taker } = order as string[];
+  const { args } = decodeFunctionData({
+    abi: exchangeProxyAbi,
+    data: callData,
+  });
+  const [order] = args as FillLimitOrderArgs;
+  const { maker, taker } = order;
   const { logs } = txReceipt;
   if (typeof maker === "string" && typeof taker === "string") {
-    const inputLog = logs.find((log) => log.from === taker.toLowerCase());
-    const outputLog = logs.find((log) => log.from === maker.toLowerCase());
+    const inputLog = logs.find((log) => log.from === taker);
+    const outputLog = logs.find((log) => log.from === maker);
     if (inputLog && outputLog) {
       return extractTokenInfo(inputLog, outputLog);
     }
   }
 }
+
+export const logParsers: LogParsers = {
+  fillLimitOrder,
+  fillOtcOrder,
+  fillOtcOrderForEth,
+  fillOtcOrderWithEth,
+  fillTakerSignedOtcOrder,
+  fillTakerSignedOtcOrderForEth,
+  executeMetaTransaction,
+  multiplexBatchSellTokenForToken,
+  multiplexBatchSellTokenForEth,
+  multiplexBatchSellEthForToken,
+  multiplexMultiHopSellTokenForToken,
+  multiplexMultiHopSellEthForToken,
+  multiplexMultiHopSellTokenForEth,
+  sellToUniswap,
+  sellTokenForEthToUniswapV3,
+  sellEthForTokenToUniswapV3,
+  sellTokenForTokenToUniswapV3,
+  sellToLiquidityProvider,
+  sellToPancakeSwap,
+};

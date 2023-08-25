@@ -52,9 +52,9 @@
     "abitype": "^0.9.6",
     "dotenv": "^16.3.1",
     "esbuild": "^0.19.1",
-    "ethers": "^6.7.0",
     "http-server": "^14.1.1",
     "typescript": "^5.1.6",
+    "viem": "^1.6.7",
     "vitest": "^0.34.1"
   }
 }

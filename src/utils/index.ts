@@ -1,14 +1,14 @@
-import { EVENT_SIGNATURES, ERC20_FUNCTION_HASHES } from "../constants";
-
+import { EVENT_SIGNATURES } from "../constants";
+import { minimalERC20Abi } from "../abi/MinimalERC20";
 import type {
   ProcessedLog,
   SupportedChainId,
-  PermitAndCallChainIds,
   EnrichedTxReceipt,
-  EnrichedTxReceiptArgs,
-  EnrichedLogWithoutAmount,
-  TryBlockAndAggregate,
+  PermitAndCallChainIds,
+  EnrichedTxReceiptArgsForViem,
 } from "../types";
+
+import { getAddress } from "viem";
 
 export function convertHexToAddress(hexString: string): string {
   return `0x${hexString.slice(-40)}`;
@@ -26,18 +26,6 @@ export function isPermitAndCallChainId(
   return [1, 137, 8453].includes(chainId);
 }
 
-export function parseHexDataToString(hexData: string) {
-  const dataLength = parseInt(hexData.slice(66, 130), 16);
-  const data = hexData.slice(130, 130 + dataLength * 2);
-  const bytes = new Uint8Array(
-    data.match(/.{1,2}/g)?.map((byte: string) => parseInt(byte, 16)) ?? []
-  );
-  const textDecoder = new TextDecoder();
-  const utf8String = textDecoder.decode(bytes);
-
-  return utf8String;
-}
-
 export function formatUnits(data: string, decimals: number) {
   const bigIntData = BigInt(data);
   const bigIntDecimals = BigInt(10 ** decimals);
@@ -51,61 +39,46 @@ export function formatUnits(data: string, decimals: number) {
     : wholePart.toString();
 }
 
-export async function fetchSymbolAndDecimal(
-  address: string,
-  tryBlockAndAggregate: TryBlockAndAggregate
-): Promise<[string, number]> {
-  const calls = [
-    { target: address, callData: ERC20_FUNCTION_HASHES.symbol },
-    { target: address, callData: ERC20_FUNCTION_HASHES.decimals },
-  ];
-  const { 2: results } = await tryBlockAndAggregate.staticCall(false, calls);
-  const [symbolResult, decimalsResult] = results;
-  const symbol = parseHexDataToString(symbolResult.returnData);
-  const decimals = Number(BigInt(decimalsResult.returnData));
-
-  return [symbol, decimals];
-}
-
-function processLog(log: EnrichedLogWithoutAmount): ProcessedLog {
-  const { topics, data, decimals, symbol, address } = log;
-  const { 1: fromHex, 2: toHex } = topics;
-  const from = convertHexToAddress(fromHex);
-  const to = convertHexToAddress(toHex);
-  const amount = formatUnits(data, decimals);
-
-  return { to, from, symbol, amount, address, decimals };
-}
-
-export async function enrichTxReceipt({
+export async function enrichTxReceiptForViem({
   transactionReceipt,
-  tryBlockAndAggregate,
-}: EnrichedTxReceiptArgs): Promise<EnrichedTxReceipt> {
-  const { from, logs } = transactionReceipt;
-  const filteredLogs = logs.filter(
-    (log) => log.topics[0] === EVENT_SIGNATURES.Transfer
-  );
+  publicClient,
+}: EnrichedTxReceiptArgsForViem): Promise<EnrichedTxReceipt> {
+  const { from: viemFrom, logs: viemLogs } = transactionReceipt;
 
-  const calls = filteredLogs.flatMap((log) => [
-    { target: log.address, callData: ERC20_FUNCTION_HASHES.symbol },
-    { target: log.address, callData: ERC20_FUNCTION_HASHES.decimals },
-  ]);
+  const transferLogsAddresses = viemLogs
+    .filter((log) => log.topics[0] === EVENT_SIGNATURES.Transfer)
+    .map((log) => ({ ...log, address: getAddress(log.address) }));
 
-  const { 2: results } = await tryBlockAndAggregate.staticCall(false, calls);
+  const contracts = [
+    ...transferLogsAddresses.map((log) => ({
+      abi: minimalERC20Abi,
+      address: log.address,
+      functionName: "symbol",
+    })),
+    ...transferLogsAddresses.map((log) => ({
+      abi: minimalERC20Abi,
+      address: log.address,
+      functionName: "decimals",
+    })),
+  ];
 
-  const enrichedLogs = filteredLogs.map((log, i) => {
-    const symbolResult = results[i * 2];
-    const decimalsResult = results[i * 2 + 1];
-    const enrichedLog = {
-      ...log,
-      symbol: parseHexDataToString(symbolResult.returnData),
-      decimals: Number(BigInt(decimalsResult.returnData)),
-    };
+  const results = await publicClient.multicall({ contracts });
 
-    return processLog(enrichedLog);
+  const midpoint = Math.floor(results.length / 2);
+
+  const enrichedLogs = transferLogsAddresses.map((log, index) => {
+    const symbol = results[index].result as string;
+    const decimals = results[midpoint + index].result as number;
+    const amount = formatUnits(log.data, decimals as number);
+    const { address, topics } = log;
+    const { 1: fromHex, 2: toHex } = topics;
+    const from = getAddress(convertHexToAddress(fromHex));
+    const to = getAddress(convertHexToAddress(toHex));
+
+    return { to, from, symbol, amount, address, decimals };
   });
 
-  return { from, logs: enrichedLogs };
+  return { from: getAddress(viemFrom), logs: enrichedLogs };
 }
 
 export function extractTokenInfo(
@@ -116,12 +89,12 @@ export function extractTokenInfo(
     tokenIn: {
       symbol: inputLog.symbol,
       amount: inputLog.amount,
-      address: inputLog.address,
+      address: getAddress(inputLog.address),
     },
     tokenOut: {
       symbol: outputLog.symbol,
       amount: outputLog.amount,
-      address: outputLog.address,
+      address: getAddress(outputLog.address),
     },
   };
 }

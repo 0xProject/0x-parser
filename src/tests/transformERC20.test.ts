@@ -1,7 +1,5 @@
-import { Contract } from "ethers";
 import { it, expect, describe } from "vitest";
 import { parseSwap } from "../index";
-import { EXCHANGE_PROXY_BY_CHAIN_ID } from "../constants";
 import { transformERC20 } from "../parsers";
 import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
 
@@ -15,25 +13,13 @@ if (!ETH_MAINNET_RPC) {
 
 describe("transformERC20", () => {
   it("returns undefined when TransformedERC20 topic is not found in logs", async () => {
-    const contract = new Contract(
-      EXCHANGE_PROXY_BY_CHAIN_ID[1],
-      EXCHANGE_PROXY_ABI.compilerOutput.abi
-    );
-
-    const transactionReceipt = {
-      from: "0x8C410057a8933d579926dEcCD043921A974A24ee",
-      hash: "0xee3ffb65f6c8e07b46471cc610cf721affeefed87098c7db30a8147d50eb2a65",
-      logs: [],
-      to: "0xDef1C0ded9bec7F1a1670819833240f027b25EfF",
-    };
-
     const result = await transformERC20({
-      transactionReceipt,
-      contract,
-      rpcUrl: ETH_MAINNET_RPC,
+      transactionReceipt: {
+        logs: []
+      },
     } as any);
 
-    expect(result).toBe(undefined);
+    expect(result).toBeUndefined();
   });
 });
 
@@ -73,7 +59,7 @@ describe("transformERC20 on various networks", () => {
     expect(data).toEqual({
       tokenIn: {
         symbol: "USDT",
-        amount: "275.0",
+        amount: "275",
         address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
       },
       tokenOut: {
@@ -113,13 +99,13 @@ describe("transformERC20 on various networks", () => {
       transactionHash:
         "0x0d8125a0d77af877c5efd475e0b2a8aa7451c2b5b95e2918387f8a038aacd718",
       exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-      rpcUrl: "https://endpoints.omniatech.io/v1/op/mainnet/public",
+      rpcUrl: "https://mainnet.optimism.io",
     });
 
     expect(data).toEqual({
       tokenIn: {
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-        amount: "51.0",
+        amount: "51",
         symbol: "ETH",
       },
       tokenOut: {
@@ -142,7 +128,7 @@ describe("transformERC20 on various networks", () => {
     expect(data).toEqual({
       tokenIn: {
         address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
-        amount: "25650.0",
+        amount: "25650",
         symbol: "USDC",
       },
       tokenOut: {
@@ -165,7 +151,7 @@ describe("transformERC20 on various networks", () => {
     expect(data).toEqual({
       tokenIn: {
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-        amount: "375000.0",
+        amount: "375000",
         symbol: "FTM",
       },
       tokenOut: {
@@ -212,7 +198,7 @@ it("parse a swap on Celo", async () => {
   expect(data).toEqual({
     tokenIn: {
       address: "0x765DE816845861e75A25fCA122bb6898B8B1282a",
-      amount: "500.0",
+      amount: "500",
       symbol: "cUSD",
     },
     tokenOut: {

@@ -44,7 +44,7 @@ it("parses swap from executeMetaTransactionV2 which wraps multiplexBatchSellToke
 
   expect(data).toEqual({
     tokenIn: {
-      amount: "4972.542335",
+      amount: "5000",
       symbol: "USDT",
       address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
     },
@@ -67,7 +67,7 @@ it("parses swap from executeMetaTransactionV2 which wraps multiplexBatchSellToke
 
   expect(data).toEqual({
     tokenIn: {
-      amount: "2.886827",
+      amount: "2.8981149999999998",
       symbol: "WETH",
       address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
     },

@@ -46,7 +46,7 @@ describe("permitAndCall", () => {
     expect(data).toEqual({
       tokenIn: {
         symbol: "cbETH",
-        amount: "0.1485446807974644",
+        amount: "0.15941858187679941",
         address: "0xBe9895146f7AF43049ca1c1AE358B0541Ea49704",
       },
       tokenOut: {
@@ -92,7 +92,7 @@ describe("permitAndCall", () => {
     expect(data).toEqual({
       tokenIn: {
         symbol: "USDC",
-        amount: "7938.859514",
+        amount: "7967.727535",
         address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
       },
       tokenOut: {

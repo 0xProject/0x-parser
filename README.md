@@ -49,12 +49,6 @@ async function main() {
 main();
 ```
 
-## Bundle Size
-
-This package directly integrates the latest version of Ethers.js, a decision driven by the rapid and often inconsistent upgrade patterns observed in some web3 codebases. This decision simplifies the source code by eliminating the need to support multiple versions of Ethers.js. However, it may lead to redundancy if you're already using the provider and contract modules in the latest Ethers.js version. This redundancy, though, might not affect your application.
-
-The impact this library may have on your app's bundle size varies depending on the context. It's not a concern for server-side scripts, but could influence the initial bundle size of client-side browser applications. Given this library tree-shakes Ethers.js dependencies, it's beneficial to use [lazy loading](https://nextjs.org/docs/pages/building-your-application/optimizing/lazy-loading#with-external-libraries) to prevent an increase in your client application's initial bundle size. For a demonstration of lazy loading the library, refer to the example available [here](https://github.com/0xProject/0x-parser/tree/main/examples/nextjs).
-
 ## Examples
 
 This repository includes examples you can execute locally. Navigate to the `/examples` directory for additional `README` information on how to run the demos locally. You can also explore a live demo of 0x-parser [here](https://0x-parser-demo.vercel.app/).

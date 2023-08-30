@@ -1,8 +1,12 @@
 import { narrow } from "abitype";
 import IZeroEx from "./abi/IZeroEx.json";
-import { Chain, PublicClient, Transport } from "viem";
 import type {
+  Hex,
+  Chain,
+  Address,
+  Transport,
   Transaction,
+  PublicClient,
   TransactionReceipt,
 } from "viem";
 
@@ -20,25 +24,16 @@ export type SupportedChainId =
   | 43114
   | 42161;
 
-export interface CallResult {
-  success: boolean;
-  returnData: string;
-}
-
-type BlockHash = string;
-
-export type AggregateResponse = [bigint, BlockHash, CallResult[]];
-
 export const exchangeProxyAbi = narrow(IZeroEx.compilerOutput.abi);
 
 export type Mtx = {
-  signer: string;
-  sender: string;
+  signer: Address;
+  sender: Address;
   expirationTimeSeconds: bigint;
   salt: bigint;
-  callData: `0x${string}`;
-  feeToken: string;
-  fees: [{ recipient: string }];
+  callData: Hex;
+  feeToken: Address;
+  fees: [{ recipient: Address }];
 };
 
 interface Signature {
@@ -51,28 +46,28 @@ interface Signature {
 export type MetaTransactionArgs = [Mtx, Signature];
 
 export interface TransformERC20Args {
-  taker: `0x${string}`;
-  inputToken: `0x${string}`;
-  outputToken: `0x${string}`;
+  taker: Address;
+  inputToken: Address;
+  outputToken: Address;
   inputTokenAmount: bigint;
   outputTokenAmount: bigint;
 }
 
 export type MultiplexBatchSellTokenForEthArgs = [
-  `0x${string}`,
-  { id: number; sellAmount: bigint; data: `0x${string}` }[],
+  Address,
+  { id: number; sellAmount: bigint; data: Hex }[],
   bigint,
   bigint
 ];
 
 interface FillTakerSignedOtcOrderOrder {
-  makerToken: `0x${string}`;
-  takerToken: `0x${string}`;
+  makerToken: Address;
+  takerToken: Address;
   makerAmount: bigint;
   takerAmount: bigint;
-  maker: `0x${string}`;
-  taker: `0x${string}`;
-  txOrigin: `0x${string}`;
+  maker: Address;
+  taker: Address;
+  txOrigin: Address;
   expiryAndNonce: bigint;
 }
 
@@ -87,16 +82,16 @@ export type FillTakerSignedOtcOrderArgs = [
 ];
 
 interface FillLimitOrderOrder {
-  makerToken: `0x${string}`;
-  takerToken: `0x${string}`;
+  makerToken: Address;
+  takerToken: Address;
   makerAmount: bigint;
   takerAmount: bigint;
   takerTokenFeeAmount: bigint;
-  maker: `0x${string}`;
-  taker: `0x${string}`;
-  sender: `0x${string}`;
-  feeRecipient: `0x${string}`;
-  pool: `0x${string}`;
+  maker: Address;
+  taker: Address;
+  sender: Address;
+  feeRecipient: Address;
+  pool: Address;
   expiry: bigint;
   salt: bigint;
 }
@@ -104,29 +99,29 @@ interface FillLimitOrderOrder {
 export type FillLimitOrderArgs = [FillLimitOrderOrder, Signature, bigint];
 
 export type MultiplexBatchSellEthForTokenArgs = [
-  `0x${string}`,
-  { id: number; sellAmount: bigint; data: `0x${string}` }[],
+  Address,
+  { id: number; sellAmount: bigint; data: Hex }[],
   bigint
 ];
 
 export type MultiplexBatchSellTokenForTokenArgs = [
-  `0x${string}`,
-  `0x${string}`,
-  { id: number; sellAmount: bigint; data: `0x${string}` }[],
+  Address,
+  Address,
+  { id: number; sellAmount: bigint; data: Hex }[],
   bigint,
   bigint
 ];
 
 interface ExecuteMetaTransactionMtx {
-  signer: `0x${string}`;
-  sender: `0x${string}`;
+  signer: Address;
+  sender: Address;
   minGasPrice: bigint;
   maxGasPrice: bigint;
   expirationTimeSeconds: bigint;
   salt: bigint;
-  callData: `0x${string}`;
+  callData: Hex;
   value: bigint;
-  feeToken: `0x${string}`;
+  feeToken: Address;
   feeAmount: bigint;
 }
 
@@ -134,16 +129,16 @@ export type ExecuteMetaTransactionArgs = [ExecuteMetaTransactionMtx, Signature];
 
 export type FillOtcOrderForEthArgs = [
   {
-    makerToken: `0x${string}`;
-    takerToken: `0x${string}`;
+    makerToken: Address;
+    takerToken: Address;
     makerAmount: bigint;
     takerAmount: bigint;
-    maker: `0x${string}`;
-    taker: `0x${string}`;
-    txOrigin: `0x${string}`;
+    maker: Address;
+    taker: Address;
+    txOrigin: Address;
     expiryAndNonce: bigint;
   },
-  Signature,
+  MakerSignature,
   bigint
 ];
 
@@ -155,21 +150,21 @@ export type PermitAndCallArgs = [
   number,
   `0x${string}`,
   `0x${string}`,
-  `0x${string}`
+  Hex
 ];
 
 export interface ProcessedLog {
-  to: string;
-  from: string;
+  to: Address;
+  from: Address;
   symbol: string;
   amount: string;
-  address: string;
+  address: Address;
   decimals: number;
 }
 
 export interface EnrichedTxReceipt {
   logs: ProcessedLog[];
-  from: string;
+  from: Address;
 }
 
 export interface EnrichedTxReceiptArgsForViem {
@@ -178,44 +173,39 @@ export interface EnrichedTxReceiptArgsForViem {
 }
 
 export interface ProcessReceiptArgsForViem {
-  signer: string;
-  recipient: string;
+  signer: Address;
+  recipient: Address;
   parser: ParserFunction;
   transactionReceipt: TransactionReceipt;
   transaction: Transaction;
   exchangeProxyAbi: typeof exchangeProxyAbi;
 }
 
-export enum TransactionStatus {
-  REVERTED = "reverted",
-  SUCCESS = "success",
-}
-
 export interface LogViem {
   transactionIndex: number | null;
   blockNumber: bigint | null;
-  transactionHash: `0x${string}` | null;
-  address: string;
-  data: `0x${string}`;
+  transactionHash: Hex | null;
+  address: Address;
+  data: Hex;
   logIndex?: number | null;
-  blockHash: `0x${string}` | null;
+  blockHash: Hex | null;
   topics: readonly string[];
 }
 
 export interface EnrichedLogWithoutAmountViem extends LogViem {
   symbol: string;
   decimals: number;
-  from?: string;
+  from?: Address;
 }
 
 export interface ParseSwapArgs {
-  transactionHash: string;
+  transactionHash: Hex;
   exchangeProxyAbi?: typeof exchangeProxyAbi;
   rpcUrl: string;
 }
 
 export type Token = {
-  symbol: string;
+  symbol?: string;
   amount: string;
   address: string;
 };
@@ -227,31 +217,31 @@ export type TokenTransaction =
     }
   | undefined;
 
-type TxParams = {
+type ParserParams = {
+  chainId?: SupportedChainId;
   txReceipt: EnrichedTxReceipt;
   transaction: Transaction;
   transactionReceipt: TransactionReceipt;
   exchangeProxyAbi: typeof exchangeProxyAbi;
-  callData: `0x${string}`;
-  publicClient?: PublicClient<Transport, Chain>;
+  callData: Hex;
+  publicClient: PublicClient<Transport, Chain>;
 };
 
-export type ParserFunction = (params: TxParams) => TokenTransaction;
+export type ParserFunction = (
+  params: ParserParams
+) => TokenTransaction | Promise<TokenTransaction | undefined>;
 
 export interface LogParsers {
   [key: string]: ParserFunction;
 }
 
-export type TransformERC20EventData = [string, string, string, bigint, bigint];
-
 export interface ParseMetaTransactionV2Args {
-  logParsers: LogParsers;
-  chainId: SupportedChainId;
-  publicClient: PublicClient<Transport, Chain>;
+  chainId?: SupportedChainId;
+  publicClient?: PublicClient<Transport, Chain>;
   exchangeProxyAbi: typeof exchangeProxyAbi;
   transaction: Transaction;
   transactionReceipt: TransactionReceipt;
-  callDataMtx?: any;
+  callData: Hex;
 }
 
 export type ParseSwap = (

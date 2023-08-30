@@ -1,24 +1,19 @@
-import { mainnet } from "viem/chains";
 import { http, getAddress, decodeFunctionData, createPublicClient } from "viem";
-import { logParsers, transformERC20 } from "./parsers";
-import { abi as permitAndCallAbi } from "./abi/PermitAndCall.json";
+import { mainnet } from "viem/chains";
+import { logParsers } from "./parsers";
+import { permitAndCallAbi } from "./abi/PermitAndCall";
 import {
-  enrichTxReceiptForViem,
   isChainIdSupported,
   isPermitAndCallChainId,
+  enrichTransactionReceipt,
 } from "./utils";
 import {
+  TRANSACTION_STATUS,
   EXCHANGE_PROXY_ABI_URL,
   EXCHANGE_PROXY_BY_CHAIN_ID,
   PERMIT_AND_CALL_BY_CHAIN_ID,
 } from "./constants";
-import { TransactionStatus } from "./types";
-import type {
-  ParseSwapArgs,
-  PermitAndCallArgs,
-  MetaTransactionArgs,
-  ParseMetaTransactionV2Args,
-} from "./types";
+import type { ParseSwapArgs, PermitAndCallArgs } from "./types";
 
 export * from "./types";
 
@@ -29,8 +24,9 @@ export async function parseSwap({
 }: ParseSwapArgs) {
   if (!rpcUrl) throw new Error("Missing rpcUrl");
   if (!transactionHash) throw new Error("Missing transaction hash");
-  if (!exchangeProxyAbi)
+  if (!exchangeProxyAbi) {
     throw new Error(`Missing 0x Exchange Proxy ABI: ${EXCHANGE_PROXY_ABI_URL}`);
+  }
 
   const publicClient = createPublicClient({
     chain: mainnet,
@@ -40,14 +36,14 @@ export async function parseSwap({
   const chainId = await publicClient.getChainId();
 
   const transactionReceipt = await publicClient.getTransactionReceipt({
-    hash: transactionHash as `0x${string}`,
+    hash: transactionHash,
   });
 
   const transaction = await publicClient.getTransaction({
-    hash: transactionHash as `0x${string}`,
+    hash: transactionHash,
   });
 
-  if (transactionReceipt.status === TransactionStatus.REVERTED) {
+  if (transactionReceipt.status === TRANSACTION_STATUS.REVERTED) {
     return null;
   }
 
@@ -61,7 +57,9 @@ export async function parseSwap({
     ? PERMIT_AND_CALL_BY_CHAIN_ID[chainId]
     : undefined;
 
-  // The `to` property is `null` when the transaction is a contract creation, which never applies to 0x-parser.
+  // The `to` property is null only in the case of a contract creation transaction,
+  // which never occurs in the context of the 0x-parser. Use TypeScript's
+  // non-null assertion operator to indicate that the to property will always be present.
   const to = getAddress(transaction.to!);
 
   const isToExchangeProxy = getAddress(to) === getAddress(exchangeProxy);
@@ -85,129 +83,44 @@ export async function parseSwap({
           data: transaction.input,
         });
 
-  const parser = logParsers[topLevelFunctionName];
-
-  if (topLevelFunctionName === "permitAndCall") {
-    const { args } = decodeFunctionData({
-      abi: permitAndCallAbi,
-      data: transaction.input,
-    });
-    const { 7: callData } = args as PermitAndCallArgs;
-    const { functionName: exchangeProxyFn } = decodeFunctionData({
-      abi: exchangeProxyAbi,
-      data: callData,
-    });
-    const parser = logParsers[exchangeProxyFn];
-    const enrichedTxReceipt = await enrichTxReceiptForViem({
-      publicClient,
-      transactionReceipt,
-    });
-    const { logs } = enrichedTxReceipt;
-
-    if (exchangeProxyFn === "executeMetaTransactionV2") {
-      return parseMetaTransactionV2({
-        chainId,
-        logParsers,
-        transaction,
-        publicClient,
-        exchangeProxyAbi,
-        transactionReceipt,
-        callDataMtx: callData,
-      });
-    }
-
-    return parser({
-      callData,
-      transaction,
-      exchangeProxyAbi,
-      transactionReceipt,
-      txReceipt: { from: transactionReceipt.from, logs },
-    });
-  }
-
-  if (topLevelFunctionName === "executeMetaTransactionV2") {
-    return parseMetaTransactionV2({
-      chainId,
-      logParsers,
-      transaction,
-      publicClient,
-      exchangeProxyAbi,
-      transactionReceipt,
-      callDataMtx: transaction.input,
-    });
-  }
-
-  // TODO: This should be refactored into parsers if possible.
-  if (topLevelFunctionName === "transformERC20") {
-    return transformERC20({
-      chainId,
-      publicClient,
-      exchangeProxyAbi,
-      transactionReceipt,
-    });
-  }
-
-  const txReceiptEnriched = await enrichTxReceiptForViem({
+  const txReceipt = await enrichTransactionReceipt({
     publicClient,
     transactionReceipt,
   });
 
-  return parser({
-    transaction,
-    exchangeProxyAbi,
-    transactionReceipt,
-    txReceipt: txReceiptEnriched,
-    callData: transaction.input,
-  });
-}
-
-// TODO: Move this into parsers and rename to executeMetaTransactionV2.
-async function parseMetaTransactionV2({
-  chainId,
-  logParsers,
-  transaction,
-  callDataMtx,
-  publicClient,
-  exchangeProxyAbi,
-  transactionReceipt,
-}: ParseMetaTransactionV2Args) {
-  const { args } = decodeFunctionData({
-    data: callDataMtx,
-    abi: exchangeProxyAbi,
-  });
-  const [mtx] = args as MetaTransactionArgs;
-  const { signer, callData, fees } = mtx;
-  const { recipient } = fees[0];
-
-  const functionDataForMtx = decodeFunctionData({
-    data: callData,
-    abi: exchangeProxyAbi,
-  });
-
-  if (functionDataForMtx.functionName === "transformERC20") {
-    return transformERC20({
-      chainId,
-      publicClient,
-      exchangeProxyAbi,
-      transactionReceipt,
+  if (topLevelFunctionName === "permitAndCall") {
+    const { args: permitAndCallArgs } = decodeFunctionData({
+      abi: permitAndCallAbi,
+      data: transaction.input,
     });
-  } else {
-    const parser = logParsers[functionDataForMtx.functionName];
-    const enrichedTxReceipt = await enrichTxReceiptForViem({
-      publicClient,
-      transactionReceipt,
+    const { 7: callData } = permitAndCallArgs as PermitAndCallArgs;
+    const { functionName: exchangeProxyFn } = decodeFunctionData({
+      abi: exchangeProxyAbi,
+      data: callData,
     });
-    const { logs } = enrichedTxReceipt;
-    const filteredLogs = logs.filter(
-      (log) => log.to !== recipient.toLowerCase()
-    );
+
+    const parser = logParsers[exchangeProxyFn];
 
     return parser({
+      chainId,
       callData,
+      txReceipt,
       transaction,
+      publicClient,
       exchangeProxyAbi,
       transactionReceipt,
-      txReceipt: { from: signer, logs: filteredLogs },
     });
   }
+
+  const parser = logParsers[topLevelFunctionName];
+
+  return parser({
+    chainId,
+    txReceipt,
+    transaction,
+    publicClient,
+    exchangeProxyAbi,
+    transactionReceipt,
+    callData: transaction.input,
+  });
 }

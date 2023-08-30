@@ -1,3 +1,4 @@
+import { getAddress } from "viem";
 import { EVENT_SIGNATURES } from "../constants";
 import { minimalERC20Abi } from "../abi/MinimalERC20";
 import type {
@@ -8,15 +9,15 @@ import type {
   EnrichedTxReceiptArgsForViem,
 } from "../types";
 
-import { getAddress } from "viem";
 
-export function convertHexToAddress(hexString: string): string {
+function convertHexToAddress(hexString: string): string {
   return `0x${hexString.slice(-40)}`;
 }
 
 export function isChainIdSupported(
-  chainId: number
+  chainId?: number
 ): chainId is SupportedChainId {
+  if (!chainId) return false;
   return [1, 5, 10, 56, 137, 250, 8453, 42220, 43114, 42161].includes(chainId);
 }
 
@@ -39,9 +40,9 @@ export function formatUnits(data: string, decimals: number) {
     : wholePart.toString();
 }
 
-export async function enrichTxReceiptForViem({
-  transactionReceipt,
+export async function enrichTransactionReceipt({
   publicClient,
+  transactionReceipt,
 }: EnrichedTxReceiptArgsForViem): Promise<EnrichedTxReceipt> {
   const { from: viemFrom, logs: viemLogs } = transactionReceipt;
 

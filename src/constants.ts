@@ -64,3 +64,8 @@ export const NATIVE_SYMBOL_BY_CHAIN_ID: Record<SupportedChainId, string> = {
   42220: "CELO", // Celo
   43114: "AVAX", // Avalanche
 } as const;
+
+export enum TRANSACTION_STATUS {
+  REVERTED = "reverted",
+  SUCCESS = "success",
+}

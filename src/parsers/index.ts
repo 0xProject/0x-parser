@@ -4,7 +4,11 @@ import {
   decodeEventLog,
   decodeFunctionData,
 } from "viem";
-import { extractTokenInfo } from "../utils";
+import {
+  extractTokenInfo,
+  isChainIdSupported,
+  enrichTransactionReceipt,
+} from "../utils";
 import { minimalERC20Abi } from "../abi/MinimalERC20";
 import {
   CONTRACTS,
@@ -13,13 +17,22 @@ import {
   NATIVE_SYMBOL_BY_CHAIN_ID,
   EXCHANGE_PROXY_BY_CHAIN_ID,
 } from "../constants";
-import type { PublicClient, Transaction, TransactionReceipt } from "viem";
+import type {
+  Hex,
+  Chain,
+  Transport,
+  Transaction,
+  PublicClient,
+  TransactionReceipt,
+} from "viem";
 import type {
   LogParsers,
+  TokenTransaction,
   SupportedChainId,
   EnrichedTxReceipt,
   TransformERC20Args,
   FillLimitOrderArgs,
+  MetaTransactionArgs,
   FillOtcOrderForEthArgs,
   ExecuteMetaTransactionArgs,
   FillTakerSignedOtcOrderArgs,
@@ -77,7 +90,7 @@ export function fillTakerSignedOtcOrder({
 }: {
   txReceipt: EnrichedTxReceipt;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  callData: `0x${string}`;
+  callData: Hex;
 }) {
   const { args } = decodeFunctionData({
     abi: exchangeProxyAbi,
@@ -171,16 +184,16 @@ export function sellToUniswap({ txReceipt }: { txReceipt: EnrichedTxReceipt }) {
 
 export async function transformERC20({
   chainId,
+  publicClient,
   transactionReceipt,
   exchangeProxyAbi,
-  publicClient,
 }: {
-  chainId: SupportedChainId;
+  chainId?: SupportedChainId;
+  publicClient: PublicClient;
   transactionReceipt: TransactionReceipt;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  publicClient: PublicClient;
 }) {
-  const nativeSymbol = NATIVE_SYMBOL_BY_CHAIN_ID[chainId];
+  const nativeSymbol = chainId ? NATIVE_SYMBOL_BY_CHAIN_ID[chainId] : "";
 
   for (const log of transactionReceipt.logs) {
     const { topics, data } = log;
@@ -192,13 +205,13 @@ export async function transformERC20({
       let outputSymbol: undefined | string;
       let outputDecimal: undefined | number;
 
-      const logDescriptionViem = decodeEventLog({
-        abi: exchangeProxyAbi,
+      const eventLog = decodeEventLog({
         data,
         topics,
+        abi: exchangeProxyAbi,
       });
       const { inputToken, outputToken, inputTokenAmount, outputTokenAmount } =
-        logDescriptionViem.args as TransformERC20Args;
+        eventLog.args as TransformERC20Args;
 
       const inputContract = {
         address: inputToken,
@@ -289,7 +302,7 @@ export function multiplexBatchSellTokenForEth({
 }: {
   txReceipt: EnrichedTxReceipt;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  callData: `0x${string}`;
+  callData: Hex;
 }) {
   const { logs } = txReceipt;
   const { args } = decodeFunctionData({
@@ -326,11 +339,7 @@ export function multiplexBatchSellTokenForEth({
     },
     {
       tokenIn: { address: "", amount: "", symbol: "" },
-      tokenOut: {
-        amount: "",
-        symbol: "ETH",
-        address: NATIVE_ASSET,
-      },
+      tokenOut: { amount: "", symbol: "ETH", address: NATIVE_ASSET },
     }
   );
 }
@@ -344,7 +353,7 @@ export function multiplexBatchSellEthForToken({
   txReceipt: EnrichedTxReceipt;
   transaction: Transaction;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  callData: `0x${string}`;
+  callData: Hex;
 }) {
   const { value } = transaction;
   const { args } = decodeFunctionData({
@@ -380,56 +389,41 @@ export function multiplexBatchSellEthForToken({
 }
 
 export function multiplexBatchSellTokenForToken({
+  callData,
   txReceipt,
   exchangeProxyAbi,
-  callData,
 }: {
+  callData: Hex;
   txReceipt: EnrichedTxReceipt;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  callData: `0x${string}`;
 }) {
-  let inputContractAddress;
-  let outputContractAddress;
-  const { args } = decodeFunctionData({
+  const { args: MultiplexBatchSellTokenForTokenArgs } = decodeFunctionData({
     abi: exchangeProxyAbi,
     data: callData,
   });
 
-  [inputContractAddress, outputContractAddress] =
-    args as MultiplexBatchSellTokenForTokenArgs;
+  const [inputContractAddress, outputContractAddress] =
+    MultiplexBatchSellTokenForTokenArgs as MultiplexBatchSellTokenForTokenArgs;
 
-  if (
-    typeof inputContractAddress === "string" &&
-    typeof outputContractAddress === "string"
-  ) {
-    const tokenData = {
-      [inputContractAddress]: {
-        amount: "0",
-        symbol: "",
-        address: "",
-      },
-      [outputContractAddress]: {
-        amount: "0",
-        symbol: "",
-        address: "",
-      },
-    };
+  const tokenData = {
+    [inputContractAddress]: { amount: "0", symbol: "", address: "" },
+    [outputContractAddress]: { amount: "0", symbol: "", address: "" },
+  };
 
-    txReceipt.logs.forEach(({ address, symbol, amount, to }) => {
-      if (getAddress(address) in tokenData) {
-        tokenData[getAddress(address)].address = getAddress(address);
-        tokenData[getAddress(address)].symbol = symbol;
-        tokenData[getAddress(address)].amount = (
-          Number(tokenData[getAddress(address)].amount) + Number(amount)
-        ).toString();
-      }
-    });
+  txReceipt.logs.forEach(({ address, symbol, amount }) => {
+    if (getAddress(address) in tokenData) {
+      tokenData[getAddress(address)].address = getAddress(address);
+      tokenData[getAddress(address)].symbol = symbol;
+      tokenData[getAddress(address)].amount = (
+        Number(tokenData[getAddress(address)].amount) + Number(amount)
+      ).toString();
+    }
+  });
 
-    return {
-      tokenIn: tokenData[inputContractAddress],
-      tokenOut: tokenData[outputContractAddress],
-    };
-  }
+  return {
+    tokenIn: tokenData[inputContractAddress],
+    tokenOut: tokenData[outputContractAddress],
+  };
 }
 
 export function sellToPancakeSwap({
@@ -454,13 +448,13 @@ export function sellToPancakeSwap({
 }
 
 export function executeMetaTransaction({
+  callData,
   txReceipt,
   exchangeProxyAbi,
-  callData,
 }: {
+  callData: Hex;
   txReceipt: EnrichedTxReceipt;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  callData: `0x${string}`;
 }) {
   const { args } = decodeFunctionData({
     abi: exchangeProxyAbi,
@@ -479,13 +473,13 @@ export function executeMetaTransaction({
 }
 
 export function fillOtcOrderForEth({
+  callData,
   txReceipt,
   exchangeProxyAbi,
-  callData,
 }: {
+  callData: Hex;
   txReceipt: EnrichedTxReceipt;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  callData: `0x${string}`;
 }) {
   const { args } = decodeFunctionData({
     abi: exchangeProxyAbi,
@@ -506,19 +500,19 @@ export function fillOtcOrderWithEth(args: {
   txReceipt: EnrichedTxReceipt;
   transaction: Transaction;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  callData: `0x${string}`;
+  callData: Hex;
 }) {
   return fillOtcOrderForEth(args);
 }
 
 export function fillLimitOrder({
+  callData,
   txReceipt,
   exchangeProxyAbi,
-  callData,
 }: {
+  callData: Hex;
   txReceipt: EnrichedTxReceipt;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  callData: `0x${string}`;
 }) {
   const { args } = decodeFunctionData({
     abi: exchangeProxyAbi,
@@ -536,6 +530,62 @@ export function fillLimitOrder({
   }
 }
 
+async function executeMetaTransactionV2({
+  chainId,
+  transaction,
+  publicClient,
+  exchangeProxyAbi,
+  transactionReceipt,
+  callData: callDataMtx,
+}: {
+  chainId?: SupportedChainId;
+  publicClient: PublicClient<Transport, Chain>;
+  exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  transaction: Transaction;
+  transactionReceipt: TransactionReceipt;
+  callData: Hex;
+}): Promise<TokenTransaction | undefined> {
+  const { args } = decodeFunctionData({
+    data: callDataMtx,
+    abi: exchangeProxyAbi,
+  });
+  const [mtx] = args as MetaTransactionArgs;
+  const { signer, callData, fees } = mtx;
+  const { recipient } = fees[0];
+
+  const { functionName } = decodeFunctionData({
+    data: callData,
+    abi: exchangeProxyAbi,
+  });
+
+  if (isChainIdSupported(chainId) && functionName === "transformERC20") {
+    return transformERC20({
+      chainId,
+      publicClient,
+      exchangeProxyAbi,
+      transactionReceipt,
+    });
+  } else {
+    const parser = logParsers[functionName];
+    const { logs } = await enrichTransactionReceipt({
+      publicClient,
+      transactionReceipt,
+    });
+    const filteredLogs = logs.filter(
+      (log) => log.to !== recipient.toLowerCase()
+    );
+
+    return parser({
+      callData,
+      transaction,
+      publicClient,
+      exchangeProxyAbi,
+      transactionReceipt,
+      txReceipt: { from: signer, logs: filteredLogs },
+    });
+  }
+}
+
 export const logParsers: LogParsers = {
   fillLimitOrder,
   fillOtcOrder,
@@ -544,6 +594,7 @@ export const logParsers: LogParsers = {
   fillTakerSignedOtcOrder,
   fillTakerSignedOtcOrderForEth,
   executeMetaTransaction,
+  executeMetaTransactionV2,
   multiplexBatchSellTokenForToken,
   multiplexBatchSellTokenForEth,
   multiplexBatchSellEthForToken,
@@ -556,4 +607,5 @@ export const logParsers: LogParsers = {
   sellTokenForTokenToUniswapV3,
   sellToLiquidityProvider,
   sellToPancakeSwap,
+  transformERC20,
 };

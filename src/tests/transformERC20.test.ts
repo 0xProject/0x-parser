@@ -14,9 +14,8 @@ if (!ETH_MAINNET_RPC) {
 describe("transformERC20", () => {
   it("returns undefined when TransformedERC20 topic is not found in logs", async () => {
     const result = await transformERC20({
-      transactionReceipt: {
-        logs: []
-      },
+      transaction: { chainId: 1 },
+      transactionReceipt: { logs: [] },
     } as any);
 
     expect(result).toBeUndefined();

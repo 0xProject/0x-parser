@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { parseSwap } from "../index";
+import { NATIVE_ASSET } from "../constants";
 import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
+
 
 require("dotenv").config();
 
@@ -50,9 +52,9 @@ describe("permitAndCall", () => {
         address: "0xBe9895146f7AF43049ca1c1AE358B0541Ea49704",
       },
       tokenOut: {
-        symbol: "ETH",
+        symbol: NATIVE_ASSET.symbol,
         amount: "0.1540473741459534",
-        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        address: NATIVE_ASSET.address,
       },
     });
   });
@@ -73,9 +75,9 @@ describe("permitAndCall", () => {
         address: "0xba100000625a3754423978a60c9317c58a424e3D",
       },
       tokenOut: {
-        symbol: "ETH",
+        symbol: NATIVE_ASSET.symbol,
         amount: "0.144785082557763087",
-        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        address: NATIVE_ASSET.address,
       },
     });
   });

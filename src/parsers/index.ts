@@ -66,6 +66,8 @@ export async function multiplexMultiHopSellTokenForEth({
   const outputLog = logs.find((log) => log.address === CONTRACTS.weth);
 
   if (inputLog && outputLog) {
+    outputLog.symbol = NATIVE_ASSET.symbol;
+    outputLog.address = NATIVE_ASSET.address;
     return extractTokenInfo(inputLog, outputLog);
   }
 }
@@ -83,6 +85,8 @@ export async function multiplexMultiHopSellEthForToken({
   const outputLog = logs.find((log) => log.to === from);
 
   if (inputLog && outputLog) {
+    inputLog.symbol = NATIVE_ASSET.symbol;
+    inputLog.address = NATIVE_ASSET.address;
     return extractTokenInfo(inputLog, outputLog);
   }
 }
@@ -142,6 +146,8 @@ export async function fillTakerSignedOtcOrderForEth({
   const outputLog = logs.find((log) => log.address === CONTRACTS.weth);
 
   if (inputLog && outputLog) {
+    outputLog.symbol = NATIVE_ASSET.symbol;
+    outputLog.address = NATIVE_ASSET.address;
     return extractTokenInfo(inputLog, outputLog);
   }
 }
@@ -159,6 +165,8 @@ export async function sellTokenForEthToUniswapV3({
   const outputLog = logs.find((log) => log.from !== from);
 
   if (inputLog && outputLog) {
+    outputLog.symbol = NATIVE_ASSET.symbol;
+    outputLog.address = NATIVE_ASSET.address;
     return extractTokenInfo(inputLog, outputLog);
   }
 }
@@ -193,6 +201,8 @@ export async function sellEthForTokenToUniswapV3({
   const outputLog = logs.find((log) => from === log.to);
 
   if (inputLog && outputLog) {
+    inputLog.symbol = NATIVE_ASSET.symbol;
+    inputLog.address = NATIVE_ASSET.address;
     return extractTokenInfo(inputLog, outputLog);
   }
 }
@@ -252,7 +262,7 @@ export async function transformERC20({
         abi: minimalERC20Abi,
       } as const;
 
-      if (inputToken === NATIVE_ASSET) {
+      if (inputToken === NATIVE_ASSET.address) {
         inputSymbol = nativeSymbol;
         inputDecimal = 18;
       } else {
@@ -271,7 +281,7 @@ export async function transformERC20({
           });
       }
 
-      if (outputToken === NATIVE_ASSET) {
+      if (outputToken === NATIVE_ASSET.address) {
         outputSymbol = nativeSymbol;
         outputDecimal = 18;
       } else {
@@ -374,7 +384,7 @@ export async function multiplexBatchSellTokenForEth({
     },
     {
       tokenIn: { address: "", amount: "", symbol: "" },
-      tokenOut: { amount: "", symbol: "ETH", address: NATIVE_ASSET },
+      tokenOut: { amount: "", symbol: NATIVE_ASSET.symbol, address: NATIVE_ASSET.address },
     }
   );
 }
@@ -412,9 +422,9 @@ export async function multiplexBatchSellEthForToken({
   if (inputLog && outputLog) {
     return {
       tokenIn: {
-        symbol: inputLog.symbol,
+        symbol: NATIVE_ASSET.symbol,
         amount: ether.toString(),
-        address: inputLog.address,
+        address: NATIVE_ASSET.address,
       },
       tokenOut: {
         symbol: outputLog.symbol,
@@ -539,18 +549,39 @@ export async function fillOtcOrderForEth({
   const outputLog = logs.find((log) => log.address === makerToken);
 
   if (inputLog && outputLog) {
+    outputLog.symbol = NATIVE_ASSET.symbol;
+    outputLog.address = NATIVE_ASSET.address;
     return extractTokenInfo(inputLog, outputLog);
   }
 }
 
-export function fillOtcOrderWithEth(args: {
+export async function fillOtcOrderWithEth({
+  callData,
+  exchangeProxyAbi,
+  publicClient,
+  transactionReceipt,
+}: {
   callData: Hex;
   transaction: Transaction;
   transactionReceipt: TransactionReceipt;
   publicClient: PublicClient<Transport, Chain>;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
 }) {
-  return fillOtcOrderForEth(args);
+  const { args } = decodeFunctionData({
+    abi: exchangeProxyAbi,
+    data: callData,
+  });
+  const logs = await transferLogs({ publicClient, transactionReceipt });
+  const [order] = args as FillOtcOrderForEthArgs;
+  const { makerToken, takerToken } = order;
+  const inputLog = logs.find((log) => log.address === takerToken);
+  const outputLog = logs.find((log) => log.address === makerToken);
+
+  if (inputLog && outputLog) {
+    inputLog.symbol = NATIVE_ASSET.symbol;
+    inputLog.address = NATIVE_ASSET.address;
+    return extractTokenInfo(inputLog, outputLog);
+  }
 }
 
 export async function fillLimitOrder({

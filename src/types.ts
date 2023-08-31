@@ -165,9 +165,9 @@ export interface EnrichLogsArgs {
 }
 
 export interface ParseSwapArgs {
-  transactionHash: Hex;
-  exchangeProxyAbi?: typeof exchangeProxyAbi;
   rpcUrl: string;
+  transactionHash: Hex;
+  exchangeProxyAbi: typeof exchangeProxyAbi;
 }
 
 export type Token = {
@@ -184,11 +184,11 @@ export type TokenTransaction =
   | undefined;
 
 type ParserParams = {
-  chainId?: SupportedChainId;
+  callData: Hex;
   transaction: Transaction;
+  chainId?: SupportedChainId;
   transactionReceipt: TransactionReceipt;
   exchangeProxyAbi: typeof exchangeProxyAbi;
-  callData: Hex;
   publicClient: PublicClient<Transport, Chain>;
 };
 

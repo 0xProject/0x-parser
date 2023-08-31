@@ -1,5 +1,6 @@
 import { it, expect, describe } from "vitest";
 import { parseSwap } from "../index";
+import { NATIVE_ASSET } from "../constants";
 import { transformERC20 } from "../parsers";
 import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
 
@@ -34,8 +35,8 @@ describe("transformERC20 on various networks", () => {
 
     expect(data).toEqual({
       tokenIn: {
-        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-        symbol: "ETH",
+        address: NATIVE_ASSET.address,
+        symbol: NATIVE_ASSET.symbol,
         amount: "332.666067836453233036",
       },
       tokenOut: {
@@ -85,9 +86,9 @@ describe("transformERC20 on various networks", () => {
         symbol: "GMX",
       },
       tokenOut: {
-        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        address: NATIVE_ASSET.address,
         amount: "1189.251717722346544033",
-        symbol: "ETH",
+        symbol: NATIVE_ASSET.symbol,
       },
     });
   });
@@ -103,9 +104,9 @@ describe("transformERC20 on various networks", () => {
 
     expect(data).toEqual({
       tokenIn: {
-        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        address: NATIVE_ASSET.address,
         amount: "51",
-        symbol: "ETH",
+        symbol: NATIVE_ASSET.symbol,
       },
       tokenOut: {
         address: "0x9A601C5bb360811d96A23689066af316a30c3027",
@@ -149,7 +150,7 @@ describe("transformERC20 on various networks", () => {
 
     expect(data).toEqual({
       tokenIn: {
-        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        address: NATIVE_ASSET.address,
         amount: "375000",
         symbol: "FTM",
       },
@@ -219,9 +220,9 @@ it("parse a swap on Base", async () => {
 
   expect(data).toEqual({
     tokenIn: {
-      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      address: NATIVE_ASSET.address,
       amount: "0.005446885313391051",
-      symbol: "ETH",
+      symbol: NATIVE_ASSET.symbol,
     },
     tokenOut: {
       address: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",

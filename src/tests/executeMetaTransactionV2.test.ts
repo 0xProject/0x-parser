@@ -1,5 +1,6 @@
 import { it, expect } from "vitest";
 import { parseSwap } from "../index";
+import { NATIVE_ASSET } from "../constants";
 import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi";
 
 require("dotenv").config();
@@ -50,8 +51,8 @@ it("parses swap from executeMetaTransactionV2 which wraps multiplexBatchSellToke
     },
     tokenOut: {
       amount: "2.6043201133029994",
-      symbol: "ETH",
-      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      symbol: NATIVE_ASSET.symbol,
+      address: NATIVE_ASSET.address,
     },
   });
 });
@@ -96,8 +97,8 @@ it("parses swap from executeMetaTransactionV2 which wraps transformERC20", async
     },
     tokenOut: {
       amount: "410.723904828710787856",
-      symbol: "ETH",
-      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      symbol: NATIVE_ASSET.symbol,
+      address: NATIVE_ASSET.address,
     },
   });
 });

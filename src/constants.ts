@@ -1,4 +1,5 @@
 import { SupportedChainId } from "./types";
+import type { Address } from "viem";
 
 export const EVENT_SIGNATURES = {
   LimitOrderFilled:
@@ -30,8 +31,8 @@ export const MULTICALL3 = "0xcA11bde05977b3631167028862bE2a173976CA11";
 export const PERMIT_AND_CALL_BY_CHAIN_ID = {
   1: "0x1291C02D288de3De7dC25353459489073D11E1Ae",
   137: "0x2ddd30fe5c12fc4cd497526f14bf3d1fcd3d5db4",
-  8453: "0x3CA53031Ad0B86a304845e83644983Be3340895f"
-} as const
+  8453: "0x3CA53031Ad0B86a304845e83644983Be3340895f",
+} as const;
 
 export const EXCHANGE_PROXY_BY_CHAIN_ID = {
   1: CONONICAL_EXCHANGE_PROXY,
@@ -44,13 +45,17 @@ export const EXCHANGE_PROXY_BY_CHAIN_ID = {
   42161: CONONICAL_EXCHANGE_PROXY,
   42220: CONONICAL_EXCHANGE_PROXY,
   43114: CONONICAL_EXCHANGE_PROXY,
-} as const
+} as const;
 
 export const CONTRACTS = {
   weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
 } as const;
 
-export const NATIVE_ASSET = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+export const NATIVE_ASSET = {
+  symbol: "ETH",
+  decimals: 18,
+  address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+} as const;
 
 export const NATIVE_SYMBOL_BY_CHAIN_ID: Record<SupportedChainId, string> = {
   1: "ETH", // Ethereum

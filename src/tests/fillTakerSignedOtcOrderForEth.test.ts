@@ -1,5 +1,6 @@
 import { it, expect } from "vitest";
 import { parseSwap } from "../index";
+import { NATIVE_ASSET } from "../constants";
 import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
 
 require("dotenv").config();
@@ -26,9 +27,9 @@ it("parses swap from fillTakerSignedOtcOrderForEth", async () => {
       address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     },
     tokenOut: {
-      symbol: "WETH",
+      symbol: NATIVE_ASSET.symbol,
       amount: "13.848320444784979968",
-      address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      address: NATIVE_ASSET.address,
     },
   });
 });

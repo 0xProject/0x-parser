@@ -18,10 +18,10 @@ export async function parseSwap({
   exchangeProxyAbi,
   rpcUrl,
 }: ParseSwapArgs) {
-  if (!rpcUrl) throw new Error("Missing rpcUrl");
-  if (!transactionHash) throw new Error("Missing transaction hash");
+  if (!rpcUrl) throw new Error("Missing rpcUrl…");
+  if (!transactionHash) throw new Error("Missing transaction hash…");
   if (!exchangeProxyAbi) {
-    throw new Error(`Missing 0x Exchange Proxy ABI: ${EXCHANGE_PROXY_ABI_URL}`);
+    throw new Error(`Missing 0x Exchange Proxy ABI: ${EXCHANGE_PROXY_ABI_URL}…`);
   }
 
   const publicClient = createPublicClient({
@@ -44,7 +44,7 @@ export async function parseSwap({
   }
 
   if (!isChainIdSupported(chainId)) {
-    throw new Error(`chainId ${chainId} is unsupported.`);
+    throw new Error(`chainId ${chainId} is unsupported…`);
   }
 
   const exchangeProxy = EXCHANGE_PROXY_BY_CHAIN_ID[chainId];

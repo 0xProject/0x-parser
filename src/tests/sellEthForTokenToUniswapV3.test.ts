@@ -1,5 +1,6 @@
 import { expect, it } from "vitest";
 import { parseSwap } from "../index";
+import { NATIVE_ASSET } from "../constants";
 import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
 
 require("dotenv").config();
@@ -20,9 +21,9 @@ it("parses swap from sellEthForTokenToUniswapV3", async () => {
 
   expect(data).toEqual({
     tokenIn: {
-      symbol: "WETH",
+      symbol: NATIVE_ASSET.symbol,
       amount: "2.749441612813630418",
-      address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+      address: NATIVE_ASSET.address,
     },
     tokenOut: {
       symbol: "HEX",

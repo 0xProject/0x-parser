@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseSwap } from "../index";
+import { NATIVE_ASSET } from "../constants";
 import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
 
 require("dotenv").config();
@@ -26,9 +27,9 @@ describe("parseSwap", () => {
         address: '0xD2d8D78087D0E43BC4804B6F946674b2Ee406b80',
       },
       tokenOut: {
-        symbol: "WETH",
+        symbol: NATIVE_ASSET.symbol,
         amount: "0.218304893918707078",
-        address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+        address: NATIVE_ASSET.address,
       },
     });
   });

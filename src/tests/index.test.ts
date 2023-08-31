@@ -12,8 +12,7 @@ if (!ETH_MAINNET_RPC) {
 }
 
 // https://etherscan.io/tx/0xe393e03e31ba2b938326ef0527aba08b4e7f2d144ac2a2172c57615990698ee6
-// basically, check if function name is from permitAndCall or exchangeProxy, otherwise return null
-it("returns null when the transaction did not interact with exchangeProxy or permitAndCall", async () => {
+it("returns null when the transaction did not interact with 0x exchangeProxy or permitAndCall", async () => {
   const data = await parseSwap({
     exchangeProxyAbi,
     rpcUrl: ETH_MAINNET_RPC,
@@ -42,22 +41,22 @@ it("throws an error when required arguments are not passed", () => {
       transactionHash: "0x…",
       exchangeProxyAbi,
     } as any);
-  }).rejects.toThrowError("Missing rpcUrl");
+  }).rejects.toThrowError("Missing rpcUrl…");
 
   expect(async () => {
     await parseSwap({
       exchangeProxyAbi,
       rpcUrl: ETH_MAINNET_RPC,
     } as any);
-  }).rejects.toThrowError("Missing transaction hash");
+  }).rejects.toThrowError("Missing transaction hash…");
 
   expect(async () => {
     await parseSwap({
       transactionHash: "0x…",
       rpcUrl: ETH_MAINNET_RPC,
-    });
+    } as any);
   }).rejects.toThrowError(
-    `Missing 0x Exchange Proxy ABI: ${EXCHANGE_PROXY_ABI_URL}`
+    `Missing 0x Exchange Proxy ABI: ${EXCHANGE_PROXY_ABI_URL}…`
   );
 });
 
@@ -69,5 +68,5 @@ it("throws an error if the chainId is not supported", () => {
       transactionHash:
         "0x689eaa9ad3db373b241330be646e450d5b8bb3faad7f0c3260c63b9ef6765fcb",
     });
-  }).rejects.toThrowError("chainId 100 is unsupported.");
+  }).rejects.toThrowError("chainId 100 is unsupported…");
 });

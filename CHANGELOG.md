@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.6.0](https://github.com/0xProject/0x-parser/compare/v0.5.0...v0.6.0) (2023-08-31)
+
+
+### Features
+
+* introduce viem + remove ethers ([1432283](https://github.com/0xProject/0x-parser/commit/14322832bc9a2a1717dddb2aef7285b8da2e4499))
+
+
+### Bug Fixes
+
+* remove exchange proxy abi from bundle... ([2b6e6f8](https://github.com/0xProject/0x-parser/commit/2b6e6f889e147f977785c1c402866b6401ec3afc))
+* support multihop for sellToUniswap ([5128e75](https://github.com/0xProject/0x-parser/commit/5128e754eaec4755361a12a75c2d7c2a6b779f17))
+* use native asset for parsers that need it ([ae82504](https://github.com/0xProject/0x-parser/commit/ae82504533dc249f849dab73e6f898a0d9663ac1))
+
 ## [0.5.0](https://github.com/0xProject/0x-parser/compare/v0.4.0...v0.5.0) (2023-08-13)
 
 

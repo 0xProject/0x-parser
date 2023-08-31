@@ -5,18 +5,15 @@ import {
   decodeFunctionData,
 } from "viem";
 import {
-  extractTokenInfo,
-  isChainIdSupported,
-  enrichTransactionReceipt,
-} from "../utils";
-import { minimalERC20Abi } from "../abi/MinimalERC20";
-import {
   CONTRACTS,
   NATIVE_ASSET,
   EVENT_SIGNATURES,
   NATIVE_SYMBOL_BY_CHAIN_ID,
   EXCHANGE_PROXY_BY_CHAIN_ID,
 } from "../constants";
+import { minimalERC20Abi } from "../abi/MinimalERC20";
+import { transferLogs, extractTokenInfo, isChainIdSupported } from "../utils";
+import { exchangeProxyAbi as exchangeProxyAbiValue } from "../abi/ExchangeProxyAbi";
 import type {
   Hex,
   Chain,
@@ -26,10 +23,9 @@ import type {
   TransactionReceipt,
 } from "viem";
 import type {
-  LogParsers,
+  Parsers,
   TokenTransaction,
   SupportedChainId,
-  EnrichedTxReceipt,
   TransformERC20Args,
   FillLimitOrderArgs,
   MetaTransactionArgs,
@@ -40,14 +36,16 @@ import type {
   MultiplexBatchSellTokenForEthArgs,
   MultiplexBatchSellTokenForTokenArgs,
 } from "../types";
-import { exchangeProxyAbi as exchangeProxyAbiValue } from "../abi/ExchangeProxyAbi";
 
-export function sellToLiquidityProvider({
-  txReceipt,
+export async function sellToLiquidityProvider({
+  publicClient,
+  transactionReceipt,
 }: {
-  txReceipt: EnrichedTxReceipt;
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
 }) {
-  const { logs, from } = txReceipt;
+  const logs = await transferLogs({ publicClient, transactionReceipt });
+  const from = getAddress(transactionReceipt.from);
   const inputLog = logs.find((log) => from === log.from);
   const outputLog = logs.find((log) => from === log.to);
   if (inputLog && outputLog) {
@@ -55,12 +53,15 @@ export function sellToLiquidityProvider({
   }
 }
 
-export function multiplexMultiHopSellTokenForEth({
-  txReceipt,
+export async function multiplexMultiHopSellTokenForEth({
+  publicClient,
+  transactionReceipt,
 }: {
-  txReceipt: EnrichedTxReceipt;
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
 }) {
-  const { logs, from } = txReceipt;
+  const from = getAddress(transactionReceipt.from);
+  const logs = await transferLogs({ publicClient, transactionReceipt });
   const inputLog = logs.find((log) => from === log.from);
   const outputLog = logs.find((log) => log.address === CONTRACTS.weth);
 
@@ -69,12 +70,15 @@ export function multiplexMultiHopSellTokenForEth({
   }
 }
 
-export function multiplexMultiHopSellEthForToken({
-  txReceipt,
+export async function multiplexMultiHopSellEthForToken({
+  publicClient,
+  transactionReceipt,
 }: {
-  txReceipt: EnrichedTxReceipt;
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
 }) {
-  const { logs, from } = txReceipt;
+  const from = getAddress(transactionReceipt.from);
+  const logs = await transferLogs({ publicClient, transactionReceipt });
   const inputLog = logs.find((log) => log.address === CONTRACTS.weth);
   const outputLog = logs.find((log) => log.to === from);
 
@@ -83,21 +87,23 @@ export function multiplexMultiHopSellEthForToken({
   }
 }
 
-export function fillTakerSignedOtcOrder({
-  txReceipt,
-  exchangeProxyAbi,
+export async function fillTakerSignedOtcOrder({
   callData,
+  publicClient,
+  exchangeProxyAbi,
+  transactionReceipt,
 }: {
-  txReceipt: EnrichedTxReceipt;
-  exchangeProxyAbi: typeof exchangeProxyAbiValue;
   callData: Hex;
+  publicClient: PublicClient<Transport, Chain>;
+  exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  transactionReceipt: TransactionReceipt;
 }) {
   const { args } = decodeFunctionData({
     abi: exchangeProxyAbi,
     data: callData,
   });
   const [order] = args as FillTakerSignedOtcOrderArgs;
-  const { logs } = txReceipt;
+  const logs = await transferLogs({ publicClient, transactionReceipt });
   const { maker, taker } = order;
   const inputLog = logs.find((log) => log.from === taker);
   const outputLog = logs.find((log) => log.from === maker);
@@ -107,9 +113,15 @@ export function fillTakerSignedOtcOrder({
   }
 }
 
-export function fillOtcOrder({ txReceipt }: { txReceipt: EnrichedTxReceipt }) {
-  const { logs, from } = txReceipt;
-  const fromAddress = from;
+export async function fillOtcOrder({
+  publicClient,
+  transactionReceipt,
+}: {
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
+}) {
+  const logs = await transferLogs({ publicClient, transactionReceipt });
+  const fromAddress = getAddress(transactionReceipt.from);
   const inputLog = logs.find((log) => log.from === fromAddress);
   const outputLog = logs.find((log) => log.to === fromAddress);
 
@@ -118,12 +130,14 @@ export function fillOtcOrder({ txReceipt }: { txReceipt: EnrichedTxReceipt }) {
   }
 }
 
-export function fillTakerSignedOtcOrderForEth({
-  txReceipt,
+export async function fillTakerSignedOtcOrderForEth({
+  publicClient,
+  transactionReceipt,
 }: {
-  txReceipt: EnrichedTxReceipt;
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
 }) {
-  const { logs } = txReceipt;
+  const logs = await transferLogs({ publicClient, transactionReceipt });
   const inputLog = logs.find((log) => log.address !== CONTRACTS.weth);
   const outputLog = logs.find((log) => log.address === CONTRACTS.weth);
 
@@ -132,12 +146,15 @@ export function fillTakerSignedOtcOrderForEth({
   }
 }
 
-export function sellTokenForEthToUniswapV3({
-  txReceipt,
+export async function sellTokenForEthToUniswapV3({
+  publicClient,
+  transactionReceipt,
 }: {
-  txReceipt: EnrichedTxReceipt;
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
 }) {
-  const { logs, from } = txReceipt;
+  const logs = await transferLogs({ publicClient, transactionReceipt });
+  const from = getAddress(transactionReceipt.from);
   const inputLog = logs.find((log) => log.from === from);
   const outputLog = logs.find((log) => log.from !== from);
 
@@ -146,12 +163,15 @@ export function sellTokenForEthToUniswapV3({
   }
 }
 
-export function sellTokenForTokenToUniswapV3({
-  txReceipt,
+export async function sellTokenForTokenToUniswapV3({
+  publicClient,
+  transactionReceipt,
 }: {
-  txReceipt: EnrichedTxReceipt;
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
 }) {
-  const { logs, from } = txReceipt;
+  const logs = await transferLogs({ publicClient, transactionReceipt });
+  const from = getAddress(transactionReceipt.from);
   const inputLog = logs.find((log) => from === log.from);
   const outputLog = logs.find((log) => from === log.to);
 
@@ -160,12 +180,15 @@ export function sellTokenForTokenToUniswapV3({
   }
 }
 
-export function sellEthForTokenToUniswapV3({
-  txReceipt,
+export async function sellEthForTokenToUniswapV3({
+  publicClient,
+  transactionReceipt,
 }: {
-  txReceipt: EnrichedTxReceipt;
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
 }) {
-  const { logs, from } = txReceipt;
+  const logs = await transferLogs({ publicClient, transactionReceipt });
+  const from = getAddress(transactionReceipt.from);
   const inputLog = logs.find((log) => from !== log.to);
   const outputLog = logs.find((log) => from === log.to);
 
@@ -174,8 +197,14 @@ export function sellEthForTokenToUniswapV3({
   }
 }
 
-export function sellToUniswap({ txReceipt }: { txReceipt: EnrichedTxReceipt }) {
-  const { logs } = txReceipt;
+export async function sellToUniswap({
+  publicClient,
+  transactionReceipt,
+}: {
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
+}) {
+  const logs = await transferLogs({ publicClient, transactionReceipt });
   const inputLog = logs[0];
   const outputLog = logs[logs.length - 1];
 
@@ -281,12 +310,15 @@ export async function transformERC20({
   }
 }
 
-export function multiplexMultiHopSellTokenForToken({
-  txReceipt,
+export async function multiplexMultiHopSellTokenForToken({
+  publicClient,
+  transactionReceipt,
 }: {
-  txReceipt: EnrichedTxReceipt;
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
 }) {
-  const { logs, from } = txReceipt;
+  const logs = await transferLogs({ publicClient, transactionReceipt });
+  const from = getAddress(transactionReceipt.from);
   const inputLog = logs.find((log) => from === log.from);
   const outputLog = logs.find((log) => from === log.to);
 
@@ -295,16 +327,19 @@ export function multiplexMultiHopSellTokenForToken({
   }
 }
 
-export function multiplexBatchSellTokenForEth({
-  txReceipt,
-  exchangeProxyAbi,
+export async function multiplexBatchSellTokenForEth({
   callData,
+  publicClient,
+  exchangeProxyAbi,
+  transactionReceipt,
 }: {
-  txReceipt: EnrichedTxReceipt;
-  exchangeProxyAbi: typeof exchangeProxyAbiValue;
   callData: Hex;
+  publicClient: PublicClient<Transport, Chain>;
+  exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  transactionReceipt: TransactionReceipt;
 }) {
-  const { logs } = txReceipt;
+  const logs = await transferLogs({ publicClient, transactionReceipt });
+
   const { args } = decodeFunctionData({
     abi: exchangeProxyAbi,
     data: callData,
@@ -344,13 +379,15 @@ export function multiplexBatchSellTokenForEth({
   );
 }
 
-export function multiplexBatchSellEthForToken({
-  txReceipt,
+export async function multiplexBatchSellEthForToken({
+  publicClient,
+  transactionReceipt,
   transaction,
   exchangeProxyAbi,
   callData,
 }: {
-  txReceipt: EnrichedTxReceipt;
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
   transaction: Transaction;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
   callData: Hex;
@@ -360,7 +397,7 @@ export function multiplexBatchSellEthForToken({
     abi: exchangeProxyAbi,
     data: callData,
   });
-  const { logs } = txReceipt;
+  const logs = await transferLogs({ publicClient, transactionReceipt });
   const { 0: outputToken } = args as MultiplexBatchSellEthForTokenArgs;
   const divisor = 1000000000000000000n; // 1e18, for conversion from wei to ether
   const etherBigInt = value / divisor;
@@ -388,15 +425,19 @@ export function multiplexBatchSellEthForToken({
   }
 }
 
-export function multiplexBatchSellTokenForToken({
+export async function multiplexBatchSellTokenForToken({
   callData,
-  txReceipt,
   exchangeProxyAbi,
+  publicClient,
+  transactionReceipt,
 }: {
   callData: Hex;
-  txReceipt: EnrichedTxReceipt;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
 }) {
+  const logs = await transferLogs({ publicClient, transactionReceipt });
+
   const { args: MultiplexBatchSellTokenForTokenArgs } = decodeFunctionData({
     abi: exchangeProxyAbi,
     data: callData,
@@ -410,7 +451,7 @@ export function multiplexBatchSellTokenForToken({
     [outputContractAddress]: { amount: "0", symbol: "", address: "" },
   };
 
-  txReceipt.logs.forEach(({ address, symbol, amount }) => {
+  logs.forEach(({ address, symbol, amount }) => {
     if (getAddress(address) in tokenData) {
       tokenData[getAddress(address)].address = getAddress(address);
       tokenData[getAddress(address)].symbol = symbol;
@@ -426,14 +467,16 @@ export function multiplexBatchSellTokenForToken({
   };
 }
 
-export function sellToPancakeSwap({
-  txReceipt,
+export async function sellToPancakeSwap({
+  publicClient,
+  transactionReceipt,
 }: {
-  txReceipt: EnrichedTxReceipt;
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
 }) {
-  const from = txReceipt.from;
-  const { logs } = txReceipt;
+  const logs = await transferLogs({ publicClient, transactionReceipt });
   const exchangeProxy = getAddress(EXCHANGE_PROXY_BY_CHAIN_ID[56]);
+  const from = getAddress(transactionReceipt.from);
   let inputLog = logs.find((log) => log.from === from);
   let outputLog = logs.find((log) => log.from !== from);
 
@@ -447,14 +490,16 @@ export function sellToPancakeSwap({
   }
 }
 
-export function executeMetaTransaction({
+export async function executeMetaTransaction({
   callData,
-  txReceipt,
   exchangeProxyAbi,
+  publicClient,
+  transactionReceipt,
 }: {
   callData: Hex;
-  txReceipt: EnrichedTxReceipt;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
 }) {
   const { args } = decodeFunctionData({
     abi: exchangeProxyAbi,
@@ -462,7 +507,7 @@ export function executeMetaTransaction({
   });
   const [metaTransaction] = args as ExecuteMetaTransactionArgs;
   const { signer } = metaTransaction;
-  const { logs } = txReceipt;
+  const logs = await transferLogs({ publicClient, transactionReceipt });
   if (typeof signer === "string") {
     const inputLog = logs.find((log) => log.from === signer);
     const outputLog = logs.find((log) => log.to === signer);
@@ -472,20 +517,22 @@ export function executeMetaTransaction({
   }
 }
 
-export function fillOtcOrderForEth({
+export async function fillOtcOrderForEth({
   callData,
-  txReceipt,
   exchangeProxyAbi,
+  publicClient,
+  transactionReceipt,
 }: {
   callData: Hex;
-  txReceipt: EnrichedTxReceipt;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
 }) {
   const { args } = decodeFunctionData({
     abi: exchangeProxyAbi,
     data: callData,
   });
-  const { logs } = txReceipt;
+  const logs = await transferLogs({ publicClient, transactionReceipt });
   const [order] = args as FillOtcOrderForEthArgs;
   const { makerToken, takerToken } = order;
   const inputLog = logs.find((log) => log.address === takerToken);
@@ -497,22 +544,25 @@ export function fillOtcOrderForEth({
 }
 
 export function fillOtcOrderWithEth(args: {
-  txReceipt: EnrichedTxReceipt;
-  transaction: Transaction;
-  exchangeProxyAbi: typeof exchangeProxyAbiValue;
   callData: Hex;
+  transaction: Transaction;
+  transactionReceipt: TransactionReceipt;
+  publicClient: PublicClient<Transport, Chain>;
+  exchangeProxyAbi: typeof exchangeProxyAbiValue;
 }) {
   return fillOtcOrderForEth(args);
 }
 
-export function fillLimitOrder({
+export async function fillLimitOrder({
   callData,
-  txReceipt,
   exchangeProxyAbi,
+  publicClient,
+  transactionReceipt,
 }: {
   callData: Hex;
-  txReceipt: EnrichedTxReceipt;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
+  publicClient: PublicClient<Transport, Chain>;
+  transactionReceipt: TransactionReceipt;
 }) {
   const { args } = decodeFunctionData({
     abi: exchangeProxyAbi,
@@ -520,7 +570,7 @@ export function fillLimitOrder({
   });
   const [order] = args as FillLimitOrderArgs;
   const { maker, taker } = order;
-  const { logs } = txReceipt;
+  const logs = await transferLogs({ publicClient, transactionReceipt });
   if (typeof maker === "string" && typeof taker === "string") {
     const inputLog = logs.find((log) => log.from === taker);
     const outputLog = logs.find((log) => log.from === maker);
@@ -539,54 +589,40 @@ async function executeMetaTransactionV2({
   callData: callDataMtx,
 }: {
   chainId?: SupportedChainId;
+  transaction: Transaction;
   publicClient: PublicClient<Transport, Chain>;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  transaction: Transaction;
   transactionReceipt: TransactionReceipt;
   callData: Hex;
-}): Promise<TokenTransaction | undefined> {
+}): Promise<TokenTransaction> {
   const { args } = decodeFunctionData({
     data: callDataMtx,
     abi: exchangeProxyAbi,
   });
   const [mtx] = args as unknown as MetaTransactionArgs;
-  const { signer, callData, fees } = mtx;
-  const { recipient } = fees[0];
-
+  const { callData } = mtx;
   const { functionName } = decodeFunctionData({
     data: callData,
     abi: exchangeProxyAbi,
   });
 
-  if (isChainIdSupported(chainId) && functionName === "transformERC20") {
-    return transformERC20({
-      chainId,
-      publicClient,
-      exchangeProxyAbi,
-      transactionReceipt,
-    });
-  } else {
-    const parser = logParsers[functionName];
-    const { logs } = await enrichTransactionReceipt({
-      publicClient,
-      transactionReceipt,
-    });
-    const filteredLogs = logs.filter(
-      (log) => log.to !== recipient.toLowerCase()
-    );
-
-    return parser({
-      callData,
-      transaction,
-      publicClient,
-      exchangeProxyAbi,
-      transactionReceipt,
-      txReceipt: { from: signer, logs: filteredLogs },
-    });
-  }
+  return isChainIdSupported(chainId) && functionName === "transformERC20"
+    ? transformERC20({
+        chainId,
+        publicClient,
+        exchangeProxyAbi,
+        transactionReceipt,
+      })
+    : parsers[functionName]({
+        callData,
+        transaction,
+        publicClient,
+        exchangeProxyAbi,
+        transactionReceipt,
+      });
 }
 
-export const logParsers: LogParsers = {
+export const parsers: Parsers = {
   fillLimitOrder,
   fillOtcOrder,
   fillOtcOrderForEth,

@@ -1,7 +1,7 @@
 import { it, expect } from "vitest";
 import { parseSwap } from "../index";
-import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
 import { EXCHANGE_PROXY_ABI_URL } from "../constants";
+import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
 
 require("dotenv").config();
 

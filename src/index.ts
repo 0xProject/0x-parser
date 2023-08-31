@@ -1,18 +1,14 @@
 import { http, getAddress, decodeFunctionData, createPublicClient } from "viem";
 import { mainnet } from "viem/chains";
-import { logParsers } from "./parsers";
+import { parsers } from "./parsers";
 import { permitAndCallAbi } from "./abi/PermitAndCall";
-import {
-  isChainIdSupported,
-  isPermitAndCallChainId,
-  enrichTransactionReceipt,
-} from "./utils";
 import {
   TRANSACTION_STATUS,
   EXCHANGE_PROXY_ABI_URL,
   EXCHANGE_PROXY_BY_CHAIN_ID,
   PERMIT_AND_CALL_BY_CHAIN_ID,
 } from "./constants";
+import { isChainIdSupported, isPermitAndCallChainId } from "./utils";
 import type { ParseSwapArgs, PermitAndCallArgs } from "./types";
 
 export * from "./types";
@@ -62,18 +58,18 @@ export async function parseSwap({
   // non-null assertion operator to indicate that the to property will always be present.
   const to = getAddress(transaction.to!);
 
-  const isToExchangeProxy = getAddress(to) === getAddress(exchangeProxy);
+  const isToExchangeProxy = to === getAddress(exchangeProxy);
 
-  const isToPermitAndCallAddress = permitAndCallAddress
-    ? getAddress(to) === getAddress(permitAndCallAddress)
+  const isToPermitAndCall = permitAndCallAddress
+    ? to === getAddress(permitAndCallAddress)
     : false;
 
-  if (!isToExchangeProxy && !isToPermitAndCallAddress) {
+  if (!isToExchangeProxy && !isToPermitAndCall) {
     return null;
   }
 
   const { functionName: topLevelFunctionName } =
-    getAddress(to) === permitAndCallAddress
+    to === permitAndCallAddress
       ? decodeFunctionData({
           abi: permitAndCallAbi,
           data: transaction.input,
@@ -82,11 +78,6 @@ export async function parseSwap({
           abi: exchangeProxyAbi,
           data: transaction.input,
         });
-
-  const txReceipt = await enrichTransactionReceipt({
-    publicClient,
-    transactionReceipt,
-  });
 
   if (topLevelFunctionName === "permitAndCall") {
     const { args: permitAndCallArgs } = decodeFunctionData({
@@ -99,12 +90,11 @@ export async function parseSwap({
       data: callData,
     });
 
-    const parser = logParsers[exchangeProxyFn];
+    const parser = parsers[exchangeProxyFn];
 
     return parser({
       chainId,
       callData,
-      txReceipt,
       transaction,
       publicClient,
       exchangeProxyAbi,
@@ -112,11 +102,10 @@ export async function parseSwap({
     });
   }
 
-  const parser = logParsers[topLevelFunctionName];
+  const parser = parsers[topLevelFunctionName];
 
   return parser({
     chainId,
-    txReceipt,
     transaction,
     publicClient,
     exchangeProxyAbi,

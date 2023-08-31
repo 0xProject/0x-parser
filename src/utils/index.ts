@@ -2,11 +2,10 @@ import { getAddress } from "viem";
 import { EVENT_SIGNATURES } from "../constants";
 import { minimalERC20Abi } from "../abi/MinimalERC20";
 import type {
-  ProcessedLog,
+  EnrichedLog,
+  EnrichLogsArgs,
   SupportedChainId,
-  EnrichedTxReceipt,
   PermitAndCallChainIds,
-  EnrichedTxReceiptArgsForViem,
 } from "../types";
 
 
@@ -40,13 +39,13 @@ export function formatUnits(data: string, decimals: number) {
     : wholePart.toString();
 }
 
-export async function enrichTransactionReceipt({
+export async function transferLogs({
   publicClient,
   transactionReceipt,
-}: EnrichedTxReceiptArgsForViem): Promise<EnrichedTxReceipt> {
-  const { from: viemFrom, logs: viemLogs } = transactionReceipt;
+}: EnrichLogsArgs): Promise<EnrichedLog[]> {
+  const { logs } = transactionReceipt;
 
-  const transferLogsAddresses = viemLogs
+  const transferLogsAddresses = logs
     .filter((log) => log.topics[0] === EVENT_SIGNATURES.Transfer)
     .map((log) => ({ ...log, address: getAddress(log.address) }));
 
@@ -70,7 +69,7 @@ export async function enrichTransactionReceipt({
   const enrichedLogs = transferLogsAddresses.map((log, index) => {
     const symbol = results[index].result as string;
     const decimals = results[midpoint + index].result as number;
-    const amount = formatUnits(log.data, decimals as number);
+    const amount = formatUnits(log.data, decimals);
     const { address, topics } = log;
     const { 1: fromHex, 2: toHex } = topics;
     const from = getAddress(convertHexToAddress(fromHex));
@@ -79,12 +78,12 @@ export async function enrichTransactionReceipt({
     return { to, from, symbol, amount, address, decimals };
   });
 
-  return { from: getAddress(viemFrom), logs: enrichedLogs };
+  return enrichedLogs;
 }
 
 export function extractTokenInfo(
-  inputLog: ProcessedLog,
-  outputLog: ProcessedLog
+  inputLog: EnrichedLog,
+  outputLog: EnrichedLog
 ) {
   return {
     tokenIn: {

@@ -23,7 +23,7 @@ export type SupportedChainId =
   | 43114
   | 42161;
 
-export type Mtx = {
+type Mtx = {
   signer: Address;
   sender: Address;
   expirationTimeSeconds: bigint;
@@ -140,17 +140,17 @@ export type FillOtcOrderForEthArgs = [
 ];
 
 export type PermitAndCallArgs = [
-  `0x${string}`,
-  `0x${string}`,
+  Address,
+  Address,
   bigint,
   bigint,
   number,
-  `0x${string}`,
-  `0x${string}`,
+  Hex,
+  Hex,
   Hex
 ];
 
-export interface ProcessedLog {
+export interface EnrichedLog {
   to: Address;
   from: Address;
   symbol: string;
@@ -159,40 +159,9 @@ export interface ProcessedLog {
   decimals: number;
 }
 
-export interface EnrichedTxReceipt {
-  logs: ProcessedLog[];
-  from: Address;
-}
-
-export interface EnrichedTxReceiptArgsForViem {
+export interface EnrichLogsArgs {
   transactionReceipt: TransactionReceipt;
   publicClient: PublicClient<Transport, Chain>;
-}
-
-export interface ProcessReceiptArgsForViem {
-  signer: Address;
-  recipient: Address;
-  parser: ParserFunction;
-  transactionReceipt: TransactionReceipt;
-  transaction: Transaction;
-  exchangeProxyAbi: typeof exchangeProxyAbi;
-}
-
-export interface LogViem {
-  transactionIndex: number | null;
-  blockNumber: bigint | null;
-  transactionHash: Hex | null;
-  address: Address;
-  data: Hex;
-  logIndex?: number | null;
-  blockHash: Hex | null;
-  topics: readonly string[];
-}
-
-export interface EnrichedLogWithoutAmountViem extends LogViem {
-  symbol: string;
-  decimals: number;
-  from?: Address;
 }
 
 export interface ParseSwapArgs {
@@ -216,7 +185,6 @@ export type TokenTransaction =
 
 type ParserParams = {
   chainId?: SupportedChainId;
-  txReceipt: EnrichedTxReceipt;
   transaction: Transaction;
   transactionReceipt: TransactionReceipt;
   exchangeProxyAbi: typeof exchangeProxyAbi;
@@ -228,17 +196,8 @@ export type ParserFunction = (
   params: ParserParams
 ) => TokenTransaction | Promise<TokenTransaction | undefined>;
 
-export interface LogParsers {
+export interface Parsers {
   [key: string]: ParserFunction;
-}
-
-export interface ParseMetaTransactionV2Args {
-  chainId?: SupportedChainId;
-  publicClient?: PublicClient<Transport, Chain>;
-  exchangeProxyAbi: typeof exchangeProxyAbi;
-  transaction: Transaction;
-  transactionReceipt: TransactionReceipt;
-  callData: Hex;
 }
 
 export type ParseSwap = (

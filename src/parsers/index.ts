@@ -39,8 +39,8 @@ import type {
   MultiplexBatchSellEthForTokenArgs,
   MultiplexBatchSellTokenForEthArgs,
   MultiplexBatchSellTokenForTokenArgs,
-  exchangeProxyAbi as exchangeProxyAbiValue,
 } from "../types";
+import { exchangeProxyAbi as exchangeProxyAbiValue } from "../abi/ExchangeProxyAbi";
 
 export function sellToLiquidityProvider({
   txReceipt,
@@ -549,7 +549,7 @@ async function executeMetaTransactionV2({
     data: callDataMtx,
     abi: exchangeProxyAbi,
   });
-  const [mtx] = args as MetaTransactionArgs;
+  const [mtx] = args as unknown as MetaTransactionArgs;
   const { signer, callData, fees } = mtx;
   const { recipient } = fees[0];
 

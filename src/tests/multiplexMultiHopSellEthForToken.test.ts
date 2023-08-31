@@ -1,6 +1,6 @@
 import { it, expect } from "vitest";
 import { parseSwap } from "../index";
-import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
+import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
 
 require("dotenv").config();
 
@@ -13,9 +13,9 @@ if (!ETH_MAINNET_RPC) {
 // https://etherscan.io/tx/0x00b191d47269265cfbbc94c77a114281ee939463b7a922e8bfbf7de8bc150c5c
 it("parses swap from multiplexMultiHopSellEthForToken", async () => {
   const data = await parseSwap({
-    transactionHash: "0x00b191d47269265cfbbc94c77a114281ee939463b7a922e8bfbf7de8bc150c5c",
-    exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
+    exchangeProxyAbi,
     rpcUrl: ETH_MAINNET_RPC,
+    transactionHash: "0x00b191d47269265cfbbc94c77a114281ee939463b7a922e8bfbf7de8bc150c5c",
   });
 
   expect(data).toEqual({

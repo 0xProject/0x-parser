@@ -1,6 +1,6 @@
 import { it, expect } from "vitest";
 import { parseSwap } from "../index";
-import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
+import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi";
 
 require("dotenv").config();
 
@@ -15,7 +15,7 @@ it("parses swap from executeMetaTransactionV2 which wraps transformERC20", async
   const data = await parseSwap({
     transactionHash:
       "0x3e22063b0a1be3e8a7a902b6a2ecd86d7753279ef368e21b99d23e431d759f71",
-    exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
+    exchangeProxyAbi,
     rpcUrl: ETH_MAINNET_RPC,
   });
 
@@ -38,7 +38,7 @@ it("parses swap from executeMetaTransactionV2 which wraps multiplexBatchSellToke
   const data = await parseSwap({
     transactionHash:
       "0xc772258418e5d73bcf891ef341a42c0d74d8f84beda7f9e8580eacc0d62ba3c7",
-    exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
+    exchangeProxyAbi,
     rpcUrl: ETH_MAINNET_RPC,
   });
 
@@ -61,7 +61,7 @@ it("parses swap from executeMetaTransactionV2 which wraps multiplexBatchSellToke
   const data = await parseSwap({
     transactionHash:
       "0xa4fa7313361c1be65bcec51217ad795028c8fd0ce9eacaff7aab546c29017921",
-    exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
+    exchangeProxyAbi,
     rpcUrl: ETH_MAINNET_RPC,
   });
 
@@ -84,7 +84,7 @@ it("parses swap from executeMetaTransactionV2 which wraps transformERC20", async
   const data = await parseSwap({
     transactionHash:
       "0xee3ffb65f6c8e07b46471cc610cf721affeefed87098c7db30a8147d50eb2a65",
-    exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
+    exchangeProxyAbi,
     rpcUrl: ETH_MAINNET_RPC,
   });
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseSwap } from "../index";
-import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
+import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
 
 require("dotenv").config();
 
@@ -14,10 +14,10 @@ describe("permitAndCall", () => {
   // https://etherscan.io/tx/0x5eac379185f24ddeba7fcd4414779df77ecfd1102da6ebf6dacf25b01a14b241
   it("parses swap", async () => {
     const data = await parseSwap({
+      exchangeProxyAbi,
+      rpcUrl: ETH_MAINNET_RPC,
       transactionHash:
         "0x5eac379185f24ddeba7fcd4414779df77ecfd1102da6ebf6dacf25b01a14b241",
-      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-      rpcUrl: ETH_MAINNET_RPC,
     });
 
     expect(data).toEqual({
@@ -37,10 +37,10 @@ describe("permitAndCall", () => {
   // https://etherscan.io/tx/0x96f00ee10fb5bc7a71865d0efef87e1105946b5a7a87d44ccc8a60fa852ba467
   it("parses swap with a meta transaction that wraps multiplexBatchSellTokenForEth", async () => {
     const data = await parseSwap({
+      exchangeProxyAbi,
+      rpcUrl: ETH_MAINNET_RPC,
       transactionHash:
         "0x96f00ee10fb5bc7a71865d0efef87e1105946b5a7a87d44ccc8a60fa852ba467",
-      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-      rpcUrl: ETH_MAINNET_RPC,
     });
 
     expect(data).toEqual({
@@ -60,10 +60,10 @@ describe("permitAndCall", () => {
   // https://etherscan.io/tx/0x142909f33e8b9882c73da6dc85193a81cd2bfa3bd39d485dd901d3b70e985ee4
   it("parses swap with a meta transaction that wraps transformERC20", async () => {
     const data = await parseSwap({
+      exchangeProxyAbi,
+      rpcUrl: ETH_MAINNET_RPC,
       transactionHash:
         "0x142909f33e8b9882c73da6dc85193a81cd2bfa3bd39d485dd901d3b70e985ee4",
-      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-      rpcUrl: ETH_MAINNET_RPC,
     });
 
     expect(data).toEqual({
@@ -83,10 +83,10 @@ describe("permitAndCall", () => {
   // https://etherscan.io/tx/0x911354147775d4460259809bf7606b6a0f06c70a788856bd7f9371411abf3a5e
   it("parses swap with a meta transaction that wraps multiplexBatchSellTokenForToken", async () => {
     const data = await parseSwap({
+      exchangeProxyAbi,
+      rpcUrl: ETH_MAINNET_RPC,
       transactionHash:
         "0x911354147775d4460259809bf7606b6a0f06c70a788856bd7f9371411abf3a5e",
-      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-      rpcUrl: ETH_MAINNET_RPC,
     });
 
     expect(data).toEqual({

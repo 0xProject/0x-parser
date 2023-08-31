@@ -1,5 +1,4 @@
-import { narrow } from "abitype";
-import IZeroEx from "./abi/IZeroEx.json";
+import { exchangeProxyAbi } from "./abi/ExchangeProxyAbi";
 import type {
   Hex,
   Chain,
@@ -23,8 +22,6 @@ export type SupportedChainId =
   | 42220
   | 43114
   | 42161;
-
-export const exchangeProxyAbi = narrow(IZeroEx.compilerOutput.abi);
 
 export type Mtx = {
   signer: Address;

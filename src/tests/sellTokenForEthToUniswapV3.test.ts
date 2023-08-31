@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseSwap } from "../index";
-import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
+import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
 
 require("dotenv").config();
 
@@ -14,9 +14,9 @@ if (!ETH_MAINNET_RPC) {
 describe("parseSwap", () => {
   it("parses swap from sellTokenForEthToUniswapV3", async () => {
     const data = await parseSwap({
-      transactionHash: '0x822d38c0746b19544cedddd9a1ebaacadd3e5da55dc293738ae135fc595e269b',
-      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
+      exchangeProxyAbi,
       rpcUrl: ETH_MAINNET_RPC,
+      transactionHash: '0x822d38c0746b19544cedddd9a1ebaacadd3e5da55dc293738ae135fc595e269b',
     });
 
     expect(data).toEqual({

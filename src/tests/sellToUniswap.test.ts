@@ -1,6 +1,6 @@
 import { it, expect } from "vitest";
 import { parseSwap } from "../index";
-import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
+import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
 
 require("dotenv").config();
 
@@ -13,10 +13,10 @@ if (!ETH_MAINNET_RPC) {
 // https://etherscan.io/tx/0xd6a7aeda4a2978c80b03700e3136c6895b48d08cd9c8d4c88dfd19dee0a12795
 it("parses a single hop swap from sellToUniswap", async () => {
   const data = await parseSwap({
+    exchangeProxyAbi,
+    rpcUrl: ETH_MAINNET_RPC,
     transactionHash:
       "0xd6a7aeda4a2978c80b03700e3136c6895b48d08cd9c8d4c88dfd19dee0a12795",
-    exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-    rpcUrl: ETH_MAINNET_RPC,
   });
 
   expect(data).toEqual({
@@ -36,10 +36,10 @@ it("parses a single hop swap from sellToUniswap", async () => {
 // https://etherscan.io/tx/0x380eebed81807391a70aac7f02cc852d441ccf0b7cf6538f7a472750e551720b
 it("parses a multihop swap from sellToUniswap", async () => {
   const data = await parseSwap({
+    exchangeProxyAbi,
+    rpcUrl: ETH_MAINNET_RPC,
     transactionHash:
       "0x380eebed81807391a70aac7f02cc852d441ccf0b7cf6538f7a472750e551720b",
-    exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-    rpcUrl: ETH_MAINNET_RPC,
   });
 
   expect(data).toEqual({

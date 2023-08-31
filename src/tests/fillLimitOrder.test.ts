@@ -1,6 +1,6 @@
 import { it, expect } from "vitest";
 import { parseSwap } from "../index";
-import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
+import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
 
 require("dotenv").config();
 
@@ -15,7 +15,7 @@ it("parses swap from fillLimitOrder", async () => {
   const data = await parseSwap({
     transactionHash:
       "0xbe734b761ccd45cc60a5b4828eb83da96405d663567a46041b049627dddf347d",
-    exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
+    exchangeProxyAbi,
     rpcUrl: ETH_MAINNET_RPC,
   });
 

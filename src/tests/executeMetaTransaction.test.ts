@@ -1,16 +1,16 @@
 import { it, expect } from "vitest";
 import { parseSwap } from "../index";
-import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
+import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi";
 
 const POLYGON_MAINNET_RPC = "https://rpc.ankr.com/polygon";
 
 // https://polygonscan.com/tx/0xaa61b2058fafae1532565b6acadf47a8fe604518185f535e2780dd28d626e0ef
 it("parses swap from executeMetaTransaction", async () => {
   const data = await parseSwap({
+    exchangeProxyAbi,
+    rpcUrl: POLYGON_MAINNET_RPC,
     transactionHash:
       "0xaa61b2058fafae1532565b6acadf47a8fe604518185f535e2780dd28d626e0ef",
-    exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-    rpcUrl: POLYGON_MAINNET_RPC,
   });
 
   expect(data).toEqual({

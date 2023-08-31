@@ -1,7 +1,7 @@
 import { it, expect, describe } from "vitest";
 import { parseSwap } from "../index";
 import { transformERC20 } from "../parsers";
-import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
+import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
 
 require("dotenv").config();
 
@@ -28,7 +28,7 @@ describe("transformERC20 on various networks", () => {
     const data = await parseSwap({
       transactionHash:
         "0x30d015e87dd5481609eec1c54433b8d4679fe641034971baf648d4528a9b0a35",
-      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
+      exchangeProxyAbi,
       rpcUrl: ETH_MAINNET_RPC,
     });
 
@@ -49,10 +49,10 @@ describe("transformERC20 on various networks", () => {
   // https://etherscan.io/tx/0x4db5b7168686cdfb1469b47a67f03fb6199aa81f3d2a26c4a05835b8752d152d
   it("Ethereum mainnet: parse a swap with ERC-20 input asset", async () => {
     const data = await parseSwap({
+      exchangeProxyAbi,
+      rpcUrl: ETH_MAINNET_RPC,
       transactionHash:
         "0x4db5b7168686cdfb1469b47a67f03fb6199aa81f3d2a26c4a05835b8752d152d",
-      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-      rpcUrl: ETH_MAINNET_RPC,
     });
 
     expect(data).toEqual({
@@ -72,10 +72,10 @@ describe("transformERC20 on various networks", () => {
   // https://arbiscan.io/tx/0x3e48c1d1d3596ecfc1f9feb9e9613f5f5fc002b76743251c31eca8bc0aa30e21
   it("parse a swap on Arbitrum", async () => {
     const data = await parseSwap({
+      exchangeProxyAbi,
+      rpcUrl: "https://arb1.arbitrum.io/rpc",
       transactionHash:
         "0x3e48c1d1d3596ecfc1f9feb9e9613f5f5fc002b76743251c31eca8bc0aa30e21",
-      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-      rpcUrl: "https://arb1.arbitrum.io/rpc",
     });
 
     expect(data).toEqual({
@@ -95,10 +95,10 @@ describe("transformERC20 on various networks", () => {
   // https://optimistic.etherscan.io/tx/0x0d8125a0d77af877c5efd475e0b2a8aa7451c2b5b95e2918387f8a038aacd718
   it("parse a swap on Optimism", async () => {
     const data = await parseSwap({
+      exchangeProxyAbi,
+      rpcUrl: "https://mainnet.optimism.io",
       transactionHash:
         "0x0d8125a0d77af877c5efd475e0b2a8aa7451c2b5b95e2918387f8a038aacd718",
-      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-      rpcUrl: "https://mainnet.optimism.io",
     });
 
     expect(data).toEqual({
@@ -118,10 +118,10 @@ describe("transformERC20 on various networks", () => {
   // https://snowtrace.io/tx/0x989436aff2791d355a08b87c9a97288699ed5a44a75897a963925b1922e12dbb
   it("parse a swap on Avalanche", async () => {
     const data = await parseSwap({
+      exchangeProxyAbi,
+      rpcUrl: "https://api.avax.network/ext/bc/C/rpc",
       transactionHash:
         "0x989436aff2791d355a08b87c9a97288699ed5a44a75897a963925b1922e12dbb",
-      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-      rpcUrl: "https://api.avax.network/ext/bc/C/rpc",
     });
 
     expect(data).toEqual({
@@ -141,10 +141,10 @@ describe("transformERC20 on various networks", () => {
   // https://ftmscan.com/tx/0xc48de1d0482475d76a13107b4d438605abe0d2223e75167fc46d6d6a54d954c2
   it("parse a swap on Fantom", async () => {
     const data = await parseSwap({
+      exchangeProxyAbi,
+      rpcUrl: "https://rpc.ftm.tools",
       transactionHash:
         "0xc48de1d0482475d76a13107b4d438605abe0d2223e75167fc46d6d6a54d954c2",
-      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-      rpcUrl: "https://rpc.ftm.tools",
     });
 
     expect(data).toEqual({
@@ -164,10 +164,10 @@ describe("transformERC20 on various networks", () => {
   // https://bscscan.com/tx/0x789d6d51ceb6d32407c97757e4be90c12f789927453413318178bed0ebc53bc0
   it("parse a swap on BNB Chain", async () => {
     const data = await parseSwap({
+      exchangeProxyAbi,
+      rpcUrl: "https://bscrpc.com",
       transactionHash:
         "0x789d6d51ceb6d32407c97757e4be90c12f789927453413318178bed0ebc53bc0",
-      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-      rpcUrl: "https://bscrpc.com",
     });
 
     expect(data).toEqual({
@@ -188,10 +188,10 @@ describe("transformERC20 on various networks", () => {
 // https://explorer.celo.org/tx/0x615c5089f772a8f2074750e8c6070013d288af7681435aba1771f6bfc63d1286
 it("parse a swap on Celo", async () => {
   const data = await parseSwap({
+    exchangeProxyAbi,
+    rpcUrl: "https://rpc.ankr.com/celo",
     transactionHash:
       "0x615c5089f772a8f2074750e8c6070013d288af7681435aba1771f6bfc63d1286",
-    exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-    rpcUrl: "https://rpc.ankr.com/celo",
   });
 
   expect(data).toEqual({
@@ -211,10 +211,10 @@ it("parse a swap on Celo", async () => {
 // https://basescan.org/tx/0x26ca796e654a3667957c25e7714c5d6d5de1fc845ebf98d8ee217f9f5e2c5f34
 it("parse a swap on Base", async () => {
   const data = await parseSwap({
+    exchangeProxyAbi,
+    rpcUrl: "https://mainnet.base.org",
     transactionHash:
       "0x26ca796e654a3667957c25e7714c5d6d5de1fc845ebf98d8ee217f9f5e2c5f34",
-    exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-    rpcUrl: "https://mainnet.base.org",
   });
 
   expect(data).toEqual({

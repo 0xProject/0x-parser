@@ -1,6 +1,6 @@
 import { it, expect, describe } from "vitest";
 import { parseSwap } from "../index";
-import EXCHANGE_PROXY_ABI from "../abi/IZeroEx.json";
+import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi";
 
 require("dotenv").config();
 
@@ -14,10 +14,10 @@ describe("fillOtcOrder", () => {
   // https://etherscan.io/tx/0xc9579b9e3cddebd3d48ccb0a719456d7c46869b2c3a536509ea88685c7a5efbb
   it("parse a swap on Ethereum", async () => {
     const data = await parseSwap({
+      exchangeProxyAbi,
+      rpcUrl: ETH_MAINNET_RPC,
       transactionHash:
         "0xc9579b9e3cddebd3d48ccb0a719456d7c46869b2c3a536509ea88685c7a5efbb",
-      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-      rpcUrl: ETH_MAINNET_RPC,
     });
 
     expect(data).toEqual({
@@ -37,10 +37,10 @@ describe("fillOtcOrder", () => {
   // https://arbiscan.io/tx/0x3e48c1d1d3596ecfc1f9feb9e9613f5f5fc002b76743251c31eca8bc0aa30e21
   it("parse a swap on Arbitrum", async () => {
     const data = await parseSwap({
+      exchangeProxyAbi,
+      rpcUrl: "https://arb1.arbitrum.io/rpc",
       transactionHash:
         "0xae78f94319844585bd9e8d4ecfefa2eb70e0cd0d49f76695ee7e4783bad4c1fc",
-      exchangeProxyAbi: EXCHANGE_PROXY_ABI.compilerOutput.abi,
-      rpcUrl: "https://arb1.arbitrum.io/rpc",
     });
 
     expect(data).toEqual({

@@ -13,13 +13,27 @@
 
 ## Overview
 
-This library is designed for [0x integrators](https://0x.org/docs/introduction/introduction-to-0x), and it simplifies the complex task of parsing [0x transactions](https://etherscan.io/address/0xdef1c0ded9bec7f1a1670819833240f027b25eff) into a format that is both user-friendly and easy to understand. One of the challenges when swapping tokens is that the trade can experience [slippage](https://0x.org/post/what-is-slippage) through [Automated Market Makers](<[AMMs](https://0x.org/post/what-is-an-automated-market-maker-amm)>) (AMMs), making the final swap amounts difficult to predict prior to executing the trade. However, this library overcomes that challenge by parsing the transaction receipt and event logs to accurately identify the final swap amounts. Try the demo [here](https://0x-parser-demo.vercel.app).
+This library is designed for [0x integrators](https://0x.org/docs/introduction/introduction-to-0x), and it simplifies the complex task of parsing [0x transactions](https://etherscan.io/address/0xdef1c0ded9bec7f1a1670819833240f027b25eff) into a format that is both user-friendly and easy to understand. 
+
+One of the challenges when swapping tokens is that the trade can experience [slippage](https://0x.org/post/what-is-slippage) through [Automated Market Makers](<[AMMs](https://0x.org/post/what-is-an-automated-market-maker-amm)>) (AMMs), making the final swap amounts difficult to predict prior to executing the trade. However, this library overcomes that challenge by parsing the transaction receipt and event logs to accurately identify the final swap amounts. Try the demo [here](https://0x-parser-demo.vercel.app).
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/hzhu/yo/main/react-demo.png" alt="Screenshot of demo app using 0x-parser" width="650"/>
 </p>
 
 ## Installation
+
+### Step 1: Install Peer Dependencies
+
+First, make sure you have the required peer dependency [viem](https://viem.sh/) installed. If you haven't installed it yet, you can do so with the following command:
+
+```
+npm install viem
+```
+
+### Step 2: Install the Parsing Library
+
+After installing the peer dependency, proceed to install the [@0x/0x-parser](https://www.npmjs.com/package/@0x/0x-parser) package:
 
 ```
 npm install @0x/0x-parser

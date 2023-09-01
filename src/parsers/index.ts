@@ -28,10 +28,10 @@ import type {
   SupportedChainId,
   TransformERC20Args,
   FillLimitOrderArgs,
-  MetaTransactionArgs,
   FillOtcOrderForEthArgs,
   ExecuteMetaTransactionArgs,
   FillTakerSignedOtcOrderArgs,
+  ExecuteMetaTransactionV2Args,
   MultiplexBatchSellEthForTokenArgs,
   MultiplexBatchSellTokenForEthArgs,
   MultiplexBatchSellTokenForTokenArgs,
@@ -384,7 +384,11 @@ export async function multiplexBatchSellTokenForEth({
     },
     {
       tokenIn: { address: "", amount: "", symbol: "" },
-      tokenOut: { amount: "", symbol: NATIVE_ASSET.symbol, address: NATIVE_ASSET.address },
+      tokenOut: {
+        amount: "",
+        symbol: NATIVE_ASSET.symbol,
+        address: NATIVE_ASSET.address,
+      },
     }
   );
 }
@@ -630,7 +634,7 @@ async function executeMetaTransactionV2({
     data: callDataMtx,
     abi: exchangeProxyAbi,
   });
-  const [mtx] = args as unknown as MetaTransactionArgs;
+  const [mtx] = args as unknown as ExecuteMetaTransactionV2Args;
   const { callData } = mtx;
   const { functionName } = decodeFunctionData({
     data: callData,

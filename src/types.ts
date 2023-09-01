@@ -23,24 +23,12 @@ export type SupportedChainId =
   | 43114
   | 42161;
 
-type Mtx = {
-  signer: Address;
-  sender: Address;
-  expirationTimeSeconds: bigint;
-  salt: bigint;
-  callData: Hex;
-  feeToken: Address;
-  fees: [{ recipient: Address }];
-};
-
 interface Signature {
   signatureType: number;
   v: number;
   r: string;
   s: string;
 }
-
-export type MetaTransactionArgs = [Mtx, Signature];
 
 export interface TransformERC20Args {
   taker: Address;
@@ -57,7 +45,7 @@ export type MultiplexBatchSellTokenForEthArgs = [
   bigint
 ];
 
-interface FillTakerSignedOtcOrderOrder {
+interface OtcOrder {
   makerToken: Address;
   takerToken: Address;
   makerAmount: bigint;
@@ -73,12 +61,12 @@ interface MakerSignature extends Signature {}
 interface TakerSignature extends Signature {}
 
 export type FillTakerSignedOtcOrderArgs = [
-  FillTakerSignedOtcOrderOrder,
+  OtcOrder,
   MakerSignature,
   TakerSignature
 ];
 
-interface FillLimitOrderOrder {
+interface LimitOrder {
   makerToken: Address;
   takerToken: Address;
   makerAmount: bigint;
@@ -93,7 +81,7 @@ interface FillLimitOrderOrder {
   salt: bigint;
 }
 
-export type FillLimitOrderArgs = [FillLimitOrderOrder, Signature, bigint];
+export type FillLimitOrderArgs = [LimitOrder, Signature, bigint];
 
 export type MultiplexBatchSellEthForTokenArgs = [
   Address,
@@ -109,35 +97,28 @@ export type MultiplexBatchSellTokenForTokenArgs = [
   bigint
 ];
 
-interface ExecuteMetaTransactionMtx {
+type MetaTransactionV2 = {
   signer: Address;
   sender: Address;
-  minGasPrice: bigint;
-  maxGasPrice: bigint;
   expirationTimeSeconds: bigint;
   salt: bigint;
   callData: Hex;
-  value: bigint;
   feeToken: Address;
+  fees: [{ recipient: Address }];
+};
+
+interface MetaTransaction extends MetaTransactionV2 {
+  minGasPrice: bigint;
+  maxGasPrice: bigint;
+  value: bigint;
   feeAmount: bigint;
 }
 
-export type ExecuteMetaTransactionArgs = [ExecuteMetaTransactionMtx, Signature];
+export type ExecuteMetaTransactionArgs = [MetaTransaction, Signature];
 
-export type FillOtcOrderForEthArgs = [
-  {
-    makerToken: Address;
-    takerToken: Address;
-    makerAmount: bigint;
-    takerAmount: bigint;
-    maker: Address;
-    taker: Address;
-    txOrigin: Address;
-    expiryAndNonce: bigint;
-  },
-  MakerSignature,
-  bigint
-];
+export type ExecuteMetaTransactionV2Args = [MetaTransactionV2, Signature];
+
+export type FillOtcOrderForEthArgs = [OtcOrder, MakerSignature, bigint];
 
 export type PermitAndCallArgs = [
   Address,

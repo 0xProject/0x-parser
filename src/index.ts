@@ -86,25 +86,29 @@ export async function parseSwap({
       abi: permitAndCallAbi as unknown as PermitAndCall[],
       data: transaction.input,
     });
-    const { 7: callData } = args;
 
-    if (callData) {
-      const { functionName: exchangeProxyFn } = decodeFunctionData({
-        abi: exchangeProxyAbi,
-        data: callData,
-      });
+    let { 7: callData } = args;
 
-      const parser = parsers[exchangeProxyFn];
-
-      return parser({
-        chainId,
-        callData,
-        transaction,
-        publicClient,
-        exchangeProxyAbi,
-        transactionReceipt,
-      });
+    if (!callData) {
+      const { 6: otherCallData } = args;
+      callData = otherCallData;
     }
+
+    const { functionName: exchangeProxyFn } = decodeFunctionData({
+      abi: exchangeProxyAbi,
+      data: callData,
+    });
+
+    const parser = parsers[exchangeProxyFn];
+
+    return parser({
+      chainId,
+      callData,
+      transaction,
+      publicClient,
+      exchangeProxyAbi,
+      transactionReceipt,
+    });
   }
 
   const parser = parsers[topLevelFunctionName];

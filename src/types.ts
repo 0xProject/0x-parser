@@ -1,3 +1,4 @@
+import { permitAndCallAbi } from "./abi/PermitAndCall";
 import { exchangeProxyAbi } from "./abi/ExchangeProxyAbi";
 import type {
   Hex,
@@ -8,7 +9,6 @@ import type {
   PublicClient,
   TransactionReceipt,
 } from "viem";
-import { permitAndCallAbi } from "./abi/PermitAndCall";
 
 export type PermitAndCallChainIds = 1 | 137 | 8453;
 
@@ -63,7 +63,7 @@ export interface ParseSwapArgs {
   exchangeProxyAbi: typeof exchangeProxyAbi;
 }
 
-export type Token = {
+type Token = {
   symbol?: string;
   amount: string;
   address: string;

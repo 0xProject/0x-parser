@@ -250,6 +250,7 @@ export async function transformERC20({
         topics,
         abi: exchangeProxyAbi,
       });
+
       const { inputToken, outputToken, inputTokenAmount, outputTokenAmount } =
         eventLog.args as TransformERC20Args;
 

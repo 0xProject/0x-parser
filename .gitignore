@@ -11,8 +11,5 @@ examples/node/index.cjs.js
 # coverage files
 coverage
 
-# hardhat cache
-cache
-
 # environment variables
 .env

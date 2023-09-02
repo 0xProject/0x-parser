@@ -1,4 +1,4 @@
-import { getAddress } from "viem";
+import { getAddress, formatUnits } from "viem";
 import { EVENT_SIGNATURES } from "../constants";
 import { minimalERC20Abi } from "../abi/MinimalERC20";
 import type {
@@ -24,19 +24,6 @@ export function isPermitAndCallChainId(
   chainId: number
 ): chainId is PermitAndCallChainIds {
   return [1, 137, 8453].includes(chainId);
-}
-
-export function formatUnits(data: string, decimals: number) {
-  const bigIntData = BigInt(data);
-  const bigIntDecimals = BigInt(10 ** decimals);
-  const wholePart = bigIntData / bigIntDecimals;
-  const fractionalPart = bigIntData % bigIntDecimals;
-  const paddedFractionalPart = String(fractionalPart).padStart(decimals, "0");
-  const formattedFractionalPart = paddedFractionalPart.replace(/0+$/, "");
-
-  return formattedFractionalPart.length > 0
-    ? `${wholePart}.${formattedFractionalPart}`
-    : wholePart.toString();
 }
 
 export async function transferLogs({
@@ -69,7 +56,7 @@ export async function transferLogs({
   const enrichedLogs = transferLogsAddresses.map((log, index) => {
     const symbol = results[index].result as string;
     const decimals = results[midpoint + index].result as number;
-    const amount = formatUnits(log.data, decimals);
+    const amount = formatUnits(BigInt(log.data), decimals);
     const { address, topics } = log;
     const { 1: fromHex, 2: toHex } = topics;
     const from = getAddress(convertHexToAddress(fromHex));

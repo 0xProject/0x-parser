@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
 import { parseSwap } from "../index";
 import { NATIVE_ASSET } from "../constants";
-import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
+import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi";
 
 require("dotenv").config();
 
@@ -11,24 +11,48 @@ if (!ETH_MAINNET_RPC) {
   throw new Error("Missing environment variable `ETH_MAINNET_RPC`");
 }
 
-// https://etherscan.io/tx/0xc552e83ef96c5d523f69494ae61b7235a6304ab439e127eb0121d33bbcdaa1ff
+// https://etherscan.io/tx/0x54362c24134d62243ea80dd0e7f77f0c62718f25fbffc6caafdd7b52f702359c
 it("parses swap from sellEthForTokenToUniswapV3", async () => {
   const data = await parseSwap({
     exchangeProxyAbi,
     rpcUrl: ETH_MAINNET_RPC,
-    transactionHash: '0xc552e83ef96c5d523f69494ae61b7235a6304ab439e127eb0121d33bbcdaa1ff',
+    transactionHash:
+      "0x54362c24134d62243ea80dd0e7f77f0c62718f25fbffc6caafdd7b52f702359c",
+  });
+
+  expect(data).toEqual({
+    tokenIn: {
+      symbol: "ETH",
+      amount: "0.098091206429872",
+      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    },
+    tokenOut: {
+      symbol: "똥코인",
+      amount: "49330077428.84485198095946916",
+      address: "0x4208Aa4d7A9a10f4f8bb7f6400c1b2161D946969",
+    },
+  });
+});
+
+// https://etherscan.io/tx/0x93e0e2967309835c4eb5443b67b6c886839b6a5c0626d33c7df976153cb224d7
+it("parses swap from sellEthForTokenToUniswapV3", async () => {
+  const data = await parseSwap({
+    exchangeProxyAbi,
+    rpcUrl: ETH_MAINNET_RPC,
+    transactionHash:
+      "0x93e0e2967309835c4eb5443b67b6c886839b6a5c0626d33c7df976153cb224d7",
   });
 
   expect(data).toEqual({
     tokenIn: {
       symbol: NATIVE_ASSET.symbol,
-      amount: "2.749441612813630418",
+      amount: "0.12864375786794413",
       address: NATIVE_ASSET.address,
     },
     tokenOut: {
-      symbol: "HEX",
-      amount: "50249.93952297",
-      address: '0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39',
+      symbol: "CGPT",
+      amount: "3895.128022043192070174",
+      address: "0x25931894a86D47441213199621F1F2994e1c39Aa",
     },
   });
 });

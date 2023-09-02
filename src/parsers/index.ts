@@ -198,7 +198,7 @@ export async function sellEthForTokenToUniswapV3({
 }) {
   const logs = await transferLogs({ publicClient, transactionReceipt });
   const from = getAddress(transactionReceipt.from);
-  const inputLog = logs.find((log) => from !== log.to);
+  const inputLog = logs.find((log) => log.address === CONTRACTS.weth);
   const outputLog = logs.find((log) => from === log.to);
 
   if (inputLog && outputLog) {

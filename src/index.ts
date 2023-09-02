@@ -9,7 +9,7 @@ import {
   PERMIT_AND_CALL_BY_CHAIN_ID,
 } from "./constants";
 import { isChainIdSupported, isPermitAndCallChainId } from "./utils";
-import type { ParseSwapArgs, PermitAndCallArgs } from "./types";
+import type { ParseSwapArgs, PermitAndCall } from "./types";
 
 export * from "./types";
 
@@ -21,7 +21,9 @@ export async function parseSwap({
   if (!rpcUrl) throw new Error("Missing rpcUrl…");
   if (!transactionHash) throw new Error("Missing transaction hash…");
   if (!exchangeProxyAbi) {
-    throw new Error(`Missing 0x Exchange Proxy ABI: ${EXCHANGE_PROXY_ABI_URL}…`);
+    throw new Error(
+      `Missing 0x Exchange Proxy ABI: ${EXCHANGE_PROXY_ABI_URL}…`
+    );
   }
 
   const publicClient = createPublicClient({
@@ -80,26 +82,29 @@ export async function parseSwap({
         });
 
   if (topLevelFunctionName === "permitAndCall") {
-    const { args: permitAndCallArgs } = decodeFunctionData({
-      abi: permitAndCallAbi,
+    const { args } = decodeFunctionData<PermitAndCall[]>({
+      abi: permitAndCallAbi as unknown as PermitAndCall[],
       data: transaction.input,
     });
-    const { 7: callData } = permitAndCallArgs as PermitAndCallArgs;
-    const { functionName: exchangeProxyFn } = decodeFunctionData({
-      abi: exchangeProxyAbi,
-      data: callData,
-    });
+    const { 7: callData } = args;
 
-    const parser = parsers[exchangeProxyFn];
+    if (callData) {
+      const { functionName: exchangeProxyFn } = decodeFunctionData({
+        abi: exchangeProxyAbi,
+        data: callData,
+      });
 
-    return parser({
-      chainId,
-      callData,
-      transaction,
-      publicClient,
-      exchangeProxyAbi,
-      transactionReceipt,
-    });
+      const parser = parsers[exchangeProxyFn];
+
+      return parser({
+        chainId,
+        callData,
+        transaction,
+        publicClient,
+        exchangeProxyAbi,
+        transactionReceipt,
+      });
+    }
   }
 
   const parser = parsers[topLevelFunctionName];

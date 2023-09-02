@@ -26,15 +26,16 @@ import type {
   Parsers,
   TokenTransaction,
   SupportedChainId,
+  FillLimitOrder,
+  FillOtcOrderForEth,
   TransformERC20Args,
-  FillLimitOrderArgs,
-  FillOtcOrderForEthArgs,
-  ExecuteMetaTransactionArgs,
-  FillTakerSignedOtcOrderArgs,
-  ExecuteMetaTransactionV2Args,
-  MultiplexBatchSellEthForTokenArgs,
-  MultiplexBatchSellTokenForEthArgs,
-  MultiplexBatchSellTokenForTokenArgs,
+  FillOtcOrderWithEth,
+  ExecuteMetaTransaction,
+  FillTakerSignedOtcOrder,
+  ExecuteMetaTransactionV2,
+  MultiplexBatchSellTokenForEth,
+  MultiplexBatchSellEthForToken,
+  MultiplexBatchSellTokenForToken,
 } from "../types";
 
 export async function sellToLiquidityProvider({
@@ -102,11 +103,11 @@ export async function fillTakerSignedOtcOrder({
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
   transactionReceipt: TransactionReceipt;
 }) {
-  const { args } = decodeFunctionData({
-    abi: exchangeProxyAbi,
+  const { args } = decodeFunctionData<FillTakerSignedOtcOrder[]>({
+    abi: exchangeProxyAbi as unknown as FillTakerSignedOtcOrder[],
     data: callData,
   });
-  const [order] = args as FillTakerSignedOtcOrderArgs;
+  const [order] = args;
   const logs = await transferLogs({ publicClient, transactionReceipt });
   const { maker, taker } = order;
   const inputLog = logs.find((log) => log.from === taker);
@@ -349,12 +350,11 @@ export async function multiplexBatchSellTokenForEth({
   transactionReceipt: TransactionReceipt;
 }) {
   const logs = await transferLogs({ publicClient, transactionReceipt });
-
-  const { args } = decodeFunctionData({
-    abi: exchangeProxyAbi,
+  const { args } = decodeFunctionData<MultiplexBatchSellTokenForEth[]>({
+    abi: exchangeProxyAbi as unknown as MultiplexBatchSellTokenForEth[],
     data: callData,
   });
-  const [inputTokenAddress] = args as MultiplexBatchSellTokenForEthArgs;
+  const [inputTokenAddress] = args;
 
   return logs.reduce(
     (acc, curr) => {
@@ -407,12 +407,12 @@ export async function multiplexBatchSellEthForToken({
   callData: Hex;
 }) {
   const { value } = transaction;
-  const { args } = decodeFunctionData({
-    abi: exchangeProxyAbi,
+  const { args } = decodeFunctionData<MultiplexBatchSellEthForToken[]>({
+    abi: exchangeProxyAbi as unknown as MultiplexBatchSellEthForToken[],
     data: callData,
   });
   const logs = await transferLogs({ publicClient, transactionReceipt });
-  const { 0: outputToken } = args as MultiplexBatchSellEthForTokenArgs;
+  const [outputToken] = args;
   const divisor = 1000000000000000000n; // 1e18, for conversion from wei to ether
   const etherBigInt = value / divisor;
   const remainderBigInt = value % divisor;
@@ -452,13 +452,12 @@ export async function multiplexBatchSellTokenForToken({
 }) {
   const logs = await transferLogs({ publicClient, transactionReceipt });
 
-  const { args: MultiplexBatchSellTokenForTokenArgs } = decodeFunctionData({
-    abi: exchangeProxyAbi,
+  const { args } = decodeFunctionData<MultiplexBatchSellTokenForToken[]>({
+    abi: exchangeProxyAbi as unknown as MultiplexBatchSellTokenForToken[],
     data: callData,
   });
 
-  const [inputContractAddress, outputContractAddress] =
-    MultiplexBatchSellTokenForTokenArgs as MultiplexBatchSellTokenForTokenArgs;
+  const [inputContractAddress, outputContractAddress] = args;
 
   const tokenData = {
     [inputContractAddress]: { amount: "0", symbol: "", address: "" },
@@ -515,11 +514,11 @@ export async function executeMetaTransaction({
   publicClient: PublicClient<Transport, Chain>;
   transactionReceipt: TransactionReceipt;
 }) {
-  const { args } = decodeFunctionData({
-    abi: exchangeProxyAbi,
+  const { args } = decodeFunctionData<ExecuteMetaTransaction[]>({
+    abi: exchangeProxyAbi as unknown as ExecuteMetaTransaction[],
     data: callData,
   });
-  const [metaTransaction] = args as ExecuteMetaTransactionArgs;
+  const [metaTransaction] = args;
   const { signer } = metaTransaction;
   const logs = await transferLogs({ publicClient, transactionReceipt });
   if (typeof signer === "string") {
@@ -542,12 +541,12 @@ export async function fillOtcOrderForEth({
   publicClient: PublicClient<Transport, Chain>;
   transactionReceipt: TransactionReceipt;
 }) {
-  const { args } = decodeFunctionData({
-    abi: exchangeProxyAbi,
+  const { args } = decodeFunctionData<FillOtcOrderForEth[]>({
+    abi: exchangeProxyAbi as unknown as FillOtcOrderForEth[],
     data: callData,
   });
   const logs = await transferLogs({ publicClient, transactionReceipt });
-  const [order] = args as FillOtcOrderForEthArgs;
+  const [order] = args;
   const { makerToken, takerToken } = order;
   const inputLog = logs.find((log) => log.address === takerToken);
   const outputLog = logs.find((log) => log.address === makerToken);
@@ -571,12 +570,12 @@ export async function fillOtcOrderWithEth({
   publicClient: PublicClient<Transport, Chain>;
   exchangeProxyAbi: typeof exchangeProxyAbiValue;
 }) {
-  const { args } = decodeFunctionData({
-    abi: exchangeProxyAbi,
+  const { args } = decodeFunctionData<FillOtcOrderWithEth[]>({
+    abi: exchangeProxyAbi as unknown as FillOtcOrderWithEth[],
     data: callData,
   });
   const logs = await transferLogs({ publicClient, transactionReceipt });
-  const [order] = args as FillOtcOrderForEthArgs;
+  const [order] = args;
   const { makerToken, takerToken } = order;
   const inputLog = logs.find((log) => log.address === takerToken);
   const outputLog = logs.find((log) => log.address === makerToken);
@@ -599,11 +598,11 @@ export async function fillLimitOrder({
   publicClient: PublicClient<Transport, Chain>;
   transactionReceipt: TransactionReceipt;
 }) {
-  const { args } = decodeFunctionData({
-    abi: exchangeProxyAbi,
+  const { args } = decodeFunctionData<FillLimitOrder[]>({
+    abi: exchangeProxyAbi as unknown as FillLimitOrder[],
     data: callData,
   });
-  const [order] = args as FillLimitOrderArgs;
+  const [order] = args;
   const { maker, taker } = order;
   const logs = await transferLogs({ publicClient, transactionReceipt });
   if (typeof maker === "string" && typeof taker === "string") {
@@ -630,12 +629,12 @@ async function executeMetaTransactionV2({
   transactionReceipt: TransactionReceipt;
   callData: Hex;
 }): Promise<TokenTransaction> {
-  const { args } = decodeFunctionData({
+  const { args } = decodeFunctionData<ExecuteMetaTransactionV2[]>({
+    abi: exchangeProxyAbi as unknown as ExecuteMetaTransactionV2[],
     data: callDataMtx,
-    abi: exchangeProxyAbi,
   });
-  const [mtx] = args as unknown as ExecuteMetaTransactionV2Args;
-  const { callData } = mtx;
+  const [metaTransaction] = args;
+  const { callData } = metaTransaction;
   const { functionName } = decodeFunctionData({
     data: callData,
     abi: exchangeProxyAbi,

@@ -8,6 +8,7 @@ import type {
   PublicClient,
   TransactionReceipt,
 } from "viem";
+import { permitAndCallAbi } from "./abi/PermitAndCall";
 
 export type PermitAndCallChainIds = 1 | 137 | 8453;
 
@@ -23,13 +24,6 @@ export type SupportedChainId =
   | 43114
   | 42161;
 
-interface Signature {
-  signatureType: number;
-  v: number;
-  r: string;
-  s: string;
-}
-
 export interface TransformERC20Args {
   taker: Address;
   inputToken: Address;
@@ -37,88 +31,6 @@ export interface TransformERC20Args {
   inputTokenAmount: bigint;
   outputTokenAmount: bigint;
 }
-
-export type MultiplexBatchSellTokenForEthArgs = [
-  Address,
-  { id: number; sellAmount: bigint; data: Hex }[],
-  bigint,
-  bigint
-];
-
-interface OtcOrder {
-  makerToken: Address;
-  takerToken: Address;
-  makerAmount: bigint;
-  takerAmount: bigint;
-  maker: Address;
-  taker: Address;
-  txOrigin: Address;
-  expiryAndNonce: bigint;
-}
-
-interface MakerSignature extends Signature {}
-
-interface TakerSignature extends Signature {}
-
-export type FillTakerSignedOtcOrderArgs = [
-  OtcOrder,
-  MakerSignature,
-  TakerSignature
-];
-
-interface LimitOrder {
-  makerToken: Address;
-  takerToken: Address;
-  makerAmount: bigint;
-  takerAmount: bigint;
-  takerTokenFeeAmount: bigint;
-  maker: Address;
-  taker: Address;
-  sender: Address;
-  feeRecipient: Address;
-  pool: Address;
-  expiry: bigint;
-  salt: bigint;
-}
-
-export type FillLimitOrderArgs = [LimitOrder, Signature, bigint];
-
-export type MultiplexBatchSellEthForTokenArgs = [
-  Address,
-  { id: number; sellAmount: bigint; data: Hex }[],
-  bigint
-];
-
-export type MultiplexBatchSellTokenForTokenArgs = [
-  Address,
-  Address,
-  { id: number; sellAmount: bigint; data: Hex }[],
-  bigint,
-  bigint
-];
-
-type MetaTransactionV2 = {
-  signer: Address;
-  sender: Address;
-  expirationTimeSeconds: bigint;
-  salt: bigint;
-  callData: Hex;
-  feeToken: Address;
-  fees: [{ recipient: Address }];
-};
-
-interface MetaTransaction extends MetaTransactionV2 {
-  minGasPrice: bigint;
-  maxGasPrice: bigint;
-  value: bigint;
-  feeAmount: bigint;
-}
-
-export type ExecuteMetaTransactionArgs = [MetaTransaction, Signature];
-
-export type ExecuteMetaTransactionV2Args = [MetaTransactionV2, Signature];
-
-export type FillOtcOrderForEthArgs = [OtcOrder, MakerSignature, bigint];
 
 export type PermitAndCallArgs = [
   Address,
@@ -184,3 +96,53 @@ export interface Parsers {
 export type ParseSwap = (
   args: ParseSwapArgs
 ) => Promise<TokenTransaction | null>;
+
+export type PermitAndCall = Extract<
+  (typeof permitAndCallAbi)[number],
+  { name: "permitAndCall" }
+>;
+
+export type ExecuteMetaTransaction = Extract<
+  (typeof exchangeProxyAbi)[number],
+  { name: "executeMetaTransaction" }
+>;
+
+export type ExecuteMetaTransactionV2 = Extract<
+  (typeof exchangeProxyAbi)[number],
+  { name: "executeMetaTransactionV2" }
+>;
+
+export type FillTakerSignedOtcOrder = Extract<
+  (typeof exchangeProxyAbi)[number],
+  { name: "fillTakerSignedOtcOrder" }
+>;
+
+export type FillOtcOrderForEth = Extract<
+  (typeof exchangeProxyAbi)[number],
+  { name: "fillOtcOrderForEth" }
+>;
+
+export type FillOtcOrderWithEth = Extract<
+  (typeof exchangeProxyAbi)[number],
+  { name: "fillOtcOrderWithEth" }
+>;
+
+export type FillLimitOrder = Extract<
+  (typeof exchangeProxyAbi)[number],
+  { name: "fillLimitOrder" }
+>;
+
+export type MultiplexBatchSellTokenForToken = Extract<
+  (typeof exchangeProxyAbi)[number],
+  { name: "multiplexBatchSellTokenForToken" }
+>;
+
+export type MultiplexBatchSellEthForToken = Extract<
+  (typeof exchangeProxyAbi)[number],
+  { name: "multiplexBatchSellEthForToken" }
+>;
+
+export type MultiplexBatchSellTokenForEth = Extract<
+  (typeof exchangeProxyAbi)[number],
+  { name: "multiplexBatchSellTokenForEth" }
+>;

@@ -174,4 +174,4 @@ export const permitAndCallAbi = [
     stateMutability: "view",
     type: "function",
   },
-];
+] as const;

@@ -48,7 +48,7 @@
     "test": "vitest --coverage --test-timeout=10000"
   },
   "peerDependencies": {
-    "viem": "^1.9.3"
+    "viem": "^1.9.5"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^0.34.3",

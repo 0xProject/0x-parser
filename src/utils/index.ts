@@ -8,7 +8,6 @@ import type {
   PermitAndCallChainIds,
 } from "../types";
 
-
 function convertHexToAddress(hexString: string): string {
   return `0x${hexString.slice(-40)}`;
 }
@@ -53,17 +52,19 @@ export async function transferLogs({
 
   const midpoint = Math.floor(results.length / 2);
 
-  const enrichedLogs = transferLogsAddresses.map((log, index) => {
-    const symbol = results[index].result as string;
-    const decimals = results[midpoint + index].result as number;
-    const amount = formatUnits(BigInt(log.data), decimals);
-    const { address, topics } = log;
-    const { 1: fromHex, 2: toHex } = topics;
-    const from = getAddress(convertHexToAddress(fromHex));
-    const to = getAddress(convertHexToAddress(toHex));
+  const enrichedLogs = transferLogsAddresses
+    .map((log, index) => {
+      const symbol = results[index].result as string;
+      const decimals = results[midpoint + index].result as number;
+      const amount = formatUnits(BigInt(log.data), decimals);
+      const { address, topics } = log;
+      const { 1: fromHex, 2: toHex } = topics;
+      const from = getAddress(convertHexToAddress(fromHex));
+      const to = getAddress(convertHexToAddress(toHex));
 
-    return { to, from, symbol, amount, address, decimals };
-  });
+      return { to, from, symbol, amount, address, decimals };
+    })
+    .filter((log) => log.amount !== "0");
 
   return enrichedLogs;
 }

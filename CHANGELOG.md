@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.0.0](https://github.com/0xProject/0x-parser/compare/v0.6.0...v1.0.0) (2023-09-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* viem as peer dependency
+
+### Features
+
+* viem as peer dependency ([f8c2239](https://github.com/0xProject/0x-parser/commit/f8c2239d05a142ec2c8956c1b74ce47aa72eed78))
+
+
+### Bug Fixes
+
+* account for identical permitAndCall function names ([1ead225](https://github.com/0xProject/0x-parser/commit/1ead2257e3d04e6bdf875c7e6dd8f64e8e80b304))
+* handle zero transfer events for sellToPancakeSwap ([4ea566a](https://github.com/0xProject/0x-parser/commit/4ea566aa5a2b3d934ec3779f473fde945e7b2781))
+* support sellEthForTokenToUniswapV3 multihop ([06f7faf](https://github.com/0xProject/0x-parser/commit/06f7fafb89cabba0bc58f8331222bf4c346231d1))
+
 ## [0.6.0](https://github.com/0xProject/0x-parser/compare/v0.5.0...v0.6.0) (2023-08-31)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/0xProject/0x-parser/compare/v1.0.0...v1.0.1) (2023-09-04)
+
+
+### Performance Improvements
+
+* parallelize rpc calls ([101172b](https://github.com/0xProject/0x-parser/commit/101172b77f99ce1c36742ea4e12e3584248009cf))
+
 ## [1.0.0](https://github.com/0xProject/0x-parser/compare/v0.6.0...v1.0.0) (2023-09-02)
 
 

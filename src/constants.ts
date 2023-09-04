@@ -56,7 +56,7 @@ export const NATIVE_ASSET = {
   address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
 } as const;
 
-export const NATIVE_SYMBOL_BY_CHAIN_ID: Record<SupportedChainId, string> = {
+export const NATIVE_SYMBOL_BY_CHAIN_ID = {
   1: "ETH", // Ethereum
   5: "ETH", // Goerli
   10: "ETH", // Optimism

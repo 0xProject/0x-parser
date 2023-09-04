@@ -79,7 +79,7 @@ export type TokenTransaction =
 export type ParserArgs = {
   callData: Hex;
   transaction: Transaction;
-  chainId?: SupportedChainId;
+  chainId: SupportedChainId;
   transactionReceipt: TransactionReceipt;
   exchangeProxyAbi: typeof exchangeProxyAbi;
   publicClient: PublicClient<Transport, Chain>;

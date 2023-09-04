@@ -200,10 +200,10 @@ export async function sellToUniswap({
 export async function transformERC20({
   chainId,
   publicClient,
-  transactionReceipt,
   exchangeProxyAbi,
+  transactionReceipt,
 }: ParserArgs) {
-  const nativeSymbol = chainId ? NATIVE_SYMBOL_BY_CHAIN_ID[chainId] : "";
+  const nativeSymbol = NATIVE_SYMBOL_BY_CHAIN_ID[chainId];
 
   for (const log of transactionReceipt.logs) {
     const { topics, data } = log;
@@ -357,11 +357,11 @@ export async function multiplexBatchSellTokenForEth({
 }
 
 export async function multiplexBatchSellEthForToken({
-  publicClient,
-  transactionReceipt,
-  transaction,
-  exchangeProxyAbi,
   callData,
+  transaction,
+  publicClient,
+  exchangeProxyAbi,
+  transactionReceipt,
 }: ParserArgs) {
   const { value } = transaction;
   const { args } = decodeFunctionData<MultiplexBatchSellEthForToken[]>({
@@ -398,8 +398,8 @@ export async function multiplexBatchSellEthForToken({
 
 export async function multiplexBatchSellTokenForToken({
   callData,
-  exchangeProxyAbi,
   publicClient,
+  exchangeProxyAbi,
   transactionReceipt,
 }: ParserArgs) {
   const logs = await transferLogs({ publicClient, transactionReceipt });
@@ -451,8 +451,8 @@ export async function sellToPancakeSwap({
 
 export async function fillOtcOrderForEth({
   callData,
-  exchangeProxyAbi,
   publicClient,
+  exchangeProxyAbi,
   transactionReceipt,
 }: ParserArgs) {
   const { args } = decodeFunctionData<FillOtcOrderForEth[]>({
@@ -474,8 +474,8 @@ export async function fillOtcOrderForEth({
 
 export async function fillOtcOrderWithEth({
   callData,
-  exchangeProxyAbi,
   publicClient,
+  exchangeProxyAbi,
   transactionReceipt,
 }: ParserArgs) {
   const { args } = decodeFunctionData<FillOtcOrderWithEth[]>({
@@ -497,8 +497,8 @@ export async function fillOtcOrderWithEth({
 
 export async function fillLimitOrder({
   callData,
-  exchangeProxyAbi,
   publicClient,
+  exchangeProxyAbi,
   transactionReceipt,
 }: ParserArgs) {
   const { args } = decodeFunctionData<FillLimitOrder[]>({
@@ -520,8 +520,8 @@ export async function fillLimitOrder({
 
 export async function executeMetaTransaction({
   callData,
-  exchangeProxyAbi,
   publicClient,
+  exchangeProxyAbi,
   transactionReceipt,
 }: ParserArgs) {
   const { args } = decodeFunctionData<ExecuteMetaTransaction[]>({

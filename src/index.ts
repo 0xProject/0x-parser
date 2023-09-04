@@ -9,7 +9,7 @@ import {
   PERMIT_AND_CALL_BY_CHAIN_ID,
 } from "./constants";
 import { isChainIdSupported, isPermitAndCallChainId } from "./utils";
-import type { ParseSwapArgs, PermitAndCall } from "./types";
+import type { ParseSwapArgs } from "./types";
 
 export * from "./types";
 
@@ -51,7 +51,7 @@ export async function parseSwap({
 
   const exchangeProxy = EXCHANGE_PROXY_BY_CHAIN_ID[chainId];
 
-  const permitAndCallAddress = isPermitAndCallChainId(chainId)
+  const permitAndCall = isPermitAndCallChainId(chainId)
     ? PERMIT_AND_CALL_BY_CHAIN_ID[chainId]
     : undefined;
 
@@ -60,58 +60,25 @@ export async function parseSwap({
   // assertion operator to indicate that the `to` property will always be present.
   const to = getAddress(transaction.to!);
 
-  const isToExchangeProxy = to === getAddress(exchangeProxy);
+  const isToExchangeProxy = to === exchangeProxy;
 
-  const isToPermitAndCall = permitAndCallAddress
-    ? to === getAddress(permitAndCallAddress)
-    : false;
+  const isToPermitAndCall = permitAndCall ? to === permitAndCall : false;
 
   if (!isToExchangeProxy && !isToPermitAndCall) {
     return null;
   }
 
-  const { functionName: topLevelFunctionName } =
-    to === permitAndCallAddress
-      ? decodeFunctionData({
-          abi: permitAndCallAbi,
-          data: transaction.input,
-        })
-      : decodeFunctionData({
-          abi: exchangeProxyAbi,
-          data: transaction.input,
-        });
+  const { functionName } = isToExchangeProxy
+    ? decodeFunctionData({
+        abi: exchangeProxyAbi,
+        data: transaction.input,
+      })
+    : decodeFunctionData({
+        abi: permitAndCallAbi,
+        data: transaction.input,
+      });
 
-  if (topLevelFunctionName === "permitAndCall") {
-    const { args } = decodeFunctionData<PermitAndCall[]>({
-      abi: permitAndCallAbi as unknown as PermitAndCall[],
-      data: transaction.input,
-    });
-
-    let { 7: callData } = args;
-
-    if (!callData) {
-      const { 6: otherCallData } = args;
-      callData = otherCallData;
-    }
-
-    const { functionName: exchangeProxyFn } = decodeFunctionData({
-      abi: exchangeProxyAbi,
-      data: callData,
-    });
-
-    const parser = parsers[exchangeProxyFn];
-
-    return parser({
-      chainId,
-      callData,
-      transaction,
-      publicClient,
-      exchangeProxyAbi,
-      transactionReceipt,
-    });
-  }
-
-  const parser = parsers[topLevelFunctionName];
+  const parser = parsers[functionName];
 
   return parser({
     chainId,

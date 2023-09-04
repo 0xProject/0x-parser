@@ -12,21 +12,21 @@ import {
   EXCHANGE_PROXY_BY_CHAIN_ID,
 } from "../constants";
 import { minimalERC20Abi } from "../abi/MinimalERC20";
-import { transferLogs, extractTokenInfo, isChainIdSupported } from "../utils";
+import { transferLogs, extractTokenInfo } from "../utils";
 import { exchangeProxyAbi as exchangeProxyAbiValue } from "../abi/ExchangeProxyAbi";
 import type {
   Hex,
   Chain,
   Transport,
-  Transaction,
   PublicClient,
   TransactionReceipt,
 } from "viem";
 import type {
   Parsers,
-  TokenTransaction,
-  SupportedChainId,
+  ParserArgs,
+  PermitAndCall,
   FillLimitOrder,
+  TokenTransaction,
   FillOtcOrderForEth,
   TransformERC20Args,
   FillOtcOrderWithEth,
@@ -37,18 +37,17 @@ import type {
   MultiplexBatchSellEthForToken,
   MultiplexBatchSellTokenForToken,
 } from "../types";
+import { permitAndCallAbi } from "../abi/PermitAndCall";
 
 export async function sellToLiquidityProvider({
   publicClient,
   transactionReceipt,
-}: {
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-}) {
+}: ParserArgs) {
   const logs = await transferLogs({ publicClient, transactionReceipt });
   const from = getAddress(transactionReceipt.from);
   const inputLog = logs.find((log) => from === log.from);
   const outputLog = logs.find((log) => from === log.to);
+
   if (inputLog && outputLog) {
     return extractTokenInfo(inputLog, outputLog);
   }
@@ -57,10 +56,7 @@ export async function sellToLiquidityProvider({
 export async function multiplexMultiHopSellTokenForEth({
   publicClient,
   transactionReceipt,
-}: {
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-}) {
+}: ParserArgs) {
   const from = getAddress(transactionReceipt.from);
   const logs = await transferLogs({ publicClient, transactionReceipt });
   const inputLog = logs.find((log) => from === log.from);
@@ -76,10 +72,7 @@ export async function multiplexMultiHopSellTokenForEth({
 export async function multiplexMultiHopSellEthForToken({
   publicClient,
   transactionReceipt,
-}: {
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-}) {
+}: ParserArgs) {
   const from = getAddress(transactionReceipt.from);
   const logs = await transferLogs({ publicClient, transactionReceipt });
   const inputLog = logs.find((log) => log.address === CONTRACTS.weth);
@@ -121,10 +114,7 @@ export async function fillTakerSignedOtcOrder({
 export async function fillOtcOrder({
   publicClient,
   transactionReceipt,
-}: {
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-}) {
+}: ParserArgs) {
   const logs = await transferLogs({ publicClient, transactionReceipt });
   const fromAddress = getAddress(transactionReceipt.from);
   const inputLog = logs.find((log) => log.from === fromAddress);
@@ -138,10 +128,7 @@ export async function fillOtcOrder({
 export async function fillTakerSignedOtcOrderForEth({
   publicClient,
   transactionReceipt,
-}: {
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-}) {
+}: ParserArgs) {
   const logs = await transferLogs({ publicClient, transactionReceipt });
   const inputLog = logs.find((log) => log.address !== CONTRACTS.weth);
   const outputLog = logs.find((log) => log.address === CONTRACTS.weth);
@@ -156,10 +143,7 @@ export async function fillTakerSignedOtcOrderForEth({
 export async function sellTokenForEthToUniswapV3({
   publicClient,
   transactionReceipt,
-}: {
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-}) {
+}: ParserArgs) {
   const logs = await transferLogs({ publicClient, transactionReceipt });
   const from = getAddress(transactionReceipt.from);
   const inputLog = logs.find((log) => log.from === from);
@@ -175,10 +159,7 @@ export async function sellTokenForEthToUniswapV3({
 export async function sellTokenForTokenToUniswapV3({
   publicClient,
   transactionReceipt,
-}: {
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-}) {
+}: ParserArgs) {
   const logs = await transferLogs({ publicClient, transactionReceipt });
   const from = getAddress(transactionReceipt.from);
   const inputLog = logs.find((log) => from === log.from);
@@ -192,10 +173,7 @@ export async function sellTokenForTokenToUniswapV3({
 export async function sellEthForTokenToUniswapV3({
   publicClient,
   transactionReceipt,
-}: {
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-}) {
+}: ParserArgs) {
   const logs = await transferLogs({ publicClient, transactionReceipt });
   const from = getAddress(transactionReceipt.from);
   const inputLog = logs.find((log) => log.address === CONTRACTS.weth);
@@ -211,10 +189,7 @@ export async function sellEthForTokenToUniswapV3({
 export async function sellToUniswap({
   publicClient,
   transactionReceipt,
-}: {
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-}) {
+}: ParserArgs) {
   const logs = await transferLogs({ publicClient, transactionReceipt });
   const inputLog = logs[0];
   const outputLog = logs[logs.length - 1];
@@ -227,12 +202,7 @@ export async function transformERC20({
   publicClient,
   transactionReceipt,
   exchangeProxyAbi,
-}: {
-  chainId?: SupportedChainId;
-  publicClient: PublicClient;
-  transactionReceipt: TransactionReceipt;
-  exchangeProxyAbi: typeof exchangeProxyAbiValue;
-}) {
+}: ParserArgs) {
   const nativeSymbol = chainId ? NATIVE_SYMBOL_BY_CHAIN_ID[chainId] : "";
 
   for (const log of transactionReceipt.logs) {
@@ -325,10 +295,7 @@ export async function transformERC20({
 export async function multiplexMultiHopSellTokenForToken({
   publicClient,
   transactionReceipt,
-}: {
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-}) {
+}: ParserArgs) {
   const logs = await transferLogs({ publicClient, transactionReceipt });
   const from = getAddress(transactionReceipt.from);
   const inputLog = logs.find((log) => from === log.from);
@@ -344,12 +311,7 @@ export async function multiplexBatchSellTokenForEth({
   publicClient,
   exchangeProxyAbi,
   transactionReceipt,
-}: {
-  callData: Hex;
-  publicClient: PublicClient<Transport, Chain>;
-  exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  transactionReceipt: TransactionReceipt;
-}) {
+}: ParserArgs) {
   const logs = await transferLogs({ publicClient, transactionReceipt });
   const { args } = decodeFunctionData<MultiplexBatchSellTokenForEth[]>({
     abi: exchangeProxyAbi as unknown as MultiplexBatchSellTokenForEth[],
@@ -400,13 +362,7 @@ export async function multiplexBatchSellEthForToken({
   transaction,
   exchangeProxyAbi,
   callData,
-}: {
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-  transaction: Transaction;
-  exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  callData: Hex;
-}) {
+}: ParserArgs) {
   const { value } = transaction;
   const { args } = decodeFunctionData<MultiplexBatchSellEthForToken[]>({
     abi: exchangeProxyAbi as unknown as MultiplexBatchSellEthForToken[],
@@ -445,21 +401,13 @@ export async function multiplexBatchSellTokenForToken({
   exchangeProxyAbi,
   publicClient,
   transactionReceipt,
-}: {
-  callData: Hex;
-  exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-}) {
+}: ParserArgs) {
   const logs = await transferLogs({ publicClient, transactionReceipt });
-
   const { args } = decodeFunctionData<MultiplexBatchSellTokenForToken[]>({
     abi: exchangeProxyAbi as unknown as MultiplexBatchSellTokenForToken[],
     data: callData,
   });
-
   const [inputContractAddress, outputContractAddress] = args;
-
   const tokenData = {
     [inputContractAddress]: { amount: "0", symbol: "", address: "" },
     [outputContractAddress]: { amount: "0", symbol: "", address: "" },
@@ -484,10 +432,7 @@ export async function multiplexBatchSellTokenForToken({
 export async function sellToPancakeSwap({
   publicClient,
   transactionReceipt,
-}: {
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-}) {
+}: ParserArgs) {
   const logs = await transferLogs({ publicClient, transactionReceipt });
   const exchangeProxy = getAddress(EXCHANGE_PROXY_BY_CHAIN_ID[56]);
   const from = getAddress(transactionReceipt.from);
@@ -504,44 +449,12 @@ export async function sellToPancakeSwap({
   }
 }
 
-export async function executeMetaTransaction({
-  callData,
-  exchangeProxyAbi,
-  publicClient,
-  transactionReceipt,
-}: {
-  callData: Hex;
-  exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-}) {
-  const { args } = decodeFunctionData<ExecuteMetaTransaction[]>({
-    abi: exchangeProxyAbi as unknown as ExecuteMetaTransaction[],
-    data: callData,
-  });
-  const [metaTransaction] = args;
-  const { signer } = metaTransaction;
-  const logs = await transferLogs({ publicClient, transactionReceipt });
-  if (typeof signer === "string") {
-    const inputLog = logs.find((log) => log.from === signer);
-    const outputLog = logs.find((log) => log.to === signer);
-    if (inputLog && outputLog) {
-      return extractTokenInfo(inputLog, outputLog);
-    }
-  }
-}
-
 export async function fillOtcOrderForEth({
   callData,
   exchangeProxyAbi,
   publicClient,
   transactionReceipt,
-}: {
-  callData: Hex;
-  exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-}) {
+}: ParserArgs) {
   const { args } = decodeFunctionData<FillOtcOrderForEth[]>({
     abi: exchangeProxyAbi as unknown as FillOtcOrderForEth[],
     data: callData,
@@ -564,13 +477,7 @@ export async function fillOtcOrderWithEth({
   exchangeProxyAbi,
   publicClient,
   transactionReceipt,
-}: {
-  callData: Hex;
-  transaction: Transaction;
-  transactionReceipt: TransactionReceipt;
-  publicClient: PublicClient<Transport, Chain>;
-  exchangeProxyAbi: typeof exchangeProxyAbiValue;
-}) {
+}: ParserArgs) {
   const { args } = decodeFunctionData<FillOtcOrderWithEth[]>({
     abi: exchangeProxyAbi as unknown as FillOtcOrderWithEth[],
     data: callData,
@@ -593,12 +500,7 @@ export async function fillLimitOrder({
   exchangeProxyAbi,
   publicClient,
   transactionReceipt,
-}: {
-  callData: Hex;
-  exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  publicClient: PublicClient<Transport, Chain>;
-  transactionReceipt: TransactionReceipt;
-}) {
+}: ParserArgs) {
   const { args } = decodeFunctionData<FillLimitOrder[]>({
     abi: exchangeProxyAbi as unknown as FillLimitOrder[],
     data: callData,
@@ -606,9 +508,33 @@ export async function fillLimitOrder({
   const [order] = args;
   const { maker, taker } = order;
   const logs = await transferLogs({ publicClient, transactionReceipt });
+
   if (typeof maker === "string" && typeof taker === "string") {
     const inputLog = logs.find((log) => log.from === taker);
     const outputLog = logs.find((log) => log.from === maker);
+    if (inputLog && outputLog) {
+      return extractTokenInfo(inputLog, outputLog);
+    }
+  }
+}
+
+export async function executeMetaTransaction({
+  callData,
+  exchangeProxyAbi,
+  publicClient,
+  transactionReceipt,
+}: ParserArgs) {
+  const { args } = decodeFunctionData<ExecuteMetaTransaction[]>({
+    abi: exchangeProxyAbi as unknown as ExecuteMetaTransaction[],
+    data: callData,
+  });
+  const [metaTransaction] = args;
+  const { signer } = metaTransaction;
+  const logs = await transferLogs({ publicClient, transactionReceipt });
+
+  if (typeof signer === "string") {
+    const inputLog = logs.find((log) => log.from === signer);
+    const outputLog = logs.find((log) => log.to === signer);
     if (inputLog && outputLog) {
       return extractTokenInfo(inputLog, outputLog);
     }
@@ -622,14 +548,7 @@ async function executeMetaTransactionV2({
   exchangeProxyAbi,
   transactionReceipt,
   callData: callDataMtx,
-}: {
-  chainId?: SupportedChainId;
-  transaction: Transaction;
-  publicClient: PublicClient<Transport, Chain>;
-  exchangeProxyAbi: typeof exchangeProxyAbiValue;
-  transactionReceipt: TransactionReceipt;
-  callData: Hex;
-}): Promise<TokenTransaction> {
+}: ParserArgs): Promise<TokenTransaction> {
   const { args } = decodeFunctionData<ExecuteMetaTransactionV2[]>({
     abi: exchangeProxyAbi as unknown as ExecuteMetaTransactionV2[],
     data: callDataMtx,
@@ -640,21 +559,50 @@ async function executeMetaTransactionV2({
     data: callData,
     abi: exchangeProxyAbi,
   });
+  const parser = parsers[functionName];
 
-  return isChainIdSupported(chainId) && functionName === "transformERC20"
-    ? transformERC20({
-        chainId,
-        publicClient,
-        exchangeProxyAbi,
-        transactionReceipt,
-      })
-    : parsers[functionName]({
-        callData,
-        transaction,
-        publicClient,
-        exchangeProxyAbi,
-        transactionReceipt,
-      });
+  return parser({
+    chainId,
+    callData,
+    transaction,
+    publicClient,
+    exchangeProxyAbi,
+    transactionReceipt,
+  });
+}
+
+function permitAndCall({
+  chainId,
+  transaction,
+  publicClient,
+  exchangeProxyAbi,
+  transactionReceipt,
+}: ParserArgs) {
+  const { args } = decodeFunctionData<PermitAndCall[]>({
+    abi: permitAndCallAbi as unknown as PermitAndCall[],
+    data: transaction.input,
+  });
+  let { 7: callData } = args;
+
+  if (!callData) {
+    const { 6: otherCallData } = args;
+    callData = otherCallData;
+  }
+
+  const { functionName: exchangeProxyFn } = decodeFunctionData({
+    abi: exchangeProxyAbi,
+    data: callData,
+  });
+  const parser = parsers[exchangeProxyFn];
+
+  return parser({
+    chainId,
+    callData,
+    transaction,
+    publicClient,
+    exchangeProxyAbi,
+    transactionReceipt,
+  });
 }
 
 export const parsers: Parsers = {
@@ -672,6 +620,7 @@ export const parsers: Parsers = {
   multiplexMultiHopSellTokenForToken,
   multiplexMultiHopSellEthForToken,
   multiplexMultiHopSellTokenForEth,
+  permitAndCall,
   sellToUniswap,
   sellTokenForEthToUniswapV3,
   sellEthForTokenToUniswapV3,

@@ -76,7 +76,7 @@ export type TokenTransaction =
     }
   | undefined;
 
-type ParserParams = {
+export type ParserArgs = {
   callData: Hex;
   transaction: Transaction;
   chainId?: SupportedChainId;
@@ -86,7 +86,7 @@ type ParserParams = {
 };
 
 export type ParserFunction = (
-  params: ParserParams
+  args: ParserArgs
 ) => TokenTransaction | Promise<TokenTransaction | undefined>;
 
 export interface Parsers {

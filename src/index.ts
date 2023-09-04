@@ -14,12 +14,12 @@ import type { ParseSwapArgs } from "./types";
 export * from "./types";
 
 export async function parseSwap({
-  transactionHash,
-  exchangeProxyAbi,
   rpcUrl,
+  exchangeProxyAbi,
+  transactionHash: hash,
 }: ParseSwapArgs) {
   if (!rpcUrl) throw new Error("Missing rpcUrl…");
-  if (!transactionHash) throw new Error("Missing transaction hash…");
+  if (!hash) throw new Error("Missing transaction hash…");
   if (!exchangeProxyAbi) {
     throw new Error(
       `Missing 0x Exchange Proxy ABI: ${EXCHANGE_PROXY_ABI_URL}…`
@@ -31,19 +31,17 @@ export async function parseSwap({
     transport: http(rpcUrl),
   });
 
-  const chainId = await publicClient.getChainId();
+  const { getChainId, getTransaction, getTransactionReceipt } = publicClient;
 
-  const transactionReceipt = await publicClient.getTransactionReceipt({
-    hash: transactionHash,
-  });
+  const [chainId, transaction, transactionReceipt] = await Promise.all([
+    getChainId(),
+    getTransaction({ hash }),
+    getTransactionReceipt({ hash }),
+  ]);
 
   if (transactionReceipt.status === TRANSACTION_STATUS.REVERTED) {
     return null;
   }
-
-  const transaction = await publicClient.getTransaction({
-    hash: transactionHash,
-  });
 
   if (!isChainIdSupported(chainId)) {
     throw new Error(`chainId ${chainId} is unsupported…`);

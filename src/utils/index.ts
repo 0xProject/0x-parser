@@ -29,12 +29,15 @@ export async function transferLogs({
   publicClient,
   transactionReceipt,
 }: EnrichLogsArgs): Promise<EnrichedLog[]> {
+  // Extract logs from transaction receipt.
   const { logs } = transactionReceipt;
 
+  // Filter logs for the "Transfer" event signature.
   const transferLogsAddresses = logs
     .filter((log) => log.topics[0] === EVENT_SIGNATURES.Transfer)
     .map((log) => ({ ...log, address: getAddress(log.address) }));
 
+  // Prepare contract queries for symbols and decimals.
   const contracts = [
     ...transferLogsAddresses.map((log) => ({
       abi: minimalERC20Abi,
@@ -48,10 +51,15 @@ export async function transferLogs({
     })),
   ];
 
+  // Execute multicall to fetch symbols and decimals.
   const results = await publicClient.multicall({ contracts });
 
+  // There are two sets of results (symbol and decimals), each of the same length.
+  // They are concatenated, so the midpoint separates them.
   const midpoint = Math.floor(results.length / 2);
 
+  // Enrich original logs with additional data (symbol, decimals) and 
+  // format the transferred amount to a human-readable format.
   const enrichedLogs = transferLogsAddresses
     .map((log, index) => {
       const symbol = results[index].result as string;

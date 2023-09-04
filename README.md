@@ -1,6 +1,7 @@
 # 0x-parser
 
-[![npm version](https://img.shields.io/npm/v/@0x/0x-parser.svg?style=flat-square&logo=npm)](https://www.npmjs.com/package/@0x/0x-parser)
+[![npm version](https://img.shields.io/npm/v/@0x/0x-parser.svg?logo=npm)](https://www.npmjs.com/package/@0x/0x-parser)
+[![minified size](https://img.shields.io/bundlephobia/min/@0x/0x-parser)](https://bundlephobia.com/package/@0x/0x-parser)
 [![codecov](https://codecov.io/gh/0xproject/0x-parser/branch/main/graph/badge.svg?token=OnNsoc2OrF)](https://codecov.io/gh/0xproject/0x-parser)
 [![build and test](https://github.com/0xproject/0x-parser/actions/workflows/test.yml/badge.svg)](https://github.com/0xproject/0x-parser/actions/workflows/test.yml)
 [![Medium](https://img.shields.io/badge/Medium-12100E?style=for-the-badge&logo=medium&logoColor=white&style=flat-square)](https://medium.com/@henballs/0x-parser-parsing-dex-transactions-9f9a6579d489)
@@ -13,9 +14,11 @@
 
 ## Overview
 
-This library is designed for [0x integrators](https://0x.org/docs/introduction/introduction-to-0x), and it simplifies the complex task of parsing [0x transactions](https://etherscan.io/address/0xdef1c0ded9bec7f1a1670819833240f027b25eff) into a format that is both user-friendly and easy to understand. 
+This library is designed for [0x](https://0x.org/docs/introduction/introduction-to-0x) integrators, simplifying the complex task of parsing [0x transactions](https://etherscan.io/address/0xdef1c0ded9bec7f1a1670819833240f027b25eff) into a format that is both user-friendly and easy to understand. When swapping tokens, one of the challenges is that the trade can experience slippage through Automated Market Makers ([AMMs](https://0x.org/post/what-is-an-automated-market-maker-amm)). This makes the final swap amounts difficult to predict prior to executing the trade. However, this library overcomes that challenge by parsing the transaction receipt and event logs to accurately identify the final swap amounts. 
 
-One of the challenges when swapping tokens is that the trade can experience [slippage](https://0x.org/post/what-is-slippage) through [Automated Market Makers](<[AMMs](https://0x.org/post/what-is-an-automated-market-maker-amm)>) (AMMs), making the final swap amounts difficult to predict prior to executing the trade. However, this library overcomes that challenge by parsing the transaction receipt and event logs to accurately identify the final swap amounts. Try the demo [here](https://0x-parser-demo.vercel.app).
+### Demo
+
+Try out the parser in a [live code environment](https://codesandbox.io/p/sandbox/0x-parser-node-js-demo-3wpfhc?file=/index.js:13,1) directly in your browser 🌐. You can also experience it in action through the [demo UI app](https://0x-parser-demo.vercel.app), which is built with 0x-parser.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/hzhu/yo/main/react-demo.png" alt="Screenshot of demo app using 0x-parser" width="650"/>
@@ -25,7 +28,7 @@ One of the challenges when swapping tokens is that the trade can experience [sli
 
 ### Step 1: Install Peer Dependencies
 
-First, make sure you have the required peer dependency [viem](https://viem.sh/) installed. If you haven't installed it yet, you can do so with the following command:
+First, make sure you have the required peer dependency [viem](https://viem.sh) installed. If you haven't installed it yet, you can do so with the following command:
 
 ```
 npm install viem
@@ -49,23 +52,28 @@ async function main() {
     "https://raw.githubusercontent.com/0xProject/protocol/development/packages/contract-artifacts/artifacts/IZeroEx.json"
   );
 
-  const IZeroEx = await response.json();
+  const data = await response.json();
+  const exchangeProxyAbi = data.compilerOutput.abi;
 
-  const data = await parseSwap({
+  // You can pass any transaction hash from 0x Exchange Proxy:
+  // https://etherscan.io/address/0xdef1c0ded9bec7f1a1670819833240f027b25eff
+  const transactionHash = "0xd8637124d650268ae7680781809800e103a3a2bee9fec56083028fea6d98140b";
+
+  const swap = await parseSwap({
+    transactionHash,
+    exchangeProxyAbi,
     rpcUrl: "https://eth.llamarpc.com",
-    exchangeProxyAbi: IZeroEx.compilerOutput.abi,
-    transactionHash: "0xd8637124d650268ae7680781809800e103a3a2bee9fec56083028fea6d98140b",
   });
 
-  console.log(data);
+  console.log(swap); // Logs the swap details in the console.
 }
 
 main();
 ```
 
-## Examples
+## Development
 
-This repository includes examples you can execute locally. Navigate to the `/examples` directory for additional `README` information on how to run the demos locally. You can also explore a live demo of 0x-parser [here](https://0x-parser-demo.vercel.app/).
+This repository contains example code that you can run locally, which is useful for the development process. The code can be found in `/examples/web/index.html` and you can run the code by runnng `npm run web:example`.
 
 ## Contributing
 

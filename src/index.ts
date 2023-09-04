@@ -56,8 +56,8 @@ export async function parseSwap({
     : undefined;
 
   // The `to` property is null only in the case of a contract creation transaction,
-  // which never occurs in the context of the 0x-parser. Use TypeScript's
-  // non-null assertion operator to indicate that the to property will always be present.
+  // which never occurs in the context of the 0x-parser. Use TypeScript's non-null
+  // assertion operator to indicate that the `to` property will always be present.
   const to = getAddress(transaction.to!);
 
   const isToExchangeProxy = to === getAddress(exchangeProxy);

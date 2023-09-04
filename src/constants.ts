@@ -1,5 +1,3 @@
-import { SupportedChainId } from "./types";
-
 export const EVENT_SIGNATURES = {
   LimitOrderFilled:
     "0xab614d2b738543c0ea21f56347cf696a3a0c42a7cbec3212a5ca22a4dcff2124",

@@ -37,13 +37,13 @@ export async function parseSwap({
     hash: transactionHash,
   });
 
-  const transaction = await publicClient.getTransaction({
-    hash: transactionHash,
-  });
-
   if (transactionReceipt.status === TRANSACTION_STATUS.REVERTED) {
     return null;
   }
+
+  const transaction = await publicClient.getTransaction({
+    hash: transactionHash,
+  });
 
   if (!isChainIdSupported(chainId)) {
     throw new Error(`chainId ${chainId} is unsupported…`);
@@ -53,7 +53,7 @@ export async function parseSwap({
 
   const permitAndCall = isPermitAndCallChainId(chainId)
     ? PERMIT_AND_CALL_BY_CHAIN_ID[chainId]
-    : undefined;
+    : null;
 
   // The `to` property is null only in the case of a contract creation transaction,
   // which never occurs in the context of the 0x-parser. Use TypeScript's non-null
@@ -62,7 +62,7 @@ export async function parseSwap({
 
   const isToExchangeProxy = to === exchangeProxy;
 
-  const isToPermitAndCall = permitAndCall ? to === permitAndCall : false;
+  const isToPermitAndCall = to === permitAndCall;
 
   if (!isToExchangeProxy && !isToPermitAndCall) {
     return null;

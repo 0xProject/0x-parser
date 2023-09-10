@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/0xProject/0x-parser/compare/v1.0.1...v1.0.2) (2023-09-10)
+
+
+### Bug Fixes
+
+* handle permitAndCall function overload ([34d01c9](https://github.com/0xProject/0x-parser/commit/34d01c93b94b84fcb60feff29573df26afbbd80e))
+
 ## [1.0.1](https://github.com/0xProject/0x-parser/compare/v1.0.0...v1.0.1) (2023-09-04)
 
 

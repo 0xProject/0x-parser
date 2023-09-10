@@ -73,7 +73,7 @@ main();
 
 ## Development
 
-This repository contains example code that you can run locally, which is useful for the development process. The code can be found in `/examples/web/index.html` and you can run the code by runnng `npm run web:example`.
+This repository contains example code that you can run locally, which is useful for the development process. The code can be found in `/examples/web/index.html` and you can run the code by running `npm run web:example`.
 
 ## Contributing
 

@@ -2,6 +2,7 @@ import { permitAndCallAbi } from "./abi/PermitAndCall";
 import { exchangeProxyAbi } from "./abi/ExchangeProxyAbi";
 import type {
   Hex,
+  Hash,
   Chain,
   Address,
   Transport,
@@ -32,17 +33,6 @@ export interface TransformERC20Args {
   outputTokenAmount: bigint;
 }
 
-export type PermitAndCallArgs = [
-  Address,
-  Address,
-  bigint,
-  bigint,
-  number,
-  Hex,
-  Hex,
-  Hex
-];
-
 export interface EnrichedLog {
   to: Address;
   from: Address;
@@ -59,7 +49,7 @@ export interface EnrichLogsArgs {
 
 export interface ParseSwapArgs {
   rpcUrl: string;
-  transactionHash: Hex;
+  transactionHash: Hash;
   exchangeProxyAbi: typeof exchangeProxyAbi;
 }
 
@@ -85,7 +75,7 @@ export type ParserArgs = {
   publicClient: PublicClient<Transport, Chain>;
 };
 
-export type ParserFunction = (
+type ParserFunction = (
   args: ParserArgs
 ) => TokenTransaction | Promise<TokenTransaction | undefined>;
 

@@ -274,7 +274,8 @@ export async function transformERC20({
           });
       }
 
-      // 0x-parser expects decimals to be present. If you find a transaction where this is not the case, please open an issue.
+      // 0x-parser expects decimals to be present. If you find a transaction
+      // where this is not the case, please open a GitHub issue.
       const inputAmount = formatUnits(inputTokenAmount, inputDecimal!);
       const outputAmount = formatUnits(outputTokenAmount, outputDecimal!);
 

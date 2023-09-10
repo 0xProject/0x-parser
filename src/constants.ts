@@ -13,10 +13,13 @@ export const EVENT_SIGNATURES = {
     "0x0f6672f78a59ba8e5e5b5d38df3ebc67f3c792e2c9259b8d97d7f00dd78ba1b3",
 } as const;
 
-export const ERC20_FUNCTION_HASHES = {
-  symbol: "0x95d89b41",
-  decimals: "0x313ce567",
-} as const;
+export const FUNCTION_SELECTORS = {
+  permitAndCall: {
+    IERC2612: "0x34b4d153", // Canonical permit
+    IERC20PermitAllowed: "0x7f9cb4d7", // Dai permit
+    IERC20MetaTransaction: "0x9d50b5e4", // Meta Transaction permit
+  }
+} as const
 
 export const EXCHANGE_PROXY_ABI_URL =
   "https://raw.githubusercontent.com/0xProject/protocol/development/packages/contract-artifacts/artifacts/IZeroEx.json";

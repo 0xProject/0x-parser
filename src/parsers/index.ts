@@ -3,11 +3,13 @@ import {
   formatUnits,
   decodeEventLog,
   decodeFunctionData,
+  encodeFunctionData,
 } from "viem";
 import {
   CONTRACTS,
   NATIVE_ASSET,
   EVENT_SIGNATURES,
+  FUNCTION_SELECTORS,
   NATIVE_SYMBOL_BY_CHAIN_ID,
   EXCHANGE_PROXY_BY_CHAIN_ID,
 } from "../constants";
@@ -582,27 +584,47 @@ function permitAndCall({
     abi: permitAndCallAbi as unknown as PermitAndCall[],
     data: transaction.input,
   });
-  let { 7: callData } = args;
+  let callData: Hex | undefined;
 
-  if (!callData) {
-    const { 6: otherCallData } = args;
-    callData = otherCallData;
+  const encodedHexData = encodeFunctionData({
+    abi: permitAndCallAbi as any,
+    functionName: "permitAndCall",
+    args: [...args],
+  });
+
+  const functionSelector = encodedHexData.slice(0, 10);
+
+  const { IERC2612, IERC20PermitAllowed, IERC20MetaTransaction } =
+    FUNCTION_SELECTORS.permitAndCall;
+
+  switch (functionSelector) {
+    case IERC2612:
+      callData = args[7];
+      break;
+    case IERC20PermitAllowed:
+      callData = args[8];
+      break;
+    case IERC20MetaTransaction:
+      callData = args[6];
+      break;
   }
 
-  const { functionName: exchangeProxyFn } = decodeFunctionData({
-    abi: exchangeProxyAbi,
-    data: callData,
-  });
-  const parser = parsers[exchangeProxyFn];
+  if (callData) {
+    const { functionName: exchangeProxyFn } = decodeFunctionData({
+      abi: exchangeProxyAbi,
+      data: callData,
+    });
+    const parser = parsers[exchangeProxyFn];
 
-  return parser({
-    chainId,
-    callData,
-    transaction,
-    publicClient,
-    exchangeProxyAbi,
-    transactionReceipt,
-  });
+    return parser({
+      chainId,
+      callData,
+      transaction,
+      publicClient,
+      exchangeProxyAbi,
+      transactionReceipt,
+    });
+  }
 }
 
 export const parsers: Parsers = {

@@ -26,7 +26,7 @@ Try out the parser in a [live code environment](https://codesandbox.io/p/sandbox
 
 ## Installation
 
-### Step 1: Install Peer Dependencies
+### Step 1: Install Peer Dependency
 
 First, make sure you have the required peer dependency [viem](https://viem.sh) installed. If you haven't installed it yet, you can do so with the following command:
 

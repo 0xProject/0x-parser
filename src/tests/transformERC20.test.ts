@@ -213,7 +213,7 @@ it("parse a swap on Celo", async () => {
 it("parse a swap on Base", async () => {
   const data = await parseSwap({
     exchangeProxyAbi,
-    rpcUrl: "https://mainnet.base.org",
+    rpcUrl: "https://1rpc.io/base",
     transactionHash:
       "0x26ca796e654a3667957c25e7714c5d6d5de1fc845ebf98d8ee217f9f5e2c5f34",
   });

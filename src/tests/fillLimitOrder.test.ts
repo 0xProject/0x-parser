@@ -16,7 +16,7 @@ it("parses swap from fillLimitOrder", async () => {
     transactionHash:
       "0xbe734b761ccd45cc60a5b4828eb83da96405d663567a46041b049627dddf347d",
     exchangeProxyAbi,
-    rpcUrl: ETH_MAINNET_RPC,
+    rpcUrl: "https://eth.llamarpc.com",
   });
 
   expect(data).toEqual({

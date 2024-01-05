@@ -1,7 +1,7 @@
 import { it, expect } from "vitest";
 import { parseSwap } from "../index";
 import { EXCHANGE_PROXY_ABI_URL } from "../constants";
-import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
+import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi";
 
 require("dotenv").config();
 
@@ -64,7 +64,7 @@ it("throws an error if the chainId is not supported", () => {
   expect(async () => {
     await parseSwap({
       exchangeProxyAbi,
-      rpcUrl: "https://rpc.gnosis.gateway.fm",
+      rpcUrl: "https://rpc.ankr.com/gnosis",
       transactionHash:
         "0x689eaa9ad3db373b241330be646e450d5b8bb3faad7f0c3260c63b9ef6765fcb",
     });

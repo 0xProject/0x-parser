@@ -1,7 +1,7 @@
 import { it, expect } from "vitest";
 import { parseSwap } from "../index";
 import { EXCHANGE_PROXY_ABI_URL } from "../constants";
-import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
+import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi";
 
 require("dotenv").config();
 
@@ -66,7 +66,7 @@ it("throws an error if the chainId is not supported", () => {
       exchangeProxyAbi,
       rpcUrl: "https://rpc.gnosis.gateway.fm",
       transactionHash:
-        "0x689eaa9ad3db373b241330be646e450d5b8bb3faad7f0c3260c63b9ef6765fcb",
+        "0x2cd8904d385dbf4347c28062d8c20d1307202ee5e1d3aacf4b3fc067ca783a29",
     });
   }).rejects.toThrowError("chainId 100 is unsupported…");
 });

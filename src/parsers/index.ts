@@ -447,6 +447,10 @@ export async function sellToPancakeSwap({
     outputLog = logs.find((log) => log.from !== exchangeProxy);
   }
 
+  if (!logs.some((log) => log.to === from)) {
+    outputLog = logs.find((log) => log.to === exchangeProxy);
+  }
+
   if (inputLog && outputLog) {
     return extractTokenInfo(inputLog, outputLog);
   }

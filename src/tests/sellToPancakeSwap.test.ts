@@ -73,4 +73,27 @@ describe("sellToPancakeSwap", () => {
       });
     });
   });
+
+  // https://bscscan.com/tx/0xba7e86dd27ba9b14cca0c98edc5df9c753ec8ae27ace3bacb80e87cbde33f850
+  it("parses swap from sellToPancakeSwap with transfer events that transfer output amount to exchange proxy", async () => {
+    const data = await parseSwap({
+      exchangeProxyAbi,
+      rpcUrl: BSC_RPC,
+      transactionHash:
+        "0xba7e86dd27ba9b14cca0c98edc5df9c753ec8ae27ace3bacb80e87cbde33f850",
+    });
+
+    expect(data).toEqual({
+      tokenIn: {
+        symbol: "IDIA",
+        amount: "50",
+        address: "0x0b15Ddf19D47E6a86A56148fb4aFFFc6929BcB89",
+      },
+      tokenOut: {
+        symbol: "WBNB",
+        amount: "0.011285266969864419",
+        address: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      },
+    });
+  });
 });

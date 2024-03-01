@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/0xProject/0x-parser/compare/v1.0.2...v1.0.3) (2024-03-01)
+
+
+### Bug Fixes
+
+* bnb txs that do not transfer tokens to taker ([a1940e3](https://github.com/0xProject/0x-parser/commit/a1940e3d50de88d5fe7ba95fdac501ef77d09585))
+
 ## [1.0.2](https://github.com/0xProject/0x-parser/compare/v1.0.1...v1.0.2) (2023-09-10)
 
 

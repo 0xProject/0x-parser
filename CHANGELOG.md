@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/0xProject/0x-parser/compare/v1.0.3...v1.0.4) (2024-03-19)
+
+
+### Bug Fixes
+
+* use output log that has WETH for sellTokenForEthToUniswapV3 ([7660957](https://github.com/0xProject/0x-parser/commit/76609578159e64b70a9b3963041d8f7c87013364))
+
 ## [1.0.3](https://github.com/0xProject/0x-parser/compare/v1.0.2...v1.0.3) (2024-03-01)
 
 

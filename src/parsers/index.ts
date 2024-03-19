@@ -149,7 +149,7 @@ export async function sellTokenForEthToUniswapV3({
   const logs = await transferLogs({ publicClient, transactionReceipt });
   const from = getAddress(transactionReceipt.from);
   const inputLog = logs.find((log) => log.from === from);
-  const outputLog = logs.find((log) => log.from !== from);
+  const outputLog = logs.find((log) => log.address === CONTRACTS.weth);
 
   if (inputLog && outputLog) {
     outputLog.symbol = NATIVE_ASSET.symbol;

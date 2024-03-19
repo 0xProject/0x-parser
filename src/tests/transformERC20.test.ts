@@ -2,7 +2,7 @@ import { it, expect, describe } from "vitest";
 import { parseSwap } from "../index";
 import { NATIVE_ASSET } from "../constants";
 import { transformERC20 } from "../parsers";
-import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi"
+import { exchangeProxyAbi } from "../abi/ExchangeProxyAbi";
 
 require("dotenv").config();
 
@@ -166,7 +166,7 @@ describe("transformERC20 on various networks", () => {
   it("parse a swap on BNB Chain", async () => {
     const data = await parseSwap({
       exchangeProxyAbi,
-      rpcUrl: "https://bscrpc.com",
+      rpcUrl: "https://rpc.ankr.com/bsc",
       transactionHash:
         "0x789d6d51ceb6d32407c97757e4be90c12f789927453413318178bed0ebc53bc0",
     });

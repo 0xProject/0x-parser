@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/0xProject/0x-parser/compare/v1.0.4...v1.0.5) (2024-04-26)
+
+
+### deps
+
+* upgrade to viem v2 ([6a51a5f](https://github.com/0xProject/0x-parser/commit/6a51a5f3c67a8c54d5aa74dbd368ba3b32ce130b))
+
 ## [1.0.4](https://github.com/0xProject/0x-parser/compare/v1.0.3...v1.0.4) (2024-03-19)
 
 

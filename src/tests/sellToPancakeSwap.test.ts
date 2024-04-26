@@ -49,28 +49,28 @@ describe("sellToPancakeSwap", () => {
         address: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
       },
     });
+  });
 
-    // https://bscscan.com/tx/0x0f95c3d8429b498a28ee194082e7394b63a595e0b9bd96b14c4895f1bd80cd9b
-    it("parses swap from sellToPancakeSwap with transfer events that transfer zero amounts", async () => {
-      const data = await parseSwap({
-        exchangeProxyAbi,
-        rpcUrl: BSC_RPC,
-        transactionHash:
-          "0x0f95c3d8429b498a28ee194082e7394b63a595e0b9bd96b14c4895f1bd80cd9b",
-      });
+  // https://bscscan.com/tx/0x0f95c3d8429b498a28ee194082e7394b63a595e0b9bd96b14c4895f1bd80cd9b
+  it("parses swap from sellToPancakeSwap with transfer events that transfer zero amounts", async () => {
+    const data = await parseSwap({
+      exchangeProxyAbi,
+      rpcUrl: BSC_RPC,
+      transactionHash:
+        "0x0f95c3d8429b498a28ee194082e7394b63a595e0b9bd96b14c4895f1bd80cd9b",
+    });
 
-      expect(data).toEqual({
-        tokenIn: {
-          symbol: "WBNB",
-          amount: "1.599214125294091218",
-          address: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-        },
-        tokenOut: {
-          symbol: "HELLO",
-          amount: "7022.195837990335108707",
-          address: "0x0F1cBEd8EFa0E012AdbCCB1638D0aB0147D5Ac00",
-        },
-      });
+    expect(data).toEqual({
+      tokenIn: {
+        symbol: "WBNB",
+        amount: "1.599214125294091218",
+        address: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      },
+      tokenOut: {
+        symbol: "HELLO",
+        amount: "7022.195837990335108707",
+        address: "0x0F1cBEd8EFa0E012AdbCCB1638D0aB0147D5Ac00",
+      },
     });
   });
 

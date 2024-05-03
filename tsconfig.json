@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "rootDir": "./src",
     "declaration": true,
     "target": "esnext",
     "lib": ["esnext", "dom"],
@@ -13,5 +14,5 @@
     "skipLibCheck": true,
     "emitDeclarationOnly": true
   },
-  "exclude": ["dist", "examples", "node_modules"]
+  "exclude": ["dist", "examples", "node_modules", "./vite.config.ts"]
 }

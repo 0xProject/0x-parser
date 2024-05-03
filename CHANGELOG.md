@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.5](https://github.com/0xProject/0x-parser/compare/v1.0.4...v1.0.5) (2024-05-03)
+
+
+### deps
+
+* upgrade to viem v2 ([6a51a5f](https://github.com/0xProject/0x-parser/commit/6a51a5f3c67a8c54d5aa74dbd368ba3b32ce130b))
+
+
+### Bug Fixes
+
+* latest TS requires specific rootDir ([c23c805](https://github.com/0xProject/0x-parser/commit/c23c8055680d562b67954eb5eb8e4914bf0dbc4c))
+
 ## [1.0.4](https://github.com/0xProject/0x-parser/compare/v1.0.3...v1.0.4) (2024-03-19)
 
 

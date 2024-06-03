@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/0xProject/0x-parser/compare/v1.1.0...v1.1.1) (2024-06-03)
+
+
+### Miscellaneous Chores
+
+* upgrade deps ([1695559](https://github.com/0xProject/0x-parser/commit/1695559ae3d911b8d185c45dc166204fc9a45f78))
+
 ## [1.1.0](https://github.com/0xProject/0x-parser/compare/v1.0.4...v1.1.0) (2024-05-03)
 
 

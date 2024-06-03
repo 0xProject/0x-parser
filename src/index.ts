@@ -1,89 +1,140 @@
-import { http, getAddress, decodeFunctionData, createPublicClient } from "viem";
-import { mainnet } from "viem/chains";
-import { parsers } from "./parsers";
-import { permitAndCallAbi } from "./abi/PermitAndCall";
-import {
-  TRANSACTION_STATUS,
-  EXCHANGE_PROXY_ABI_URL,
-  EXCHANGE_PROXY_BY_CHAIN_ID,
-  PERMIT_AND_CALL_BY_CHAIN_ID,
-} from "./constants";
-import { isChainIdSupported, isPermitAndCallChainId } from "./utils";
-import type { ParseSwapArgs } from "./types";
+import { erc20Abi, getAddress, formatUnits } from "viem";
+import type {
+  Chain,
+  Address,
+  Transport,
+  PublicClient,
+  TransactionReceipt,
+} from "viem";
 
-export * from "./types";
+const NATIVE_TOKEN_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+
+type SupportedChainId = 1 | 8453;
+
+export const NATIVE_SYMBOL_BY_CHAIN_ID: { [key in SupportedChainId]: string } =
+  {
+    1: "ETH", // Ethereum
+    8453: "ETH", // Base
+  };
+
+export function isChainIdSupported(
+  chainId: number
+): chainId is SupportedChainId {
+  return [1, 10, 56, 137, 8453, 42161].includes(chainId);
+}
+
+export interface EnrichLogsArgs {
+  transactionReceipt: TransactionReceipt;
+  publicClient: PublicClient<Transport, Chain>;
+}
+export interface EnrichedLog {
+  to: Address;
+  from: Address;
+  symbol: string;
+  amount: string;
+  address: Address;
+  decimals: number;
+}
+
+export async function transferLogs({
+  publicClient,
+  transactionReceipt,
+}: EnrichLogsArgs): Promise<any> {
+  const EVENT_SIGNATURES = {
+    Transfer:
+      "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+  } as const;
+  const { logs } = transactionReceipt;
+  const transferLogsAddresses = logs
+    .filter((log) => log.topics[0] === EVENT_SIGNATURES.Transfer)
+    .map((log) => ({ ...log, address: getAddress(log.address) }));
+  const contracts = [
+    ...transferLogsAddresses.map((log) => ({
+      abi: erc20Abi,
+      address: log.address,
+      functionName: "symbol",
+    })),
+    ...transferLogsAddresses.map((log) => ({
+      abi: erc20Abi,
+      address: log.address,
+      functionName: "decimals",
+    })),
+  ];
+  const results = await publicClient.multicall({ contracts });
+  const midpoint = Math.floor(results.length / 2);
+  const enrichedLogs = transferLogsAddresses
+    .map((log, index) => {
+      const symbol = results[index].result as string;
+      const decimals = results[midpoint + index].result as number;
+      const amount =
+        log.data === "0x" ? "0" : formatUnits(BigInt(log.data), decimals);
+      const { address, topics } = log;
+      const { 1: fromHex, 2: toHex } = topics;
+      const from = getAddress(convertHexToAddress(fromHex));
+      const to = getAddress(convertHexToAddress(toHex));
+
+      return { to, from, symbol, amount, address, decimals };
+    })
+    .filter((log) => log.amount !== "0");
+
+  return enrichedLogs;
+}
+
+function convertHexToAddress(hexString: string): string {
+  return `0x${hexString.slice(-40)}`;
+}
 
 export async function parseSwap({
-  rpcUrl,
-  exchangeProxyAbi,
-  transactionHash: hash,
-}: ParseSwapArgs) {
-  if (!rpcUrl) throw new Error("Missing rpcUrl…");
-  if (!hash) throw new Error("Missing transaction hash…");
-  if (!exchangeProxyAbi) {
-    throw new Error(
-      `Missing 0x Exchange Proxy ABI: ${EXCHANGE_PROXY_ABI_URL}…`
-    );
-  }
-
-  const publicClient = createPublicClient({
-    chain: mainnet,
-    transport: http(rpcUrl),
-  });
-
-  const { getChainId, getTransaction, getTransactionReceipt } = publicClient;
-
-  const [chainId, transaction, transactionReceipt] = await Promise.all([
-    getChainId(),
-    getTransaction({ hash }),
-    getTransactionReceipt({ hash }),
-  ]);
-
-  if (transactionReceipt.status === TRANSACTION_STATUS.REVERTED) {
-    return null;
-  }
-
+  publicClient,
+  transactionHash,
+}: {
+  publicClient: PublicClient<Transport, Chain>;
+  transactionHash: Address;
+}) {
+  const chainId = await publicClient.getChainId();
   if (!isChainIdSupported(chainId)) {
     throw new Error(`chainId ${chainId} is unsupported…`);
   }
 
-  const exchangeProxy = EXCHANGE_PROXY_BY_CHAIN_ID[chainId];
-
-  const permitAndCall = isPermitAndCallChainId(chainId)
-    ? PERMIT_AND_CALL_BY_CHAIN_ID[chainId]
-    : null;
-
-  // The `to` property is null only in the case of a contract creation transaction,
-  // which never occurs in the context of the 0x-parser. Use TypeScript's non-null
-  // assertion operator to indicate that the `to` property will always be present.
-  const to = getAddress(transaction.to!);
-
-  const isToExchangeProxy = to === exchangeProxy;
-
-  const isToPermitAndCall = to === permitAndCall;
-
-  if (!isToExchangeProxy && !isToPermitAndCall) {
-    return null;
-  }
-
-  const { functionName } = isToExchangeProxy
-    ? decodeFunctionData({
-        abi: exchangeProxyAbi,
-        data: transaction.input,
-      })
-    : decodeFunctionData({
-        abi: permitAndCallAbi,
-        data: transaction.input,
-      });
-
-  const parser = parsers[functionName];
-
-  return parser({
-    chainId,
-    transaction,
-    publicClient,
-    exchangeProxyAbi,
-    transactionReceipt,
-    callData: transaction.input,
+  const transactionReceipt = await publicClient.getTransactionReceipt({
+    hash: transactionHash,
   });
+  const { value } = await publicClient.getTransaction({
+    hash: transactionHash,
+  });
+  const isNativeSell = value > 0n;
+  const logs = await transferLogs({
+    publicClient,
+    transactionReceipt,
+  });
+
+  const input = logs[0];
+  const output = logs[logs.length - 1];
+  if (isNativeSell) {
+    const sellAmount = formatUnits(value, 18);
+    return {
+      tokenIn: {
+        symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
+        amount: sellAmount,
+        address: NATIVE_TOKEN_ADDRESS,
+      },
+      tokenOut: {
+        symbol: output.symbol,
+        amount: output.amount,
+        address: output.address,
+      },
+    };
+  }
+  return {
+    tokenIn: {
+      symbol: input.symbol,
+      amount: input.amount,
+      address: input.address,
+    },
+    tokenOut: {
+      symbol: output.symbol,
+      amount: output.amount,
+      address: output.address,
+    },
+  };
 }

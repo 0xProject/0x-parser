@@ -14,7 +14,7 @@
 
 ## Overview
 
-This library is designed for [0x](https://0x.org/docs/introduction/introduction-to-0x) integrators, simplifying the complex task of parsing [0x transactions](https://etherscan.io/address/0xdef1c0ded9bec7f1a1670819833240f027b25eff) into a format that is both user-friendly and easy to understand. When swapping tokens, one of the challenges is that the trade can experience slippage through Automated Market Makers ([AMMs](https://0x.org/post/what-is-an-automated-market-maker-amm)). This makes the final swap amounts difficult to predict prior to executing the trade. However, this library overcomes that challenge by parsing the transaction receipt and event logs to accurately identify the final swap amounts. 
+This library is designed for [0x](https://0x.org/docs/introduction/introduction-to-0x) integrators, simplifying the complex task of parsing [0x transactions](https://etherscan.io/address/0xdef1c0ded9bec7f1a1670819833240f027b25eff) into a format that is both user-friendly and easy to understand. When swapping tokens, one of the challenges is that the trade can experience slippage through Automated Market Makers ([AMMs](https://0x.org/post/what-is-an-automated-market-maker-amm)). This makes the final swap amounts difficult to predict prior to executing the trade. However, this library overcomes that challenge by parsing the transaction receipt and event logs to accurately identify the final swap amounts.
 
 ### Demo
 
@@ -48,22 +48,8 @@ npm install @0x/0x-parser
 import { parseSwap } from "@0x/0x-parser";
 
 async function main() {
-  const response = await fetch(
-    "https://raw.githubusercontent.com/0xProject/protocol/development/packages/contract-artifacts/artifacts/IZeroEx.json"
-  );
-
-  const data = await response.json();
-  const exchangeProxyAbi = data.compilerOutput.abi;
-
-  // You can pass any transaction hash from 0x Exchange Proxy:
-  // https://etherscan.io/address/0xdef1c0ded9bec7f1a1670819833240f027b25eff
-  const transactionHash = "0xd8637124d650268ae7680781809800e103a3a2bee9fec56083028fea6d98140b";
-
-  const swap = await parseSwap({
-    transactionHash,
-    exchangeProxyAbi,
-    rpcUrl: "https://eth.llamarpc.com",
-  });
+  const transactionHash = `0x2b9a12398613887e9813594e8583f488f0e8392d8e6e0ba8d9e140065826dd00`;
+  const swap = await parseSwap({ publicClient, transactionHash });
 
   console.log(swap); // Logs the swap details in the console.
 }

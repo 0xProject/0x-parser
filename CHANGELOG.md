@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/0xProject/0x-parser/compare/v1.1.1...v1.2.0) (2024-06-19)
+
+
+### Features
+
+* introduce parseSwapV2 for Settler ([a15fcc4](https://github.com/0xProject/0x-parser/commit/a15fcc4a4d6b217d1679bc14ef5f9b84a20ba220))
+
 ## [1.1.1](https://github.com/0xProject/0x-parser/compare/v1.1.0...v1.1.1) (2024-06-03)
 
 

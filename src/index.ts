@@ -87,3 +87,8 @@ export async function parseSwap({
     callData: transaction.input,
   });
 }
+
+/**
+ * This function is specific to 0x API transactions on Settler.
+ */
+export { parseSwapV2 } from "./parseSwapV2";

@@ -183,6 +183,31 @@ test("parses swapped amounts case 6 (buy FoT token, FLOKI)", async () => {
   });
 });
 
+// Gasless RFQ
+// https://etherscan.io/tx/0x5dd4579b5709b405d6df935d516563e1db09453f37431639ae7e1358ec8f834d
+test("parses swapped amounts from tx settled by gasless rfq)", async () => {
+  const transactionHash =
+    "0x5dd4579b5709b405d6df935d516563e1db09453f37431639ae7e1358ec8f834d";
+
+  const result = await parseSwapV2({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "USDC",
+      amount: "20",
+      address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    },
+    tokenOut: {
+      symbol: "USDT",
+      amount: "11.604822",
+      address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    },
+  });
+});
+
 // https://explorer.celo.org/tx/0x615c5089f772a8f2074750e8c6070013d288af7681435aba1771f6bfc63d1286
 test("throws an error for unsupported chains)", async () => {
   const transactionHash =

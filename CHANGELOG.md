@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/0xProject/0x-parser/compare/v1.2.1...v1.2.2) (2024-07-10)
+
+
+### Bug Fixes
+
+* native transfers with SettlerMetaTxn ([1d659a6](https://github.com/0xProject/0x-parser/commit/1d659a6f01db14f409f6f8f117189d06809e1b4f))
+
 ## [1.2.1](https://github.com/0xProject/0x-parser/compare/v1.2.0...v1.2.1) (2024-07-10)
 
 

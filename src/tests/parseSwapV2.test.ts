@@ -414,6 +414,37 @@ test("parse a gasless swap on Base (USDC for DEGEN)", async () => {
   });
 });
 
+// https://basescan.org/tx/0x14416958953850c5c5a572d6e8cb832c032d0678b3ce9da6cdce891a20864b99
+test("parse a gasless swap on Base (USDC for ETH) for SettlerMetaTxn", async () => {
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0x14416958953850c5c5a572d6e8cb832c032d0678b3ce9da6cdce891a20864b99";
+
+  const result = await parseSwapV2({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "USDC",
+      amount: "21.27865",
+      address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    },
+    tokenOut: {
+      symbol: "ETH",
+      amount: "0.006847116541535933",
+      address: NATIVE_ASSET.address,
+    },
+  });
+});
+
 // https://arbiscan.io/tx/0xb2c05194e4ec9ae0f82098ec82a606df544e87c8d6b7726bbb4b1dcc023cb9d7
 test("parse a gasless swap on on Arbitrum (ARB for ETH)", async () => {
   const publicClient = createPublicClient({

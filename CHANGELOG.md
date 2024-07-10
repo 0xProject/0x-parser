@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/0xProject/0x-parser/compare/v1.2.0...v1.2.1) (2024-07-10)
+
+
+### Bug Fixes
+
+* account for native token transfer & meta transactions ([2f65804](https://github.com/0xProject/0x-parser/commit/2f65804762688c233d6960292ae33a01a82ab138))
+
 ## [1.2.0](https://github.com/0xProject/0x-parser/compare/v1.1.1...v1.2.0) (2024-06-19)
 
 

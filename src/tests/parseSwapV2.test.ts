@@ -1,17 +1,50 @@
-import { http, createPublicClient } from "viem";
-import { base, mainnet } from "viem/chains";
+import {
+  http,
+  createPublicClient,
+  type PublicClient,
+  type Transport,
+  type Chain,
+} from "viem";
+import { arbitrum, base, mainnet, polygon } from "viem/chains";
 import { test, expect } from "vitest";
 import { parseSwapV2 } from "../index";
+import { NATIVE_ASSET } from "../constants";
 
 require("dotenv").config();
 
-if (!process.env.ETH_MAINNET_RPC) {
-  throw new Error("An RPC URL required.");
+if (!process.env.ALCHEMY_API_KEY) {
+  throw new Error("An Alchemy API key is required.");
 }
 
 const publicClient = createPublicClient({
   chain: mainnet,
-  transport: http(process.env.ETH_MAINNET_RPC),
+  transport: http(
+    `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+  ),
+});
+
+// https://etherscan.io/tx/0x2fc205711fc933ef6e5bcc0bf6e6a9bfc220b2d8073aea4f41305882f485669d
+test("parses swapped amounts case 0 (default)", async () => {
+  const transactionHash =
+    "0x2fc205711fc933ef6e5bcc0bf6e6a9bfc220b2d8073aea4f41305882f485669d";
+
+  const result = await parseSwapV2({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "KAI",
+      amount: "12124969884.736401754",
+      address: "0xA045Fe936E26e1e1e1Fb27C1f2Ae3643acde0171",
+    },
+    tokenOut: {
+      symbol: "USDC",
+      amount: "340.919143",
+      address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    },
+  });
 });
 
 // https://etherscan.io/tx/0x2b9a12398613887e9813594e8583f488f0e8392d8e6e0ba8d9e140065826dd00
@@ -227,11 +260,13 @@ test("throws an error for unsupported chains)", async () => {
 });
 
 // https://basescan.org/tx/0xa09cb1606e30c3aed8a842723fd6c23cecd838a59f750ab3dbc5ef2c7486e696
-test("parse a swap on Base", async () => {
+test("parse a swap on Base (USDC for DAI)", async () => {
   const publicClient = createPublicClient({
-    chain: mainnet,
-    transport: http("https://mainnet.base.org"),
-  });
+    chain: base,
+    transport: http(
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
 
   const transactionHash =
     "0xa09cb1606e30c3aed8a842723fd6c23cecd838a59f750ab3dbc5ef2c7486e696";
@@ -251,6 +286,161 @@ test("parse a swap on Base", async () => {
       symbol: "DAI",
       amount: "17.843596331665784515",
       address: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
+    },
+  });
+});
+
+// https://basescan.org/tx/0xea8bca6e13f2c3e6c1e956308003b8d5da5fca44e03eac7ddbdcea271186ab37
+test("parse a swap on Base (DEGEN for ETH)", async () => {
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0xea8bca6e13f2c3e6c1e956308003b8d5da5fca44e03eac7ddbdcea271186ab37";
+
+  const result = await parseSwapV2({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "DEGEN",
+      amount: "3173.454530222930443426",
+      address: "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed",
+    },
+    tokenOut: {
+      symbol: "ETH",
+      amount: "0.006410046715601835",
+      address: NATIVE_ASSET.address,
+    },
+  });
+});
+
+// https://basescan.org/tx/0x9e81eee3f09b79fe1e3700fdb79bf78098b6073ec17e3524498177407ac33a00
+test("parse a swap on Base (ETH for BRETT)", async () => {
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0x9e81eee3f09b79fe1e3700fdb79bf78098b6073ec17e3524498177407ac33a00";
+
+  const result = await parseSwapV2({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "ETH",
+      amount: "0.027500863104380774",
+      address: NATIVE_ASSET.address,
+    },
+    tokenOut: {
+      symbol: "BRETT",
+      amount: "698.405912537092209301",
+      address: "0x532f27101965dd16442E59d40670FaF5eBB142E4",
+    },
+  });
+});
+
+// https://polygonscan.com/tx/0x438517b81f50858035f4b8e0870f5d797616509b5102c28814bcc378559c213d
+test("parse a gasless approval + gasless swap on Polygon (USDC for MATIC)", async () => {
+  const publicClient = createPublicClient({
+    chain: polygon,
+    transport: http(
+      `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0x438517b81f50858035f4b8e0870f5d797616509b5102c28814bcc378559c213d";
+
+  const result = await parseSwapV2({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "USDC",
+      amount: "7.79692",
+      address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    },
+    tokenOut: {
+      symbol: "MATIC",
+      amount: "15.513683571865599415",
+      address: NATIVE_ASSET.address,
+    },
+  });
+});
+
+// https://basescan.org/tx/0x40fc248824e11c11debb307a68ba04ff0f068c67de07e6817f5405e055b91c44
+test("parse a gasless swap on Base (USDC for DEGEN)", async () => {
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0x40fc248824e11c11debb307a68ba04ff0f068c67de07e6817f5405e055b91c44";
+
+  const result = await parseSwapV2({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "USDC",
+      amount: "42.001841",
+      address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    },
+    tokenOut: {
+      symbol: "DEGEN",
+      amount: "6570.195174245277347697",
+      address: "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed",
+    },
+  });
+});
+
+// https://arbiscan.io/tx/0xb2c05194e4ec9ae0f82098ec82a606df544e87c8d6b7726bbb4b1dcc023cb9d7
+test("parse a gasless swap on on Arbitrum (ARB for ETH)", async () => {
+  const publicClient = createPublicClient({
+    chain: arbitrum,
+    transport: http(
+      `https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0xb2c05194e4ec9ae0f82098ec82a606df544e87c8d6b7726bbb4b1dcc023cb9d7";
+
+  const result = await parseSwapV2({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "ARB",
+      amount: "1.337",
+      address: "0x912CE59144191C1204E64559FE8253a0e49E6548",
+    },
+    tokenOut: {
+      symbol: "ETH",
+      amount: "0.000304461782666722",
+      address: NATIVE_ASSET.address,
     },
   });
 });

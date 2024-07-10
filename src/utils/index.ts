@@ -57,7 +57,7 @@ export async function transferLogs({
   // They are concatenated, so the midpoint separates them.
   const midpoint = Math.floor(results.length / 2);
 
-  // Enrich original logs with additional data (symbol, decimals) and 
+  // Enrich original logs with additional data (symbol, decimals) and
   // format the transferred amount to a human-readable format.
   const enrichedLogs = transferLogsAddresses
     .map((log, index) => {

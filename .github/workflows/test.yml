@@ -13,6 +13,7 @@ jobs:
       - run: npm test --coverage
         env:
           ETH_MAINNET_RPC: ${{ secrets.ETH_MAINNET_RPC }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
       - uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

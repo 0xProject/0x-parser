@@ -303,11 +303,15 @@ export async function parseSwapV2({
 
     const nativeTransferAmount = extractNativeTransfer(trace, taker);
 
-    output = {
-      symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
-      amount: nativeTransferAmount,
-      address: NATIVE_TOKEN_ADDRESS,
-    };
+    if (nativeTransferAmount === "0") {
+      output = logs[logs.length - 1];
+    } else {
+      output = {
+        symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
+        amount: nativeTransferAmount,
+        address: NATIVE_TOKEN_ADDRESS,
+      };
+    }
   }
 
   if (isNativeSell) {

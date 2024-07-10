@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.3](https://github.com/0xProject/0x-parser/compare/v1.2.2...v1.2.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* erc-20 transfers for SettlerMetaTxn ([329a1fd](https://github.com/0xProject/0x-parser/commit/329a1fdf9654527cd5f10634bffc50c9e9f0b0c4))
+
 ## [1.2.2](https://github.com/0xProject/0x-parser/compare/v1.2.1...v1.2.2) (2024-07-10)
 
 

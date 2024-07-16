@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.4](https://github.com/0xProject/0x-parser/compare/v1.2.3...v1.2.4) (2024-07-16)
+
+
+### Bug Fixes
+
+* use logs if taker received found in logs ([ef27691](https://github.com/0xProject/0x-parser/commit/ef27691991fb63238e7f853ece90d10d93dd0f8f))
+
 ## [1.2.3](https://github.com/0xProject/0x-parser/compare/v1.2.2...v1.2.3) (2024-07-10)
 
 

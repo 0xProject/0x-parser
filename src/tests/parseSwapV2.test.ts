@@ -5,7 +5,7 @@ import {
   type Transport,
   type Chain,
 } from "viem";
-import { arbitrum, base, mainnet, polygon } from "viem/chains";
+import { arbitrum, base, mainnet, optimism, polygon } from "viem/chains";
 import { test, expect } from "vitest";
 import { parseSwapV2 } from "../index";
 import { NATIVE_ASSET } from "../constants";
@@ -503,6 +503,68 @@ test("parse a gasless swap on on Arbitrum (ARB for ETH)", async () => {
       symbol: "ETH",
       amount: "0.000304461782666722",
       address: NATIVE_ASSET.address,
+    },
+  });
+});
+
+// https://optimistic.etherscan.io/tx/0xdfd5180c9f84d8f7381f48550dd14df86dd704489c251a10a67bd3cfdb0ae626
+test("parse a gasless swap on Optimism (USDC for OP) for executeMetaTxn", async () => {
+  const publicClient = createPublicClient({
+    chain: optimism,
+    transport: http(
+      `https://opt-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0xdfd5180c9f84d8f7381f48550dd14df86dd704489c251a10a67bd3cfdb0ae626";
+
+  const result = await parseSwapV2({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "USDC",
+      amount: "5",
+      address: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+    },
+    tokenOut: {
+      symbol: "OP",
+      amount: "2.744026666231502743",
+      address: "0x4200000000000000000000000000000000000042",
+    },
+  });
+});
+
+// https://bscscan.com/tx/0xdda12da1e32c3320082355c985d6f2c6559169989de51e3cc83123395516c057
+test("parse a swap on BNB Chain (ETH for USDC) for execute", async () => {
+  const publicClient = createPublicClient({
+    chain: optimism,
+    transport: http(
+      `https://bnb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0xdda12da1e32c3320082355c985d6f2c6559169989de51e3cc83123395516c057";
+
+  const result = await parseSwapV2({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "ETH",
+      amount: "0.728252933682622857",
+      address: "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+    },
+    tokenOut: {
+      symbol: "USDC",
+      amount: "2260.511889276471849176",
+      address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
     },
   });
 });

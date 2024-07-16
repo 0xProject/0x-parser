@@ -135,7 +135,7 @@ function extractNativeTransfer(trace: Trace, recipient: Address) {
   function traverseCalls(calls: Trace[]) {
     calls.forEach((call) => {
       if (
-        call.to.toLowerCase() === recipient &&
+        call.to.toLowerCase() === recipient.toLowerCase() &&
         fromHex(call.value, "bigint") > 0n
       ) {
         totalTransferred = totalTransferred + fromHex(call.value, "bigint");
@@ -299,12 +299,28 @@ export async function parseSwapV2({
       data: transaction.input,
     });
 
-    const taker = args[0].recipient.toLowerCase() as Address;
+    const { 3: msgSender } = args;
 
-    const nativeTransferAmount = extractNativeTransfer(trace, taker);
+    const nativeTransferAmount = extractNativeTransfer(trace, msgSender);
 
     if (nativeTransferAmount === "0") {
       output = logs[logs.length - 1];
+      const takerReceived = logs.filter(
+        (log) => log.to.toLowerCase() === msgSender.toLowerCase()
+      );
+      if (takerReceived.length === 1) {
+        output = {
+          symbol: takerReceived[0].symbol,
+          amount: takerReceived[0].amount,
+          address: takerReceived[0].address,
+        };
+      } else {
+        // Unknown if this case actually happens. If it does, please file a bug report here: https://github.com/0xProject/0x-parser/issues/new/choose".
+        output = { symbol: "", amount: "", address: "" };
+        console.error(
+          "More than one `takerReceived` log. File a bug report here: https://github.com/0xProject/0x-parser/issues/new/choose"
+        );
+      }
     } else {
       output = {
         symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],

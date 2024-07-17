@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.5](https://github.com/0xProject/0x-parser/compare/v1.2.4...v1.2.5) (2024-07-17)
+
+
+### Bug Fixes
+
+* filter from logs from taker for initial input ([fb218e5](https://github.com/0xProject/0x-parser/commit/fb218e5e50c59ac66eef36d33167fb1c772d5211))
+
 ## [1.2.4](https://github.com/0xProject/0x-parser/compare/v1.2.3...v1.2.4) (2024-07-16)
 
 

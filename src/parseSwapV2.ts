@@ -247,7 +247,11 @@ export async function parseSwapV2({
     transactionReceipt,
   });
 
-  let input = logs[0];
+  const fromTaker = logs.filter(
+    (log) => log.from.toLowerCase() === taker.toLowerCase()
+  );
+
+  let input = fromTaker.length ? fromTaker[0] : logs[0];
 
   let output =
     nativeTransferAmount === "0"

@@ -538,6 +538,37 @@ test("parse a gasless swap on Optimism (USDC for OP) for executeMetaTxn", async 
   });
 });
 
+// https://optimistic.etherscan.io/tx/0x9abc33ffc67ff9348af9a29f109c4f27b36ee5bc80dd81ae3814e69309449a61
+test("parse a gasless swap on Optimism (USDC for OP) for execute", async () => {
+  const publicClient = createPublicClient({
+    chain: optimism,
+    transport: http(
+      `https://opt-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0x9abc33ffc67ff9348af9a29f109c4f27b36ee5bc80dd81ae3814e69309449a61";
+
+  const result = await parseSwapV2({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "USDC",
+      amount: "5",
+      address: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+    },
+    tokenOut: {
+      symbol: "OP",
+      amount: "2.73214427938472425",
+      address: "0x4200000000000000000000000000000000000042",
+    },
+  });
+});
+
 // https://bscscan.com/tx/0xdda12da1e32c3320082355c985d6f2c6559169989de51e3cc83123395516c057
 test("parse a swap on BNB Chain (ETH for USDC) for execute", async () => {
   const publicClient = createPublicClient({

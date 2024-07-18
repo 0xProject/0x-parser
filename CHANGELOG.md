@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/0xProject/0x-parser/compare/v1.2.5...v2.0.0) (2024-07-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* migrate project to 0x v2 & settler
+
+### Features
+
+* migrate project to 0x v2 & settler ([ec87786](https://github.com/0xProject/0x-parser/commit/ec877868564da53db540c0af4688dd92b4818630))
+
 ## [1.2.5](https://github.com/0xProject/0x-parser/compare/v1.2.4...v1.2.5) (2024-07-17)
 
 

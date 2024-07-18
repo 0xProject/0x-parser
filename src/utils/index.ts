@@ -1,69 +1,76 @@
-import { getAddress, formatUnits } from "viem";
-import { EVENT_SIGNATURES } from "../constants";
-import { minimalERC20Abi } from "../abi/MinimalERC20";
-import type {
-  EnrichedLog,
-  EnrichLogsArgs,
-  SupportedChainId,
-  PermitAndCallChainIds,
-} from "../types";
-
-function convertHexToAddress(hexString: string): string {
-  return `0x${hexString.slice(-40)}`;
-}
+import { fromHex, erc20Abi, getAddress, formatUnits, formatEther } from "viem";
+import type { Address } from "viem";
+import type { Trace, EnrichLogsArgs, SupportedChainId } from "../types";
 
 export function isChainIdSupported(
   chainId: number
 ): chainId is SupportedChainId {
-  return [1, 5, 10, 56, 137, 250, 8453, 42220, 43114, 42161].includes(chainId);
+  return [1, 10, 56, 137, 8453, 42161, 43114].includes(chainId);
 }
 
-export function isPermitAndCallChainId(
-  chainId: number
-): chainId is PermitAndCallChainIds {
-  return [1, 137, 8453].includes(chainId);
+export function extractNativeTransfer(trace: Trace, recipient: Address) {
+  let totalTransferred = 0n;
+
+  function traverseCalls(calls: Trace[]) {
+    calls.forEach((call) => {
+      if (
+        call.to.toLowerCase() === recipient.toLowerCase() &&
+        fromHex(call.value, "bigint") > 0n
+      ) {
+        totalTransferred = totalTransferred + fromHex(call.value, "bigint");
+      }
+      if (call.calls && call.calls.length > 0) {
+        traverseCalls(call.calls);
+      }
+    });
+  }
+
+  traverseCalls(trace.calls);
+
+  return formatEther(totalTransferred);
 }
 
 export async function transferLogs({
   publicClient,
   transactionReceipt,
-}: EnrichLogsArgs): Promise<EnrichedLog[]> {
-  // Extract logs from transaction receipt.
+}: EnrichLogsArgs): Promise<
+  {
+    to: `0x${string}`;
+    from: `0x${string}`;
+    symbol: string;
+    amount: string;
+    address: `0x${string}`;
+    decimals: number;
+  }[]
+> {
+  const EVENT_SIGNATURES = {
+    Transfer:
+      "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+  } as const;
   const { logs } = transactionReceipt;
-
-  // Filter logs for the "Transfer" event signature.
   const transferLogsAddresses = logs
     .filter((log) => log.topics[0] === EVENT_SIGNATURES.Transfer)
     .map((log) => ({ ...log, address: getAddress(log.address) }));
-
-  // Prepare contract queries for symbols and decimals.
   const contracts = [
     ...transferLogsAddresses.map((log) => ({
-      abi: minimalERC20Abi,
+      abi: erc20Abi,
       address: log.address,
       functionName: "symbol",
     })),
     ...transferLogsAddresses.map((log) => ({
-      abi: minimalERC20Abi,
+      abi: erc20Abi,
       address: log.address,
       functionName: "decimals",
     })),
   ];
-
-  // Execute multicall to fetch symbols and decimals.
   const results = await publicClient.multicall({ contracts });
-
-  // There are two sets of results (symbol and decimals), each of the same length.
-  // They are concatenated, so the midpoint separates them.
   const midpoint = Math.floor(results.length / 2);
-
-  // Enrich original logs with additional data (symbol, decimals) and
-  // format the transferred amount to a human-readable format.
   const enrichedLogs = transferLogsAddresses
     .map((log, index) => {
       const symbol = results[index].result as string;
       const decimals = results[midpoint + index].result as number;
-      const amount = formatUnits(BigInt(log.data), decimals);
+      const amount =
+        log.data === "0x" ? "0" : formatUnits(BigInt(log.data), decimals);
       const { address, topics } = log;
       const { 1: fromHex, 2: toHex } = topics;
       const from = getAddress(convertHexToAddress(fromHex));
@@ -76,20 +83,6 @@ export async function transferLogs({
   return enrichedLogs;
 }
 
-export function extractTokenInfo(
-  inputLog: EnrichedLog,
-  outputLog: EnrichedLog
-) {
-  return {
-    tokenIn: {
-      symbol: inputLog.symbol,
-      amount: inputLog.amount,
-      address: getAddress(inputLog.address),
-    },
-    tokenOut: {
-      symbol: outputLog.symbol,
-      amount: outputLog.amount,
-      address: getAddress(outputLog.address),
-    },
-  };
+function convertHexToAddress(hexString: string): string {
+  return `0x${hexString.slice(-40)}`;
 }

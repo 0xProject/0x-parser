@@ -8,10 +8,11 @@
     "swap",
     "erc-20",
     "events",
+    "settler",
     "ethereum",
+    "aggregator",
     "0x protocol",
-    "transactions",
-    "exchange proxy"
+    "transactions"
   ],
   "author": "henryzhu.eth",
   "license": "MIT",
@@ -48,16 +49,16 @@
     "test": "vitest --coverage"
   },
   "peerDependencies": {
-    "viem": "^2.13.3"
+    "viem": "^2.17.5"
   },
   "devDependencies": {
-    "@types/node": "^20.14.0",
-    "@vitest/coverage-v8": "^1.6.0",
-    "abitype": "^1.0.2",
+    "@types/node": "^20.14.11",
+    "@vitest/coverage-v8": "^2.0.3",
+    "abitype": "^1.0.5",
     "dotenv": "^16.4.5",
-    "esbuild": "^0.21.4",
+    "esbuild": "^0.23.0",
     "http-server": "^14.1.1",
-    "typescript": "^5.4.5",
-    "vitest": "^1.6.0"
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.3"
   }
 }

@@ -8,13 +8,13 @@
 
 ## Blockchain Support
 
-| <img alt="arbitrum" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/arbitrum/info/logo.png" width="23"/> | <img alt="avalanche" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/avalanchec/info/logo.png" width="20"/> | <img alt="base" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/base/info/logo.png" width="20"/> | <img alt="bnb chain" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/binance/info/logo.png" width="21"/> | <img alt="celo" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/celo/info/logo.png" width="20"/> | <img alt="ethereum" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/ethereum/info/logo.png" width="21"/> | <img alt="fantom" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/fantom/info/logo.png" width="22"/> | <img alt="optimism" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/optimism/info/logo.png" width="22"/> | <img alt="polygon" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/polygon/info/logo.png" width="22"/> |
-| :----------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------: |
-|                                                               Arbitrum                                                               |                                                                Avalanche                                                                |                                                             Base                                                             |                                                              BNB Chain                                                               |                                                             Celo                                                             |                                                               Ethereum                                                               |                                                              Fantom                                                              |                                                               Optimism                                                               |                                                              Polygon                                                               |
+| <img alt="arbitrum" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/arbitrum/info/logo.png" width="23"/> | <img alt="avalanche" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/avalanchec/info/logo.png" width="20"/> | <img alt="base" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/base/info/logo.png" width="20"/> | <img alt="bnb chain" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/binance/info/logo.png" width="21"/> | <img alt="ethereum" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/ethereum/info/logo.png" width="21"/> | <img alt="optimism" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/optimism/info/logo.png" width="22"/> | <img alt="polygon" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/polygon/info/logo.png" width="22"/> |
+| :----------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------: |
+|                                                               Arbitrum                                                               |                                                                Avalanche                                                                |                                                             Base                                                             |                                                              BNB Chain                                                               |                                                               Ethereum                                                               |                                                               Optimism                                                               |                                                              Polygon                                                               |
 
 ## Overview
 
-This library is designed for [0x](https://0x.org/docs/introduction/introduction-to-0x) integrators, simplifying the complex task of parsing [0x transactions](https://etherscan.io/address/0xdef1c0ded9bec7f1a1670819833240f027b25eff) into a format that is both user-friendly and easy to understand. When swapping tokens, one of the challenges is that the trade can experience slippage through Automated Market Makers ([AMMs](https://0x.org/post/what-is-an-automated-market-maker-amm)). This makes the final swap amounts difficult to predict prior to executing the trade. However, this library overcomes that challenge by parsing the transaction receipt and event logs to accurately identify the final swap amounts. 
+This library is designed for [0x](https://0x.org/docs/introduction/introduction-to-0x) integrators, simplifying the complex task of parsing [0x transactions](https://0x.org/docs/next/introduction/introduction-to-0x#the-0x-ecosystem) into a format that is both user-friendly and easy to understand. When swapping tokens, one of the challenges is that the trade can experience slippage through Automated Market Makers ([AMMs](https://0x.org/post/what-is-an-automated-market-maker-amm)). This makes the final swap amounts difficult to predict prior to executing the trade. However, this library overcomes that challenge by parsing the transaction receipt and event logs to accurately identify the final swap amounts.
 
 ### Demo
 
@@ -46,26 +46,24 @@ npm install @0x/0x-parser
 
 ```typescript
 import { parseSwap } from "@0x/0x-parser";
+import { createPublicClient } from "viem";
 
 async function main() {
-  const response = await fetch(
-    "https://raw.githubusercontent.com/0xProject/protocol/development/packages/contract-artifacts/artifacts/IZeroEx.json"
-  );
+  const RPC_URL = `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`;
 
-  const data = await response.json();
-  const exchangeProxyAbi = data.compilerOutput.abi;
+  // You can pass any transaction hash that you got after submitted a 0x transaction:
+  // https://etherscan.io/address/0x2fc205711fc933ef6e5bcc0bf6e6a9bfc220b2d8073aea4f41305882f485669d
+  const transactionHash =
+    "0x2fc205711fc933ef6e5bcc0bf6e6a9bfc220b2d8073aea4f41305882f485669d";
 
-  // You can pass any transaction hash from 0x Exchange Proxy:
-  // https://etherscan.io/address/0xdef1c0ded9bec7f1a1670819833240f027b25eff
-  const transactionHash = "0xd8637124d650268ae7680781809800e103a3a2bee9fec56083028fea6d98140b";
-
-  const swap = await parseSwap({
-    transactionHash,
-    exchangeProxyAbi,
-    rpcUrl: "https://eth.llamarpc.com",
+  const publicClient = createPublicClient({
+    chain: mainnet,
+    transport: http(RPC_URL),
   });
 
-  console.log(swap); // Logs the swap details in the console.
+  const swap = await parseSwap({ publicClient, transactionHash });
+
+  console.log(swap); // Logs the swap details.
 }
 
 main();

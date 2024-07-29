@@ -2,50 +2,46 @@
 <html>
   <head>
     <title>0x-parser</title>
-    <link href="./favicon.png" rel="shortcut icon" type="image/x-icon">
+    <link href="./favicon.png" rel="shortcut icon" type="image/x-icon" />
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script type="module">
       import { parseSwap } from "./index.esm.js";
-      window.parseSwap = parseSwap;
-    </script>
-    <script type="text/babel">
-      const rpcUrls = {
-        arbitrum: "https://1rpc.io/arb",
-        avalanche: "https://api.avax.network/ext/bc/C/rpc",
-        base: "https://mainnet.base.org",
-        bsc: "https://bscrpc.com",
-        celo: "https://rpc.ankr.com/celo",
-        ethereum: "https://eth.llamarpc.com",
-        fantom: "https://rpc.ftm.tools",
-        optimism: "https://mainnet.optimism.io",
-        polygon: "https://polygon-rpc.com",
-      };
+      import { http, createPublicClient } from "https://esm.sh/viem";
+      import { base } from "https://esm.sh/viem@2.18.2/chains";
 
-      // Try other transaction hashes from 0x Exchange Proxy
-      // See Exchange Proxy: https://etherscan.io/address/0xdef1c0ded9bec7f1a1670819833240f027b25eff
-      const transactionHash = "0xc772258418e5d73bcf891ef341a42c0d74d8f84beda7f9e8580eacc0d62ba3c7";
+      const transactionHash = `0xa09cb1606e30c3aed8a842723fd6c23cecd838a59f750ab3dbc5ef2c7486e696`;
+
+      const publicClient = createPublicClient({
+        chain: base,
+        transport: http("https://base-mainnet.gateway.tatum.io"), // RPC must support debug_traceTransaction
+      });
 
       async function example() {
-        const abiUrl = "https://raw.githubusercontent.com/0xProject/protocol/development/packages/contract-artifacts/artifacts/IZeroEx.json";
-        const response = await fetch(abiUrl);
-        const IZeroEx = await response.json();
         const data = await parseSwap({
+          publicClient,
           transactionHash,
-          rpcUrl: rpcUrls.ethereum,
-          exchangeProxyAbi: IZeroEx.compilerOutput.abi,
         });
         console.log(JSON.stringify(data, null, 4));
       }
+
       example();
     </script>
   </head>
-  <body style="font-family: monospace; font-size: 20px; padding: 0 24px; background: #222; color: #fff;">
+  <body
+    style="
+      font-family: monospace;
+      font-size: 20px;
+      padding: 0 24px;
+      background: #222;
+      color: #fff;
+    "
+  >
     <h1>0x-parser</h1>
     <p>Open the JavaScript console to see the parsed swap data.</p>
     <p>
       For more info, see the blog post
       <a
-        style="font-weight: semi-bold; font-size: 24px; color: goldenrod;"
+        style="font-weight: semi-bold; font-size: 24px; color: goldenrod"
         href="https://medium.com/@henballs/0x-parser-parsing-dex-transactions-9f9a6579d489"
         >0x-parser: Parsing DEX Transactions</a
       >.

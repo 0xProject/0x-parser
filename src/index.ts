@@ -173,6 +173,12 @@ export async function parseSwap({
     };
   }
 
+  if (!output && input.from) {
+    output = logs.find(
+      (log) => log.to.toLowerCase() === input.from.toLowerCase()
+    );
+  }
+
   /* v8 ignore start */
   if (!output) {
     console.error(

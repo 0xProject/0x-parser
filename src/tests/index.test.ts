@@ -259,6 +259,37 @@ test("throws an error for unsupported chains)", async () => {
   }).rejects.toThrowError("chainId 42220 is unsupported…");
 });
 
+// https://basescan.org/tx/0x314ea35ef3120934ee4714f4815dc3b08dc2ab0e32e0662bfba3cdbcff14d79b
+test("parse a gasless swap on Base (DAI for USDC)", async () => {
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0x314ea35ef3120934ee4714f4815dc3b08dc2ab0e32e0662bfba3cdbcff14d79b";
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "DAI",
+      amount: "1.998484821908329022",
+      address: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
+    },
+    tokenOut: {
+      symbol: "USDC",
+      amount: "1.982641",
+      address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    },
+  });
+});
+
 // https://basescan.org/tx/0xa09cb1606e30c3aed8a842723fd6c23cecd838a59f750ab3dbc5ef2c7486e696
 test("parse a swap on Base (USDC for DAI)", async () => {
   const publicClient = createPublicClient({

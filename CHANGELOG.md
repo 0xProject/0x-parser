@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/0xProject/0x-parser/compare/v2.0.0...v2.0.1) (2024-07-31)
+
+
+### Bug Fixes
+
+* parse latest executeMetaTxn from base ([f6a825c](https://github.com/0xProject/0x-parser/commit/f6a825c79a0f47efcf85209a2ba8c4673caa9b36))
+
 ## [2.0.0](https://github.com/0xProject/0x-parser/compare/v1.2.5...v2.0.0) (2024-07-18)
 
 

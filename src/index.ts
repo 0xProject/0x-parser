@@ -8,9 +8,9 @@ import {
 import {
   SETTLER_ABI,
   MULTICALL3_ADDRESS,
+  FUNCTION_SELECTORS,
   NATIVE_TOKEN_ADDRESS,
   NATIVE_SYMBOL_BY_CHAIN_ID,
-  SETTLER_META_TXN_BY_CHAIN_ID,
 } from "./constants";
 import {
   transferLogs,
@@ -106,10 +106,7 @@ export async function parseSwap({
     }
   }
 
-  const isSettlerMetaTxn =
-    to?.toLowerCase() === SETTLER_META_TXN_BY_CHAIN_ID[chainId].toLowerCase();
-
-  if (isSettlerMetaTxn) {
+  if (transaction.input.startsWith(FUNCTION_SELECTORS.EXECUTE_META_TXN)) {
     const { args } = decodeFunctionData<any[]>({
       abi: SETTLER_ABI,
       data: transaction.input,
@@ -171,12 +168,6 @@ export async function parseSwap({
       },
       tokenOut,
     };
-  }
-
-  if (!output && input.from) {
-    output = logs.find(
-      (log) => log.to.toLowerCase() === input.from.toLowerCase()
-    );
   }
 
   /* v8 ignore start */

@@ -476,6 +476,37 @@ test("parse a gasless swap on Base (USDC for ETH) for SettlerMetaTxn", async () 
   });
 });
 
+// https://basescan.org/tx/0x29b3f7bcd154e20e050793aa62d90309a860296aa846fd1158dc21356d1a3deb
+test("parse a gasless swap on Base (weirdo for ETH) for SettlerMetaTxn", async () => {
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0x29b3f7bcd154e20e050793aa62d90309a860296aa846fd1158dc21356d1a3deb";
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "weirdo",
+      amount: "3145398.30971883",
+      address: "0x76734B57dFe834F102fB61E1eBF844Adf8DD931e",
+    },
+    tokenOut: {
+      symbol: "ETH",
+      amount: "0.039633073597929391",
+      address: NATIVE_ETH_ADDRESS,
+    },
+  });
+});
+
 // https://basescan.org/tx/0xe595dec22a7e2c2c5bdb0c1a7e59b2302ede72e5d2210c6cd7071222ea6dc2b2
 test("parse a gasless swap on Base (DEGEN for USDC) for SettlerMetaTxn", async () => {
   const publicClient = createPublicClient({

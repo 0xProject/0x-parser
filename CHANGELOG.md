@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/0xProject/0x-parser/compare/v2.0.1...v2.0.2) (2024-08-11)
+
+
+### Bug Fixes
+
+* remove hardcoded settler meta txn contract ([70893de](https://github.com/0xProject/0x-parser/commit/70893de6c03e3041655bacf4cc75fa3750737e8c))
+
 ## [2.0.1](https://github.com/0xProject/0x-parser/compare/v2.0.0...v2.0.1) (2024-07-31)
 
 

@@ -1,5 +1,5 @@
 import { fromHex, erc20Abi, getAddress, formatUnits, formatEther } from "viem";
-import type { Address } from "viem";
+import type { Address, TransactionReceipt } from "viem";
 import type { Trace, EnrichLogsArgs, SupportedChainId } from "../types";
 
 export function isChainIdSupported(
@@ -30,7 +30,27 @@ export function extractNativeTransfer(trace: Trace, recipient: Address) {
   return formatEther(totalTransferred);
 }
 
-export async function transferLogs({
+export function getTransferLogs({
+  transactionReceipt,
+}: {
+  transactionReceipt: TransactionReceipt;
+}) {
+  const EVENT_SIGNATURES = {
+    Transfer:
+      "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+  } as const;
+  const { logs } = transactionReceipt;
+
+  return logs
+    .filter((log) => log.topics[0] === EVENT_SIGNATURES.Transfer)
+    .map((log) => ({
+      ...log,
+      data: log.data === "0x" ? 0n : BigInt(log.data),
+      address: getAddress(log.address),
+    }));
+}
+
+export async function transferLogsPretty({
   publicClient,
   transactionReceipt,
 }: EnrichLogsArgs): Promise<
@@ -38,19 +58,15 @@ export async function transferLogs({
     to: `0x${string}`;
     from: `0x${string}`;
     symbol: string;
-    amount: string;
+    amount: bigint;
     address: `0x${string}`;
     decimals: number;
   }[]
 > {
-  const EVENT_SIGNATURES = {
-    Transfer:
-      "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
-  } as const;
-  const { logs } = transactionReceipt;
-  const transferLogsAddresses = logs
-    .filter((log) => log.topics[0] === EVENT_SIGNATURES.Transfer)
-    .map((log) => ({ ...log, address: getAddress(log.address) }));
+  const transferLogsAddresses = getTransferLogs({
+    transactionReceipt,
+  });
+
   const contracts = [
     ...transferLogsAddresses.map((log) => ({
       abi: erc20Abi,

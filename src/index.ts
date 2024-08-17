@@ -11,21 +11,26 @@ import {
   FUNCTION_SELECTORS,
   NATIVE_TOKEN_ADDRESS,
   NATIVE_SYMBOL_BY_CHAIN_ID,
+  ERC_4337_ABI,
 } from "./constants";
 import {
-  transferLogs,
+  transferLogsPretty,
   isChainIdSupported,
   extractNativeTransfer,
+  getTransferLogs,
 } from "./utils";
 import type { Hash, Chain, Address, Transport, PublicClient } from "viem";
 import type { TraceTransactionSchema } from "./types";
+import { writeFile } from "fs";
 
 export async function parseSwap({
   publicClient,
   transactionHash: hash,
+  smartContractWalletAddress,
 }: {
   publicClient: PublicClient<Transport, Chain>;
   transactionHash: Address;
+  smartContractWalletAddress?: Address;
 }) {
   const chainId = await publicClient.getChainId();
 
@@ -42,11 +47,15 @@ export async function parseSwap({
     },
   }));
 
+  const ERC_4337_ENTRY_POINT = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
+
   const trace = await client.traceCall({ hash });
 
   const transaction = await publicClient.getTransaction({ hash });
 
   const { from: taker, value, to } = transaction;
+
+  const isToERC4337 = to === ERC_4337_ENTRY_POINT.toLowerCase();
 
   const nativeTransferAmount = extractNativeTransfer(trace, taker);
 
@@ -54,10 +63,37 @@ export async function parseSwap({
 
   const isNativeSell = value > 0n;
 
-  const logs = await transferLogs({
+  const logs = await transferLogsPretty({
     publicClient,
     transactionReceipt,
   });
+
+  console.log(logs);
+
+  // writeFile("./test.js", JSON.stringify(trace), (err: any) => {
+  //   if (err) {
+  //     console.error(err);
+  //   } else {
+  //     // file written successfully
+  //     console.log("yayz");
+  //   }
+  // });
+
+  // console.log(logs);
+
+  // if (isToERC4337) {
+  //   if (!smartContractWalletAddress) {
+  //     throw new Error('This is an ERC-4337 transaction. You must include a smartContractWalletAddress which is the address that initiated the transaction.')
+  //   }
+  //
+  //   return {
+  //     // handle erc20 via logs
+  //
+  //     // handle native tokens via traces
+  //   }
+  // }
+
+  // console.log(logs, "<--logs");
 
   const fromTaker = logs.filter(
     (log) => log.from.toLowerCase() === taker.toLowerCase()

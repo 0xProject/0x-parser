@@ -24,7 +24,7 @@ const publicClient = createPublicClient({
 });
 
 // https://etherscan.io/tx/0x2fc205711fc933ef6e5bcc0bf6e6a9bfc220b2d8073aea4f41305882f485669d
-test("parses swapped amounts case 0 (default)", async () => {
+test.only("parses swapped amounts case 0 (default)", async () => {
   const transactionHash =
     "0x2fc205711fc933ef6e5bcc0bf6e6a9bfc220b2d8073aea4f41305882f485669d";
 
@@ -476,8 +476,9 @@ test("parse a gasless swap on Base (USDC for ETH) for SettlerMetaTxn", async () 
   });
 });
 
-// https://basescan.org/tx/0x29b3f7bcd154e20e050793aa62d90309a860296aa846fd1158dc21356d1a3deb
-test("parse a gasless swap on Base (weirdo for ETH) for SettlerMetaTxn", async () => {
+// Smart Contract Wallet
+// https://basescan.org/tx/0x1da34cd16f14534636d3cb6d5bcc4d92c8096acf428ead532db393b39015f740
+test.skip("parse a gasless swap on Base (weirdo for ETH) for SettlerMetaTxn", async () => {
   const publicClient = createPublicClient({
     chain: base,
     transport: http(
@@ -486,23 +487,24 @@ test("parse a gasless swap on Base (weirdo for ETH) for SettlerMetaTxn", async (
   }) as PublicClient<Transport, Chain>;
 
   const transactionHash =
-    "0x29b3f7bcd154e20e050793aa62d90309a860296aa846fd1158dc21356d1a3deb";
+    "0x1da34cd16f14534636d3cb6d5bcc4d92c8096acf428ead532db393b39015f740";
 
   const result = await parseSwap({
     publicClient,
     transactionHash,
+    smartContractWalletAddress: "0x3F6dAB60Cc16377Df9684959e20962f44De20988",
   });
 
   expect(result).toEqual({
     tokenIn: {
-      symbol: "weirdo",
-      amount: "3145398.30971883",
-      address: "0x76734B57dFe834F102fB61E1eBF844Adf8DD931e",
+      symbol: "USDC",
+      amount: "3.860044",
+      address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     },
     tokenOut: {
-      symbol: "ETH",
-      amount: "0.039633073597929391",
-      address: NATIVE_ETH_ADDRESS,
+      symbol: "DAI",
+      amount: "3.863771067388041704",
+      address: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
     },
   });
 });

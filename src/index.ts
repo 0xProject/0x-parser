@@ -16,6 +16,7 @@ import {
   transferLogs,
   isChainIdSupported,
   extractNativeTransfer,
+  extractNativeTransfer2,
 } from "./utils";
 import type { Hash, Chain, Address, Transport, PublicClient } from "viem";
 import type { TraceTransactionSchema } from "./types";
@@ -23,9 +24,11 @@ import type { TraceTransactionSchema } from "./types";
 export async function parseSwap({
   publicClient,
   transactionHash: hash,
+  smartContractWalletAddress,
 }: {
   publicClient: PublicClient<Transport, Chain>;
   transactionHash: Address;
+  smartContractWalletAddress?: Address;
 }) {
   const chainId = await publicClient.getChainId();
 
@@ -42,11 +45,15 @@ export async function parseSwap({
     },
   }));
 
+  const ERC_4337_ENTRY_POINT = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
+
   const trace = await client.traceCall({ hash });
 
   const transaction = await publicClient.getTransaction({ hash });
 
   const { from: taker, value, to } = transaction;
+
+  const isToERC4337 = to === ERC_4337_ENTRY_POINT.toLowerCase();
 
   const nativeTransferAmount = extractNativeTransfer(trace, taker);
 
@@ -58,6 +65,86 @@ export async function parseSwap({
     publicClient,
     transactionReceipt,
   });
+
+  if (isToERC4337) {
+    if (!smartContractWalletAddress) {
+      throw new Error(
+        "This is an ERC-4337 transaction. You must provide a smart contract wallet address to 0x-parser."
+      );
+    }
+
+    const transfersFromSmartContractWallet = logs.reduce((acc, curr) => {
+      if (curr.to === smartContractWalletAddress) {
+        return {
+          ...acc,
+          output: curr,
+        };
+      }
+
+      if (curr.from === smartContractWalletAddress) {
+        return {
+          ...acc,
+          input: curr,
+        };
+      }
+
+      return acc;
+    }, {});
+
+    let { input, output } = transfersFromSmartContractWallet as any;
+
+    const nativeTransferAmount = extractNativeTransfer(
+      trace,
+      smartContractWalletAddress
+    );
+
+    const nativeTransferAmount2 = extractNativeTransfer2(
+      trace,
+      smartContractWalletAddress
+    );
+
+    if (!output && nativeTransferAmount !== "0") {
+      return {
+        tokenIn: {
+          address: input.address,
+          amount: input.amount,
+          symbol: input.symbol,
+        },
+        tokenOut: {
+          address: NATIVE_TOKEN_ADDRESS,
+          amount: nativeTransferAmount,
+          symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
+        },
+      };
+    } else if (!input && nativeTransferAmount2 !== "0") {
+      const inputLog = logs.filter((log) => log.symbol === "WETH")[0];
+      return {
+        tokenIn: {
+          address: NATIVE_TOKEN_ADDRESS,
+          amount: inputLog?.amount,
+          symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
+        },
+        tokenOut: {
+          address: output.address,
+          amount: output.amount,
+          symbol: output.symbol,
+        },
+      };
+    } else {
+      return {
+        tokenIn: {
+          address: input.address,
+          amount: input.amount,
+          symbol: input.symbol,
+        },
+        tokenOut: {
+          address: output.address,
+          amount: output.amount,
+          symbol: output.symbol,
+        },
+      };
+    }
+  }
 
   const fromTaker = logs.filter(
     (log) => log.from.toLowerCase() === taker.toLowerCase()

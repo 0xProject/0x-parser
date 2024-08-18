@@ -8,7 +8,7 @@ import {
 import { arbitrum, base, mainnet, optimism, polygon } from "viem/chains";
 import { test, expect } from "vitest";
 import { parseSwap } from "../index";
-import { NATIVE_ETH_ADDRESS } from "../constants";
+import { NATIVE_TOKEN_ADDRESS } from "../constants";
 
 require("dotenv").config();
 
@@ -347,7 +347,7 @@ test("parse a swap on Base (DEGEN for ETH)", async () => {
     tokenOut: {
       symbol: "ETH",
       amount: "0.006410046715601835",
-      address: NATIVE_ETH_ADDRESS,
+      address: NATIVE_TOKEN_ADDRESS,
     },
   });
 });
@@ -373,7 +373,7 @@ test("parse a swap on Base (ETH for BRETT)", async () => {
     tokenIn: {
       symbol: "ETH",
       amount: "0.027500863104380774",
-      address: NATIVE_ETH_ADDRESS,
+      address: NATIVE_TOKEN_ADDRESS,
     },
     tokenOut: {
       symbol: "BRETT",
@@ -409,7 +409,7 @@ test("parse a gasless approval + gasless swap on Polygon (USDC for MATIC)", asyn
     tokenOut: {
       symbol: "MATIC",
       amount: "15.513683571865599415",
-      address: NATIVE_ETH_ADDRESS,
+      address: NATIVE_TOKEN_ADDRESS,
     },
   });
 });
@@ -471,7 +471,7 @@ test("parse a gasless swap on Base (USDC for ETH) for SettlerMetaTxn", async () 
     tokenOut: {
       symbol: "ETH",
       amount: "0.006847116541535933",
-      address: NATIVE_ETH_ADDRESS,
+      address: NATIVE_TOKEN_ADDRESS,
     },
   });
 });
@@ -502,7 +502,7 @@ test("parse a gasless swap on Base (weirdo for ETH) for SettlerMetaTxn", async (
     tokenOut: {
       symbol: "ETH",
       amount: "0.039633073597929391",
-      address: NATIVE_ETH_ADDRESS,
+      address: NATIVE_TOKEN_ADDRESS,
     },
   });
 });
@@ -564,7 +564,7 @@ test("parse a gasless swap on on Arbitrum (ARB for ETH)", async () => {
     tokenOut: {
       symbol: "ETH",
       amount: "0.000304461782666722",
-      address: NATIVE_ETH_ADDRESS,
+      address: NATIVE_TOKEN_ADDRESS,
     },
   });
 });
@@ -658,6 +658,244 @@ test("parse a swap on BNB Chain (ETH for USDC) for execute", async () => {
       symbol: "USDC",
       amount: "2260.511889276471849176",
       address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+    },
+  });
+});
+
+test("throws when smart contract wallet is not passed", async () => {
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0x756289cdedd4c007268ef208fe2758a9fb6efd49fb241397b67089512b497662";
+
+  expect(async () => {
+    await parseSwap({
+      publicClient,
+      transactionHash,
+    });
+  }).rejects.toThrowError(
+    "This is an ERC-4337 transaction. You must provide a smart contract wallet address to 0x-parser."
+  );
+});
+
+// https://basescan.org/tx/0x756289cdedd4c007268ef208fe2758a9fb6efd49fb241397b67089512b497662
+test("parse a swap on Base (DEGEN for BRETT) with smart contract wallet", async () => {
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0x756289cdedd4c007268ef208fe2758a9fb6efd49fb241397b67089512b497662`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+    smartContractWallet: "0x3F6dAB60Cc16377Df9684959e20962f44De20988",
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "DEGEN",
+      amount: "882.414233540058884907",
+      address: "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed",
+    },
+    tokenOut: {
+      symbol: "BRETT",
+      amount: "48.014669721245576995",
+      address: "0x532f27101965dd16442E59d40670FaF5eBB142E4",
+    },
+  });
+});
+
+// https://basescan.org/tx/0xaa09479aafdb1a33815fb3842c350ccedf5e3f9eaec31b8cba1f41eea674a8f3
+test("parse a swap on Base (BRETT for ETH) with smart contract wallet", async () => {
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0xaa09479aafdb1a33815fb3842c350ccedf5e3f9eaec31b8cba1f41eea674a8f3`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+    smartContractWallet: "0x3F6dAB60Cc16377Df9684959e20962f44De20988",
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "BRETT",
+      amount: "48.014669721245576995",
+      address: "0x532f27101965dd16442E59d40670FaF5eBB142E4",
+    },
+    tokenOut: {
+      symbol: "ETH",
+      amount: "0.001482901054900327",
+      address: NATIVE_TOKEN_ADDRESS,
+    },
+  });
+});
+
+// https://basescan.org/tx/0xe289a22987dcedfacb13584211c1d723ef5c42ea6e0dfd5c4d3271d20dec9ddc
+test("parse a swap on Base (ETH for USDC) with smart contract wallet", async () => {
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0xe289a22987dcedfacb13584211c1d723ef5c42ea6e0dfd5c4d3271d20dec9ddc`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+    smartContractWallet: "0x3F6dAB60Cc16377Df9684959e20962f44De20988",
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "ETH",
+      amount: "0.001",
+      address: NATIVE_TOKEN_ADDRESS,
+    },
+    tokenOut: {
+      symbol: "USDC",
+      amount: "2.600807",
+      address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    },
+  });
+});
+
+// https://polygonscan.com/tx/0xc624eb3ea779d1645571b5a538683eee1fb1bd9afdb1d0cb470de2b8755353a9
+test("parse a swap on Polygon (MATIC for USDC) with smart contract wallet", async () => {
+  const publicClient = createPublicClient({
+    chain: polygon,
+    transport: http(
+      `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0xc624eb3ea779d1645571b5a538683eee1fb1bd9afdb1d0cb470de2b8755353a9`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+    smartContractWallet: "0x3F6dAB60Cc16377Df9684959e20962f44De20988",
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "MATIC",
+      amount: "5",
+      address: NATIVE_TOKEN_ADDRESS,
+    },
+    tokenOut: {
+      symbol: "USDC",
+      amount: "2.04366",
+      address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    },
+  });
+});
+
+// https://polygonscan.com/tx/0x6ec07b99b37695a60915b3886476a86efdd4c60420ddcd158efd62f9c3fba074
+test("parse a swap on Polygon (USDC for WMATIC) with smart contract wallet", async () => {
+  const publicClient = createPublicClient({
+    chain: polygon,
+    transport: http(
+      `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0x6ec07b99b37695a60915b3886476a86efdd4c60420ddcd158efd62f9c3fba074`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+    smartContractWallet: "0x3F6dAB60Cc16377Df9684959e20962f44De20988",
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "USDC",
+      amount: "2.04366",
+      address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    },
+    tokenOut: {
+      symbol: "WMATIC",
+      amount: "4.996808166219061944",
+      address: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+    },
+  });
+});
+
+// https://bscscan.com/tx/0xfd4730866f81a7007a586c21b97f56d3f1e62bbba7ebb65e52032676466a8ec1
+test("parse a swap on BNB Chain (BNB for USDT) with smart contract wallet", async () => {
+  const publicClient = createPublicClient({
+    chain: optimism,
+    transport: http(
+      `https://bnb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0xfd4730866f81a7007a586c21b97f56d3f1e62bbba7ebb65e52032676466a8ec1`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+    smartContractWallet: "0x3F6dAB60Cc16377Df9684959e20962f44De20988",
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "BNB",
+      amount: "0.001",
+      address: NATIVE_TOKEN_ADDRESS,
+    },
+    tokenOut: {
+      symbol: "USDT",
+      amount: "0.537528100143963945",
+      address: "0x55d398326f99059fF775485246999027B3197955",
+    },
+  });
+});
+
+// https://bscscan.com/tx/0x5f8839d369b61c5325a4f5406f55e26310722744aa3177b62924e077cb705432
+test("parse a swap on BNB Chain (USDT for BNB) with smart contract wallet", async () => {
+  const publicClient = createPublicClient({
+    chain: optimism,
+    transport: http(
+      `https://bnb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0x5f8839d369b61c5325a4f5406f55e26310722744aa3177b62924e077cb705432`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+    smartContractWallet: "0x3F6dAB60Cc16377Df9684959e20962f44De20988",
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "USDT",
+      amount: "1.874528100143963945",
+      address: "0x55d398326f99059fF775485246999027B3197955",
+    },
+    tokenOut: {
+      symbol: "BNB",
+      amount: "0.003467772175199184",
+      address: NATIVE_TOKEN_ADDRESS,
     },
   });
 });

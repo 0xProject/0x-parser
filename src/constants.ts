@@ -1,6 +1,6 @@
 import type { SupportedChainId } from "./types";
 
-export const SETTLER_ABI = [
+export const SETTLER_META_TXN_ABI = [
   {
     inputs: [
       {
@@ -27,12 +27,9 @@ export const SETTLER_ABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
-];
+] as const;
 
 export const FUNCTION_SELECTORS = { EXECUTE_META_TXN: "0xfd3ad6d4" };
-
-export const NATIVE_TOKEN_ADDRESS =
-  "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 
 export const NATIVE_SYMBOL_BY_CHAIN_ID: { [key in SupportedChainId]: string } =
   {
@@ -45,6 +42,8 @@ export const NATIVE_SYMBOL_BY_CHAIN_ID: { [key in SupportedChainId]: string } =
     43114: "AVAX", // Avalanche
   };
 
-export const MULTICALL3_ADDRESS = "0xcA11bde05977b3631167028862bE2a173976CA11";
+export const NATIVE_TOKEN_ADDRESS = `0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`;
 
-export const NATIVE_ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+export const MULTICALL3_ADDRESS = `0xcA11bde05977b3631167028862bE2a173976CA11`;
+
+export const ERC_4337_ENTRY_POINT = `0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789`;

@@ -6,16 +6,18 @@ import {
   decodeFunctionData,
 } from "viem";
 import {
-  SETTLER_ABI,
   MULTICALL3_ADDRESS,
   FUNCTION_SELECTORS,
+  ERC_4337_ENTRY_POINT,
   NATIVE_TOKEN_ADDRESS,
+  SETTLER_META_TXN_ABI,
   NATIVE_SYMBOL_BY_CHAIN_ID,
 } from "./constants";
 import {
   transferLogs,
   isChainIdSupported,
-  extractNativeTransfer,
+  calculateNativeTransfer,
+  parseSmartContractWalletTx,
 } from "./utils";
 import type { Hash, Chain, Address, Transport, PublicClient } from "viem";
 import type { TraceTransactionSchema } from "./types";
@@ -23,9 +25,11 @@ import type { TraceTransactionSchema } from "./types";
 export async function parseSwap({
   publicClient,
   transactionHash: hash,
+  smartContractWallet,
 }: {
   publicClient: PublicClient<Transport, Chain>;
   transactionHash: Address;
+  smartContractWallet?: Address;
 }) {
   const chainId = await publicClient.getChainId();
 
@@ -48,7 +52,11 @@ export async function parseSwap({
 
   const { from: taker, value, to } = transaction;
 
-  const nativeTransferAmount = extractNativeTransfer(trace, taker);
+  const isToERC4337 = to === ERC_4337_ENTRY_POINT.toLowerCase();
+
+  const nativeAmountToTaker = calculateNativeTransfer(trace, {
+    recipient: taker,
+  });
 
   const transactionReceipt = await publicClient.getTransactionReceipt({ hash });
 
@@ -59,6 +67,21 @@ export async function parseSwap({
     transactionReceipt,
   });
 
+  if (isToERC4337) {
+    if (!smartContractWallet) {
+      throw new Error(
+        "This is an ERC-4337 transaction. You must provide a smart contract wallet address to 0x-parser."
+      );
+    }
+
+    return parseSmartContractWalletTx({
+      logs,
+      trace,
+      chainId,
+      smartContractWallet,
+    });
+  }
+
   const fromTaker = logs.filter(
     (log) => log.from.toLowerCase() === taker.toLowerCase()
   );
@@ -66,13 +89,13 @@ export async function parseSwap({
   let input = fromTaker.length ? fromTaker[0] : logs[0];
 
   let output =
-    nativeTransferAmount === "0"
+    nativeAmountToTaker === "0"
       ? logs.find((log) => {
           return log.to.toLowerCase() === taker.toLowerCase();
         })
       : {
           symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
-          amount: nativeTransferAmount,
+          amount: nativeAmountToTaker,
           address: NATIVE_TOKEN_ADDRESS,
         };
 
@@ -82,41 +105,42 @@ export async function parseSwap({
       data: transaction.input,
     });
 
-    const { args: settlerArgs } = decodeFunctionData<any[]>({
-      abi: SETTLER_ABI,
+    const { args: settlerArgs } = decodeFunctionData({
+      abi: SETTLER_META_TXN_ABI,
       data: multicallArgs[0][1].callData,
     });
 
     const takerForGaslessApprovalSwap =
       settlerArgs[0].recipient.toLowerCase() as Address;
 
-    const nativeTransferAmount = extractNativeTransfer(
-      trace,
-      takerForGaslessApprovalSwap
-    );
+    const nativeAmountToTaker = calculateNativeTransfer(trace, {
+      recipient: takerForGaslessApprovalSwap,
+    });
 
-    if (nativeTransferAmount === "0") {
+    if (nativeAmountToTaker === "0") {
       output = output = logs[logs.length - 1];
     } else {
       output = {
         symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
-        amount: nativeTransferAmount,
+        amount: nativeAmountToTaker,
         address: NATIVE_TOKEN_ADDRESS,
       };
     }
   }
 
   if (transaction.input.startsWith(FUNCTION_SELECTORS.EXECUTE_META_TXN)) {
-    const { args } = decodeFunctionData<any[]>({
-      abi: SETTLER_ABI,
+    const { args } = decodeFunctionData({
+      abi: SETTLER_META_TXN_ABI,
       data: transaction.input,
     });
 
     const { 3: msgSender } = args;
 
-    const nativeTransferAmount = extractNativeTransfer(trace, msgSender);
+    const nativeAmountToTaker = calculateNativeTransfer(trace, {
+      recipient: msgSender,
+    });
 
-    if (nativeTransferAmount === "0") {
+    if (nativeAmountToTaker === "0") {
       output = logs[logs.length - 1];
       const takerReceived = logs.filter(
         (log) => log.to.toLowerCase() === msgSender.toLowerCase()
@@ -138,7 +162,7 @@ export async function parseSwap({
     } else {
       output = {
         symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
-        amount: nativeTransferAmount,
+        amount: nativeAmountToTaker,
         address: NATIVE_TOKEN_ADDRESS,
       };
     }

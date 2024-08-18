@@ -1,6 +1,12 @@
 import { fromHex, erc20Abi, getAddress, formatUnits, formatEther } from "viem";
+import { NATIVE_SYMBOL_BY_CHAIN_ID, NATIVE_TOKEN_ADDRESS } from "../constants";
 import type { Address } from "viem";
-import type { Trace, EnrichLogsArgs, SupportedChainId } from "../types";
+import type {
+  Trace,
+  EnrichedLog,
+  EnrichLogsArgs,
+  SupportedChainId,
+} from "../types";
 
 export function isChainIdSupported(
   chainId: number
@@ -8,21 +14,31 @@ export function isChainIdSupported(
   return [1, 10, 56, 137, 8453, 42161, 43114].includes(chainId);
 }
 
-export function extractNativeTransfer(trace: Trace, recipient: Address) {
+export function calculateNativeTransfer(
+  trace: Trace,
+  options: { recipient: Address; direction?: "to" | "from" }
+): string {
+  const { recipient, direction = "to" } = options;
   let totalTransferred = 0n;
+  const recipientLower = recipient.toLowerCase();
+
+  function processCall(call: Trace) {
+    if (!call.value) return;
+
+    const relevantAddress = direction === "from" ? call.from : call.to;
+
+    if (relevantAddress.toLowerCase() === recipientLower) {
+      totalTransferred += fromHex(call.value, "bigint");
+    }
+  }
 
   function traverseCalls(calls: Trace[]) {
-    calls.forEach((call) => {
-      if (
-        call.to.toLowerCase() === recipient.toLowerCase() &&
-        fromHex(call.value, "bigint") > 0n
-      ) {
-        totalTransferred = totalTransferred + fromHex(call.value, "bigint");
-      }
+    for (const call of calls) {
+      processCall(call);
       if (call.calls && call.calls.length > 0) {
         traverseCalls(call.calls);
       }
-    });
+    }
   }
 
   traverseCalls(trace.calls);
@@ -33,24 +49,14 @@ export function extractNativeTransfer(trace: Trace, recipient: Address) {
 export async function transferLogs({
   publicClient,
   transactionReceipt,
-}: EnrichLogsArgs): Promise<
-  {
-    to: `0x${string}`;
-    from: `0x${string}`;
-    symbol: string;
-    amount: string;
-    address: `0x${string}`;
-    decimals: number;
-  }[]
-> {
+}: EnrichLogsArgs): Promise<EnrichedLog[]> {
   const EVENT_SIGNATURES = {
-    Transfer:
-      "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+    Transfer: `0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef`,
   } as const;
-  const { logs } = transactionReceipt;
-  const transferLogsAddresses = logs
+  const transferLogsAddresses = transactionReceipt.logs
     .filter((log) => log.topics[0] === EVENT_SIGNATURES.Transfer)
     .map((log) => ({ ...log, address: getAddress(log.address) }));
+
   const contracts = [
     ...transferLogsAddresses.map((log) => ({
       abi: erc20Abi,
@@ -85,4 +91,80 @@ export async function transferLogs({
 
 function convertHexToAddress(hexString: string): string {
   return `0x${hexString.slice(-40)}`;
+}
+
+export function parseSmartContractWalletTx({
+  logs,
+  trace,
+  chainId,
+  smartContractWallet,
+}: {
+  logs: EnrichedLog[];
+  trace: Trace;
+  chainId: SupportedChainId;
+  smartContractWallet: Address;
+}) {
+  const smartContractWalletTransferLogs = logs.reduce<{
+    output?: EnrichedLog;
+    input?: EnrichedLog;
+  }>((acc, curr) => {
+    if (curr.to === smartContractWallet) return { ...acc, output: curr };
+    if (curr.from === smartContractWallet) return { ...acc, input: curr };
+    return acc;
+  }, {});
+
+  let { input, output } = smartContractWalletTransferLogs;
+
+  const nativeAmountToTaker = calculateNativeTransfer(trace, {
+    recipient: smartContractWallet,
+  });
+
+  const nativeAmountFromTaker = calculateNativeTransfer(trace, {
+    recipient: smartContractWallet,
+    direction: "from",
+  });
+
+  if (!output && nativeAmountToTaker !== "0") {
+    return {
+      tokenIn: {
+        address: input?.address,
+        amount: input?.amount,
+        symbol: input?.symbol,
+      },
+      tokenOut: {
+        address: NATIVE_TOKEN_ADDRESS,
+        amount: nativeAmountToTaker,
+        symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
+      },
+    };
+  } else if (!input && nativeAmountFromTaker !== "0") {
+    const wrappedNativeAsset =
+      chainId === 56 ? "WBNB" : chainId === 137 ? "WMATIC" : "WETH";
+    const inputLog = logs.filter((log) => log.symbol === wrappedNativeAsset)[0];
+    return {
+      tokenIn: {
+        address: NATIVE_TOKEN_ADDRESS,
+        amount: inputLog?.amount,
+        symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
+      },
+      tokenOut: {
+        address: output?.address,
+        amount: output?.amount,
+        symbol: output?.symbol,
+      },
+    };
+  } else {
+    return {
+      tokenIn: {
+        address: input?.address,
+        amount: input?.amount,
+        symbol: input?.symbol,
+      },
+      tokenOut: {
+        address: output?.address,
+        amount: output?.amount,
+        symbol: output?.symbol,
+      },
+    };
+  }
 }

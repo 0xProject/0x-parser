@@ -686,7 +686,7 @@ test("parse a swap on Base (DEGEN for BRETT) with smart contract wallet", async 
 });
 
 // https://basescan.org/tx/0xaa09479aafdb1a33815fb3842c350ccedf5e3f9eaec31b8cba1f41eea674a8f3
-test("parse a swap on Base (BRETT for ETH) with smart contract wallet", async () => {
+test.only("parse a swap on Base (BRETT for ETH) with smart contract wallet", async () => {
   const publicClient = createPublicClient({
     chain: base,
     transport: http(

@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/0xProject/0x-parser/compare/v2.0.2...v2.1.0) (2024-08-19)
+
+
+### Features
+
+* support parsing erc-4337 transactions ([373d143](https://github.com/0xProject/0x-parser/commit/373d14304a118eee1d73f686ff98cf4639b3719a))
+
 ## [2.0.2](https://github.com/0xProject/0x-parser/compare/v2.0.1...v2.0.2) (2024-08-11)
 
 

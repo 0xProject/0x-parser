@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/0xProject/0x-parser/compare/v2.1.0...v2.1.1) (2024-08-19)
+
+
+### Bug Fixes
+
+* return null for smart contract wallet reverts ([bcd9730](https://github.com/0xProject/0x-parser/commit/bcd9730f4ced823d7e9c3aefad6067918f9ecc47))
+
 ## [2.1.0](https://github.com/0xProject/0x-parser/compare/v2.0.2...v2.1.0) (2024-08-19)
 
 

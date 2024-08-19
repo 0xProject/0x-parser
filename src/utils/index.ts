@@ -125,46 +125,62 @@ export function parseSmartContractWalletTx({
   });
 
   if (!output && nativeAmountToTaker !== "0") {
-    return {
-      tokenIn: {
-        address: input?.address,
-        amount: input?.amount,
-        symbol: input?.symbol,
-      },
-      tokenOut: {
-        address: NATIVE_TOKEN_ADDRESS,
-        amount: nativeAmountToTaker,
-        symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
-      },
-    };
-  } else if (!input && nativeAmountFromTaker !== "0") {
+    if (input) {
+      return {
+        tokenIn: {
+          address: input.address,
+          amount: input.amount,
+          symbol: input.symbol,
+        },
+        tokenOut: {
+          address: NATIVE_TOKEN_ADDRESS,
+          amount: nativeAmountToTaker,
+          symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
+        },
+      };
+    } else {
+      return null;
+    }
+  }
+
+  if (!input && nativeAmountFromTaker !== "0") {
     const wrappedNativeAsset =
       chainId === 56 ? "WBNB" : chainId === 137 ? "WMATIC" : "WETH";
-    const inputLog = logs.filter((log) => log.symbol === wrappedNativeAsset)[0];
+
+    const inputLog = logs.find((log) => log.symbol === wrappedNativeAsset);
+
+    if (inputLog) {
+      return {
+        tokenIn: {
+          address: NATIVE_TOKEN_ADDRESS,
+          amount: inputLog.amount,
+          symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
+        },
+        tokenOut: {
+          address: output?.address,
+          amount: output?.amount,
+          symbol: output?.symbol,
+        },
+      };
+    } else {
+      return null;
+    }
+  }
+
+  if (input && output) {
     return {
       tokenIn: {
-        address: NATIVE_TOKEN_ADDRESS,
-        amount: inputLog?.amount,
-        symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
+        address: input.address,
+        amount: input.amount,
+        symbol: input.symbol,
       },
       tokenOut: {
-        address: output?.address,
-        amount: output?.amount,
-        symbol: output?.symbol,
-      },
-    };
-  } else {
-    return {
-      tokenIn: {
-        address: input?.address,
-        amount: input?.amount,
-        symbol: input?.symbol,
-      },
-      tokenOut: {
-        address: output?.address,
-        amount: output?.amount,
-        symbol: output?.symbol,
+        address: output.address,
+        amount: output.amount,
+        symbol: output.symbol,
       },
     };
   }
+
+  return null;
 }

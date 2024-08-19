@@ -899,3 +899,23 @@ test("parse a swap on BNB Chain (USDT for BNB) with smart contract wallet", asyn
     },
   });
 });
+
+// https://basescan.org/tx/0x47b4e55bfaee712775a2181f0219db02647d1a2f97eeac6b4f6f2465aac64d86
+test("gracefully handles a revert in a erc-4337 transaction", async () => {
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0x47b4e55bfaee712775a2181f0219db02647d1a2f97eeac6b4f6f2465aac64d86`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+    smartContractWallet: "0x3F6dAB60Cc16377Df9684959e20962f44De20988",
+  });
+
+  expect(result).toEqual(null);
+});

@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.2](https://github.com/0xProject/0x-parser/compare/v2.1.1...v2.1.2) (2024-08-19)
+
+
+### Bug Fixes
+
+* ensure output values exist ([0c3dc98](https://github.com/0xProject/0x-parser/commit/0c3dc98f98e5948a5561fc7e1bac976dafc7f4be))
+
 ## [2.1.1](https://github.com/0xProject/0x-parser/compare/v2.1.0...v2.1.1) (2024-08-19)
 
 

@@ -149,7 +149,7 @@ export function parseSmartContractWalletTx({
 
     const inputLog = logs.find((log) => log.symbol === wrappedNativeAsset);
 
-    if (inputLog) {
+    if (inputLog && output) {
       return {
         tokenIn: {
           address: NATIVE_TOKEN_ADDRESS,
@@ -157,9 +157,9 @@ export function parseSmartContractWalletTx({
           symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
         },
         tokenOut: {
-          address: output?.address,
-          amount: output?.amount,
-          symbol: output?.symbol,
+          address: output.address,
+          amount: output.amount,
+          symbol: output.symbol,
         },
       };
     } else {

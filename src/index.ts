@@ -158,6 +158,11 @@ export async function parseSwap({
           "File a bug report here, including the expected results (URL to a block explorer) and the unexpected results: https://github.com/0xProject/0x-parser/issues/new/choose."
         );
       }
+
+      input = logs.filter(
+        (log) => log.from.toLowerCase() === msgSender.toLowerCase()
+      )[0];
+
       /* v8 ignore stop */
     } else {
       output = {

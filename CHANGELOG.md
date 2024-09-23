@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.3](https://github.com/0xProject/0x-parser/compare/v2.1.2...v2.1.3) (2024-09-23)
+
+
+### Bug Fixes
+
+* use correct taker for meta transaction ([70caa91](https://github.com/0xProject/0x-parser/commit/70caa914995ddca04785e9f5dadfdcc185d34f09))
+
 ## [2.1.2](https://github.com/0xProject/0x-parser/compare/v2.1.1...v2.1.2) (2024-08-19)
 
 

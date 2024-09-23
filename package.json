@@ -49,16 +49,16 @@
     "test": "vitest --coverage"
   },
   "peerDependencies": {
-    "viem": "^2.17.5"
+    "viem": "^2.21.3"
   },
   "devDependencies": {
-    "@types/node": "^20.14.11",
-    "@vitest/coverage-v8": "^2.0.3",
-    "abitype": "^1.0.5",
+    "@types/node": "^22.6.0",
+    "@vitest/coverage-v8": "^2.1.1",
+    "abitype": "^1.0.6",
     "dotenv": "^16.4.5",
-    "esbuild": "^0.23.0",
+    "esbuild": "^0.24.0",
     "http-server": "^14.1.1",
-    "typescript": "^5.5.3",
-    "vitest": "^2.0.3"
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.1"
   }
 }

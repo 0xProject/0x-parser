@@ -33,7 +33,7 @@
     "src"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "scripts": {
     "start": "npm run build && cp ./dist ./public/dist",

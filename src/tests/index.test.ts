@@ -745,6 +745,37 @@ test("parse a swap on Base (BRETT for ETH) with smart contract wallet", async ()
   });
 });
 
+// https://basescan.org/tx/0x283e2034885c34d2e2a5755e8ec77517c5eb8a2bf859a1a74b6dafec6f7ec73b
+test("parse a meta transaction swap on Base (WETH for USDC)", async () => {
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0x283e2034885c34d2e2a5755e8ec77517c5eb8a2bf859a1a74b6dafec6f7ec73b`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+    smartContractWallet: "0x3F6dAB60Cc16377Df9684959e20962f44De20988",
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "WETH",
+      amount: "0.0076565",
+      address: "0x4200000000000000000000000000000000000006",
+    },
+    tokenOut: {
+      symbol: "USDC",
+      amount: "19.977303",
+      address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    },
+  });
+});
+
 // https://basescan.org/tx/0xe289a22987dcedfacb13584211c1d723ef5c42ea6e0dfd5c4d3271d20dec9ddc
 test("parse a swap on Base (ETH for USDC) with smart contract wallet", async () => {
   const publicClient = createPublicClient({

@@ -5,7 +5,14 @@ import {
   type Transport,
   type Chain,
 } from "viem";
-import { arbitrum, base, mainnet, optimism, polygon } from "viem/chains";
+import {
+  base,
+  scroll,
+  polygon,
+  mainnet,
+  arbitrum,
+  optimism,
+} from "viem/chains";
 import { test, expect } from "vitest";
 import { parseSwap } from "../index";
 import { NATIVE_TOKEN_ADDRESS } from "../constants";
@@ -950,4 +957,35 @@ test("gracefully handles a revert in a erc-4337 transaction", async () => {
   });
 
   expect(result).toEqual(null);
+});
+
+// https://scrollscan.com/tx/0x84b07445a1a868b4338df8aed67c9ea330e771596bf603dbef8c12b3cb9970e5
+test("parse a swap on Scroll(USDC for USDT) with execute", async () => {
+  const publicClient = createPublicClient({
+    chain: scroll,
+    transport: http(
+      `https://scroll-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0x84b07445a1a868b4338df8aed67c9ea330e771596bf603dbef8c12b3cb9970e5`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+    smartContractWallet: "0x3F6dAB60Cc16377Df9684959e20962f44De20988",
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "USDC",
+      amount: "1",
+      address: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
+    },
+    tokenOut: {
+      symbol: "USDT",
+      amount: "0.998168",
+      address: "0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df",
+    },
+  });
 });

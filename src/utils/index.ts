@@ -1,4 +1,14 @@
 import { fromHex, erc20Abi, getAddress, formatUnits, formatEther } from "viem";
+import {
+  bsc,
+  base,
+  scroll,
+  mainnet,
+  polygon,
+  arbitrum,
+  optimism,
+  avalanche,
+} from "viem/chains";
 import { NATIVE_SYMBOL_BY_CHAIN_ID, NATIVE_TOKEN_ADDRESS } from "../constants";
 import type { Address } from "viem";
 import type {
@@ -11,7 +21,17 @@ import type {
 export function isChainIdSupported(
   chainId: number
 ): chainId is SupportedChainId {
-  return [1, 10, 56, 137, 8453, 42161, 43114].includes(chainId);
+  const supportedChainIds: number[] = [
+    bsc.id,
+    base.id,
+    scroll.id,
+    polygon.id,
+    mainnet.id,
+    arbitrum.id,
+    optimism.id,
+    avalanche.id,
+  ];
+  return supportedChainIds.includes(chainId);
 }
 
 export function calculateNativeTransfer(

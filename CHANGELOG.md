@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/0xProject/0x-parser/compare/v2.1.3...v2.2.0) (2024-09-24)
+
+
+### Features
+
+* support new chain, scroll ([5f5bed4](https://github.com/0xProject/0x-parser/commit/5f5bed4b72ac8975a55a70fb94adb2d2ed924260))
+
 ## [2.1.3](https://github.com/0xProject/0x-parser/compare/v2.1.2...v2.1.3) (2024-09-23)
 
 

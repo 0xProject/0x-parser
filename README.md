@@ -24,6 +24,10 @@ Try out the parser in a [live code environment](https://codesandbox.io/p/sandbox
   <img src="https://raw.githubusercontent.com/hzhu/yo/main/react-demo.png" alt="Screenshot of demo app using 0x-parser" width="650"/>
 </p>
 
+## Requirements
+
+0x-parser relies on the `debug_traceTransaction` Ethereum JSON-RPC method to parse 0x transactions. Ensure that your RPC node [supports](https://docs.alchemy.com/reference/debug-tracetransaction) [this](https://www.quicknode.com/docs/ethereum/debug_traceTransaction) [method](https://docs.infura.io/api/networks/linea/json-rpc-methods/debug/debug_tracetransaction).
+
 ## Installation
 
 ### Step 1: Install Peer Dependency

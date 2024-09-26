@@ -1,3 +1,14 @@
+import {
+  bsc,
+  base,
+  linea,
+  scroll,
+  mainnet,
+  polygon,
+  arbitrum,
+  optimism,
+  avalanche,
+} from "viem/chains";
 import type { SupportedChainId } from "./types";
 
 export const SETTLER_META_TXN_ABI = [
@@ -33,13 +44,15 @@ export const FUNCTION_SELECTORS = { EXECUTE_META_TXN: "0xfd3ad6d4" };
 
 export const NATIVE_SYMBOL_BY_CHAIN_ID: { [key in SupportedChainId]: string } =
   {
-    1: "ETH", // Ethereum
-    10: "ETH", // Optimism
-    56: "BNB", // BNB Chain
-    137: "MATIC", // Polygon
-    8453: "ETH", // Base
-    42161: "ETH", // Arbitrum One
-    43114: "AVAX", // Avalanche
+    [bsc.id]: bsc.nativeCurrency.symbol,
+    [base.id]: base.nativeCurrency.symbol,
+    [linea.id]: linea.nativeCurrency.symbol,
+    [scroll.id]: scroll.nativeCurrency.symbol,
+    [mainnet.id]: mainnet.nativeCurrency.symbol,
+    [polygon.id]: polygon.nativeCurrency.symbol,
+    [optimism.id]: optimism.nativeCurrency.symbol,
+    [arbitrum.id]: arbitrum.nativeCurrency.symbol,
+    [avalanche.id]: avalanche.nativeCurrency.symbol,
   };
 
 export const NATIVE_TOKEN_ADDRESS = `0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`;

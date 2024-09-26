@@ -8,6 +8,7 @@ import {
   arbitrum,
   optimism,
   avalanche,
+  linea,
 } from "viem/chains";
 import { NATIVE_SYMBOL_BY_CHAIN_ID, NATIVE_TOKEN_ADDRESS } from "../constants";
 import type { Address } from "viem";
@@ -24,6 +25,7 @@ export function isChainIdSupported(
   const supportedChainIds: number[] = [
     bsc.id,
     base.id,
+    linea.id,
     scroll.id,
     polygon.id,
     mainnet.id,
@@ -165,7 +167,7 @@ export function parseSmartContractWalletTx({
 
   if (!input && nativeAmountFromTaker !== "0") {
     const wrappedNativeAsset =
-      chainId === 56 ? "WBNB" : chainId === 137 ? "WMATIC" : "WETH";
+      chainId === 56 ? "WBNB" : chainId === 137 ? "WPOL" : "WETH";
 
     const inputLog = logs.find((log) => log.symbol === wrappedNativeAsset);
 

@@ -1,3 +1,15 @@
+import {
+  bsc,
+  base,
+  linea,
+  scroll,
+  mainnet,
+  polygon,
+  arbitrum,
+  optimism,
+  avalanche,
+} from "viem/chains";
+
 import type {
   Hex,
   Hash,
@@ -8,7 +20,16 @@ import type {
   TransactionReceipt,
 } from "viem";
 
-export type SupportedChainId = 1 | 10 | 56 | 137 | 8453 | 42161 | 43114;
+export type SupportedChainId =
+  | typeof bsc.id
+  | typeof base.id
+  | typeof linea.id
+  | typeof scroll.id
+  | typeof mainnet.id
+  | typeof polygon.id
+  | typeof arbitrum.id
+  | typeof optimism.id
+  | typeof avalanche.id;
 
 export interface EnrichLogsArgs {
   transactionReceipt: TransactionReceipt;

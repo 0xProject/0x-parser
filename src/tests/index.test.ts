@@ -7,6 +7,7 @@ import {
 } from "viem";
 import {
   base,
+  linea,
   scroll,
   polygon,
   mainnet,
@@ -391,7 +392,7 @@ test("parse a swap on Base (ETH for BRETT)", async () => {
 });
 
 // https://polygonscan.com/tx/0x438517b81f50858035f4b8e0870f5d797616509b5102c28814bcc378559c213d
-test("parse a gasless approval + gasless swap on Polygon (USDC for MATIC)", async () => {
+test("parse a gasless approval + gasless swap on Polygon (USDC for POL)", async () => {
   const publicClient = createPublicClient({
     chain: polygon,
     transport: http(
@@ -414,7 +415,7 @@ test("parse a gasless approval + gasless swap on Polygon (USDC for MATIC)", asyn
       address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
     },
     tokenOut: {
-      symbol: "MATIC",
+      symbol: "POL",
       amount: "15.513683571865599415",
       address: NATIVE_TOKEN_ADDRESS,
     },
@@ -816,7 +817,7 @@ test("parse a swap on Base (ETH for USDC) with smart contract wallet", async () 
 });
 
 // https://polygonscan.com/tx/0xc624eb3ea779d1645571b5a538683eee1fb1bd9afdb1d0cb470de2b8755353a9
-test("parse a swap on Polygon (MATIC for USDC) with smart contract wallet", async () => {
+test("parse a swap on Polygon (WPOL for USDC) with smart contract wallet", async () => {
   const publicClient = createPublicClient({
     chain: polygon,
     transport: http(
@@ -834,7 +835,7 @@ test("parse a swap on Polygon (MATIC for USDC) with smart contract wallet", asyn
 
   expect(result).toEqual({
     tokenIn: {
-      symbol: "MATIC",
+      symbol: "POL",
       amount: "5",
       address: NATIVE_TOKEN_ADDRESS,
     },
@@ -847,7 +848,7 @@ test("parse a swap on Polygon (MATIC for USDC) with smart contract wallet", asyn
 });
 
 // https://polygonscan.com/tx/0x6ec07b99b37695a60915b3886476a86efdd4c60420ddcd158efd62f9c3fba074
-test("parse a swap on Polygon (USDC for WMATIC) with smart contract wallet", async () => {
+test("parse a swap on Polygon (USDC for WPOL) with smart contract wallet", async () => {
   const publicClient = createPublicClient({
     chain: polygon,
     transport: http(
@@ -870,7 +871,7 @@ test("parse a swap on Polygon (USDC for WMATIC) with smart contract wallet", asy
       address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
     },
     tokenOut: {
-      symbol: "WMATIC",
+      symbol: "WPOL",
       amount: "4.996808166219061944",
       address: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
     },
@@ -986,6 +987,36 @@ test("parse a swap on Scroll(USDC for USDT) with execute", async () => {
       symbol: "USDT",
       amount: "0.998168",
       address: "0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df",
+    },
+  });
+});
+
+// https://lineascan.build/tx/0x3506d4cd4b434ec3e6fb2ec5473069471257a9436c4e8e576e0eca2a02816a75
+test("parse a swap on Linear (USDC for WETH) with execute", async () => {
+  const publicClient = createPublicClient({
+    chain: linea,
+    transport: http(
+      `https://linea-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0x3506d4cd4b434ec3e6fb2ec5473069471257a9436c4e8e576e0eca2a02816a75`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "USDC",
+      amount: "22.314511",
+      address: "0x176211869cA2b568f2A7D4EE941E073a821EE1ff",
+    },
+    tokenOut: {
+      symbol: "ETH",
+      amount: "0.008646502734906467",
+      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     },
   });
 });

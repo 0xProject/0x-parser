@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/0xProject/0x-parser/compare/v2.2.0...v2.3.0) (2024-09-26)
+
+
+### Features
+
+* support linea + update polygon native symbol ([f2ff8c4](https://github.com/0xProject/0x-parser/commit/f2ff8c46c95efbcaa4760024de3af456b000b852))
+
 ## [2.2.0](https://github.com/0xProject/0x-parser/compare/v2.1.3...v2.2.0) (2024-09-24)
 
 

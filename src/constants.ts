@@ -1,6 +1,7 @@
 import {
   bsc,
   base,
+  blast,
   linea,
   scroll,
   mainnet,
@@ -46,6 +47,7 @@ export const NATIVE_SYMBOL_BY_CHAIN_ID: { [key in SupportedChainId]: string } =
   {
     [bsc.id]: bsc.nativeCurrency.symbol,
     [base.id]: base.nativeCurrency.symbol,
+    [blast.id]: blast.nativeCurrency.symbol,
     [linea.id]: linea.nativeCurrency.symbol,
     [scroll.id]: scroll.nativeCurrency.symbol,
     [mainnet.id]: mainnet.nativeCurrency.symbol,

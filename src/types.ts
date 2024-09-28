@@ -1,6 +1,7 @@
 import {
   bsc,
   base,
+  blast,
   linea,
   scroll,
   mainnet,
@@ -23,6 +24,7 @@ import type {
 export type SupportedChainId =
   | typeof bsc.id
   | typeof base.id
+  | typeof blast.id
   | typeof linea.id
   | typeof scroll.id
   | typeof mainnet.id

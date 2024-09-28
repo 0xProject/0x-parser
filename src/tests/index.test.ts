@@ -7,6 +7,7 @@ import {
 } from "viem";
 import {
   base,
+  blast,
   linea,
   scroll,
   polygon,
@@ -1017,6 +1018,66 @@ test("parse a swap on Linear (USDC for WETH) with execute", async () => {
       symbol: "ETH",
       amount: "0.008646502734906467",
       address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    },
+  });
+});
+
+// https://blastscan.io/tx/0x2cdcf1c74ff01657a2d8540be3e820e21312fd5b929ae1dc887f1a45418a4bf4
+test("parse a swap on Blast (YOLO for USDB) with execute", async () => {
+  const publicClient = createPublicClient({
+    chain: blast,
+    transport: http(
+      `https://blast-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0x2cdcf1c74ff01657a2d8540be3e820e21312fd5b929ae1dc887f1a45418a4bf4`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "YOLO",
+      amount: "10004.483202235712364987",
+      address: "0xf77dd21c5ce38ac08786BE35Ef1d1DeC1a6a15F3",
+    },
+    tokenOut: {
+      symbol: "USDB",
+      amount: "22.673803957148435593",
+      address: "0x4300000000000000000000000000000000000003",
+    },
+  });
+});
+
+// https://blastscan.io/tx/0x62b094c45cc2506d60d44afa50bc54e699c09278be5050d8510a42ab1c8fa31f
+test("parse a swap on Blast (ETH for ezETH) with execute", async () => {
+  const publicClient = createPublicClient({
+    chain: blast,
+    transport: http(
+      `https://blast-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0x62b094c45cc2506d60d44afa50bc54e699c09278be5050d8510a42ab1c8fa31f`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "ETH",
+      amount: "0.0005",
+      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    },
+    tokenOut: {
+      symbol: "ezETH",
+      amount: "0.000491534297265178",
+      address: "0x2416092f143378750bb29b79eD961ab195CcEea5",
     },
   });
 });

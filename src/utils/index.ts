@@ -2,13 +2,14 @@ import { fromHex, erc20Abi, getAddress, formatUnits, formatEther } from "viem";
 import {
   bsc,
   base,
+  blast,
+  linea,
   scroll,
   mainnet,
   polygon,
   arbitrum,
   optimism,
   avalanche,
-  linea,
 } from "viem/chains";
 import { NATIVE_SYMBOL_BY_CHAIN_ID, NATIVE_TOKEN_ADDRESS } from "../constants";
 import type { Address } from "viem";
@@ -25,6 +26,7 @@ export function isChainIdSupported(
   const supportedChainIds: number[] = [
     bsc.id,
     base.id,
+    blast.id,
     linea.id,
     scroll.id,
     polygon.id,

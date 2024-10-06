@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.5.0](https://github.com/0xProject/0x-parser/compare/v2.3.0...v2.5.0) (2024-10-06)
+
+
+### Features
+
+* introduce mantle support ([182c90f](https://github.com/0xProject/0x-parser/commit/182c90f9706db1fd0ee8205825df706e97d4315f))
+* support new chain, blast ([410971b](https://github.com/0xProject/0x-parser/commit/410971b18111c6c69351eb0e1d1edb2203af48a0))
+
 ## [2.4.0](https://github.com/0xProject/0x-parser/compare/v2.3.0...v2.4.0) (2024-09-28)
 
 

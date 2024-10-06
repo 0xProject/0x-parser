@@ -1081,3 +1081,33 @@ test("parse a swap on Blast (ETH for ezETH) with execute", async () => {
     },
   });
 });
+
+// https://mantlescan.xyz/tx/0xbd89bd8f580e5606c046feac8b0d72e321009cfed361c9919eb4845999ea79a4
+test("parse a swap on Mantle (WETH for mETH) with execute", async () => {
+  const publicClient = createPublicClient({
+    chain: blast,
+    transport: http(
+      `https://mantle-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0xbd89bd8f580e5606c046feac8b0d72e321009cfed361c9919eb4845999ea79a4`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "WETH",
+      amount: "0.0001",
+      address: "0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111",
+    },
+    tokenOut: {
+      symbol: "mETH",
+      amount: "0.000097870496599353",
+      address: "0xcDA86A272531e8640cD7F1a92c01839911B90bb0",
+    },
+  });
+});

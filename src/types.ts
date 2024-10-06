@@ -4,6 +4,7 @@ import {
   blast,
   linea,
   scroll,
+  mantle,
   mainnet,
   polygon,
   arbitrum,
@@ -27,6 +28,7 @@ export type SupportedChainId =
   | typeof blast.id
   | typeof linea.id
   | typeof scroll.id
+  | typeof mantle.id
   | typeof mainnet.id
   | typeof polygon.id
   | typeof arbitrum.id

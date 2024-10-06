@@ -8,9 +8,84 @@
 
 ## Blockchain Support
 
-| <img alt="arbitrum" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/arbitrum/info/logo.png" width="23"/> | <img alt="avalanche" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/avalanchec/info/logo.png" width="20"/> | <img alt="base" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/base/info/logo.png" width="20"/> | <img alt="bnb chain" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/binance/info/logo.png" width="21"/> | <img alt="blast" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/blast/info/logo.png" width="22"/> | <img alt="ethereum" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/ethereum/info/logo.png" width="21"/> | <img alt="linea" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/linea/info/logo.png" width="22"/> | <img alt="mantle" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/mantle/info/logo.png" width="22"/> | <img alt="optimism" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/optimism/info/logo.png" width="22"/> | <img alt="polygon" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/polygon/info/logo.png" width="22"/> | <img alt="scroll" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/scroll/info/logo.png" width="22"/> |
-| :----------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------: |
-|                                                               Arbitrum                                                               |                                                                Avalanche                                                                |                                                             Base                                                             |                                                              BNB Chain                                                               |                                                             Blast                                                              |                                                               Ethereum                                                               |                                                             Linea                                                              |                                                              Mantle                                                              |                                                               Optimism                                                               |                                                              Polygon                                                               |                                                              Scroll                                                              |
+<table>
+  <tr>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="arbitrum" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/arbitrum/info/logo.png" width="23"/>
+        <br>Arbitrum
+      </div>
+    </td>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="avalanche" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/avalanchec/info/logo.png" width="20"/>
+        <br>Avalanche
+      </div>
+    </td>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="base" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/base/info/logo.png" width="20"/>
+        <br>Base
+      </div>
+    </td>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="bnb chain" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/binance/info/logo.png" width="21"/>
+        <br>BNB Chain
+      </div>
+    </td>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="blast" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/blast/info/logo.png" width="22"/>
+        <br>Blast
+      </div>
+    </td>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="ethereum" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/ethereum/info/logo.png" width="21"/>
+        <br>Ethereum
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="linea" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/linea/info/logo.png" width="22"/>
+        <br>Linea
+      </div>
+    </td>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="mantle" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/mantle/info/logo.png" width="22"/>
+        <br>Mantle
+      </div>
+    </td>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="optimism" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/optimism/info/logo.png" width="22"/>
+        <br>Optimism
+      </div>
+    </td>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="polygon" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/polygon/info/logo.png" width="22"/>
+        <br>Polygon
+      </div>
+    </td>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="scroll" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/scroll/info/logo.png" width="22"/>
+        <br>Scroll
+      </div>
+    </td>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="coming soon" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/mode/info/logo.png" width="22"/>
+        <br>Coming Soon
+      </div>
+    </td>
+  </tr>
+</table>
 
 ## Overview
 

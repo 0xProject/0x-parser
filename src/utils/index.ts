@@ -2,6 +2,7 @@ import { fromHex, erc20Abi, getAddress, formatUnits, formatEther } from "viem";
 import {
   bsc,
   base,
+  mode,
   blast,
   linea,
   scroll,
@@ -27,6 +28,7 @@ export function isChainIdSupported(
   const supportedChainIds: number[] = [
     bsc.id,
     base.id,
+    mode.id,
     blast.id,
     linea.id,
     scroll.id,

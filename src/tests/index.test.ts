@@ -7,6 +7,7 @@ import {
 } from "viem";
 import {
   base,
+  mode,
   blast,
   linea,
   scroll,
@@ -962,7 +963,7 @@ test("gracefully handles a revert in a erc-4337 transaction", async () => {
 });
 
 // https://scrollscan.com/tx/0x84b07445a1a868b4338df8aed67c9ea330e771596bf603dbef8c12b3cb9970e5
-test("parse a swap on Scroll(USDC for USDT) with execute", async () => {
+test("parse a swap on Scroll (USDC for USDT) with execute", async () => {
   const publicClient = createPublicClient({
     chain: scroll,
     transport: http(
@@ -993,7 +994,7 @@ test("parse a swap on Scroll(USDC for USDT) with execute", async () => {
 });
 
 // https://lineascan.build/tx/0x3506d4cd4b434ec3e6fb2ec5473069471257a9436c4e8e576e0eca2a02816a75
-test("parse a swap on Linear (USDC for WETH) with execute", async () => {
+test("parse a swap on Linea (USDC for WETH) with execute", async () => {
   const publicClient = createPublicClient({
     chain: linea,
     transport: http(
@@ -1111,3 +1112,68 @@ test("parse a swap on Mantle (WETH for mETH) with execute", async () => {
     },
   });
 });
+
+// https://explorer.mode.network/tx/0xd84a08f6d48b5c34cde908452602088cdb42beceef29074b8a8d5c7e45f2a3dc
+test("parse a swap on Mode (ETH for BEAST) with Settler", async () => {
+  const publicClient = createPublicClient({
+    chain: mode,
+    transport: http(
+      `https://fluent-boldest-water.mode-mainnet.quiknode.pro/${process.env.QUICKNODE_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0xd84a08f6d48b5c34cde908452602088cdb42beceef29074b8a8d5c7e45f2a3dc`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "ETH",
+      amount: "0.001",
+      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    },
+    tokenOut: {
+      symbol: "BEAST",
+      amount: "273191.79887332631998981",
+      address: "0x6a660e56FA3b630A786CC4Ae98859f8532D03dE9",
+    },
+  });
+});
+
+// https://explorer.mode.network/tx/0xd10163ac93593667d3922a05c09580856b1b4c1dc015738c67968912a42c46dc
+test("parse a swap on Mode (BEAST for ezETH) with Settler", async () => {
+  const publicClient = createPublicClient({
+    chain: mode,
+    transport: http(
+      `https://fluent-boldest-water.mode-mainnet.quiknode.pro/${process.env.QUICKNODE_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0xd10163ac93593667d3922a05c09580856b1b4c1dc015738c67968912a42c46dc`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "BEAST",
+      amount: "238973",
+      address: "0x6a660e56FA3b630A786CC4Ae98859f8532D03dE9",
+    },
+    tokenOut: {
+      symbol: "ezETH",
+      amount: "0.000846925725410518",
+      address: "0x2416092f143378750bb29b79eD961ab195CcEea5",
+    },
+  });
+});
+
+test.todo(
+  "parse a swap on Mode (ezETH for BEAST) with SettlerMetaTxn",
+  async () => {}
+);

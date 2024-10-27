@@ -81,7 +81,7 @@
     <td style="width:100px; text-align:center;">
       <div align="center">
         <img alt="coming soon" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/mode/info/logo.png" width="22"/>
-        <br>Coming Soon
+        <br>Mode
       </div>
     </td>
   </tr>

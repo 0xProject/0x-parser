@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.0](https://github.com/0xProject/0x-parser/compare/v2.5.0...v2.6.0) (2024-10-28)
+
+
+### Features
+
+* support mode ([3ad4ea3](https://github.com/0xProject/0x-parser/commit/3ad4ea3bcd53f5661788cd5224a5f3e606952e74))
+
 ## [2.5.0](https://github.com/0xProject/0x-parser/compare/v2.3.0...v2.5.0) (2024-10-06)
 
 

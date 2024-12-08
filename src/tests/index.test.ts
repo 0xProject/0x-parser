@@ -401,7 +401,7 @@ test("parse a gasless approval + gasless swap on Polygon (USDC for POL)", async 
     transport: http(
       `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
-  }) as PublicClient<Transport, Chain>;
+  });
 
   const transactionHash =
     "0x438517b81f50858035f4b8e0870f5d797616509b5102c28814bcc378559c213d";
@@ -556,7 +556,7 @@ test("parse a gasless swap on on Arbitrum (ARB for ETH)", async () => {
     transport: http(
       `https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
-  }) as PublicClient<Transport, Chain>;
+  });
 
   const transactionHash =
     "0xb2c05194e4ec9ae0f82098ec82a606df544e87c8d6b7726bbb4b1dcc023cb9d7";
@@ -826,7 +826,7 @@ test("parse a swap on Polygon (WPOL for USDC) with smart contract wallet", async
     transport: http(
       `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
-  }) as PublicClient<Transport, Chain>;
+  });
 
   const transactionHash = `0xc624eb3ea779d1645571b5a538683eee1fb1bd9afdb1d0cb470de2b8755353a9`;
 
@@ -857,7 +857,7 @@ test("parse a swap on Polygon (USDC for WPOL) with smart contract wallet", async
     transport: http(
       `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
-  }) as PublicClient<Transport, Chain>;
+  });
 
   const transactionHash = `0x6ec07b99b37695a60915b3886476a86efdd4c60420ddcd158efd62f9c3fba074`;
 
@@ -970,7 +970,7 @@ test("parse a swap on Scroll (USDC for USDT) with execute", async () => {
     transport: http(
       `https://scroll-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
-  }) as PublicClient<Transport, Chain>;
+  });
 
   const transactionHash = `0x84b07445a1a868b4338df8aed67c9ea330e771596bf603dbef8c12b3cb9970e5`;
 
@@ -1001,7 +1001,7 @@ test("parse a swap on Linea (USDC for WETH) with execute", async () => {
     transport: http(
       `https://linea-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
-  }) as PublicClient<Transport, Chain>;
+  });
 
   const transactionHash = `0x3506d4cd4b434ec3e6fb2ec5473069471257a9436c4e8e576e0eca2a02816a75`;
 
@@ -1031,7 +1031,7 @@ test("parse a swap on Blast (YOLO for USDB) with execute", async () => {
     transport: http(
       `https://blast-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
-  }) as PublicClient<Transport, Chain>;
+  });
 
   const transactionHash = `0x2cdcf1c74ff01657a2d8540be3e820e21312fd5b929ae1dc887f1a45418a4bf4`;
 
@@ -1061,7 +1061,7 @@ test("parse a swap on Blast (ETH for ezETH) with execute", async () => {
     transport: http(
       `https://blast-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
-  }) as PublicClient<Transport, Chain>;
+  });
 
   const transactionHash = `0x62b094c45cc2506d60d44afa50bc54e699c09278be5050d8510a42ab1c8fa31f`;
 
@@ -1091,7 +1091,7 @@ test("parse a swap on Mantle (WETH for mETH) with execute", async () => {
     transport: http(
       `https://mantle-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
-  }) as PublicClient<Transport, Chain>;
+  });
 
   const transactionHash = `0xbd89bd8f580e5606c046feac8b0d72e321009cfed361c9919eb4845999ea79a4`;
 

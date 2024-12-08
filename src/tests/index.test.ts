@@ -1173,7 +1173,32 @@ test("parse a swap on Mode (BEAST for ezETH) with Settler", async () => {
   });
 });
 
-test.todo(
-  "parse a swap on Mode (ezETH for BEAST) with SettlerMetaTxn",
-  async () => {}
-);
+// https://explorer.mode.network/tx/0xbdd6288ff42ccdd63779214c911c0e86debf02ee3bbf1e6f0355d40a8fba1a1f
+test("parse a swap on Mode (ezETH for MODE) with SettlerMetaTxn", async () => {
+  const publicClient = createPublicClient({
+    chain: mode,
+    transport: http(
+      `https://fluent-boldest-water.mode-mainnet.quiknode.pro/${process.env.QUICKNODE_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0xbdd6288ff42ccdd63779214c911c0e86debf02ee3bbf1e6f0355d40a8fba1a1f`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "ezETH",
+      amount: "0.000846925725410518",
+      address: "0x2416092f143378750bb29b79eD961ab195CcEea5",
+    },
+    tokenOut: {
+      symbol: "MODE",
+      amount: "60.488654650393620538",
+      address: "0xDfc7C877a950e49D2610114102175A06C2e3167a",
+    },
+  });
+});

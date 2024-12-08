@@ -15,6 +15,7 @@ import {
   mainnet,
   arbitrum,
   optimism,
+  mantle,
 } from "viem/chains";
 import { test, expect } from "vitest";
 import { parseSwap } from "../index";
@@ -1109,6 +1110,36 @@ test("parse a swap on Mantle (WETH for mETH) with execute", async () => {
       symbol: "mETH",
       amount: "0.000097870496599353",
       address: "0xcDA86A272531e8640cD7F1a92c01839911B90bb0",
+    },
+  });
+});
+
+// https://mantlescan.xyz/tx/0x504118136b57d7a1ef7b3674505c32bf9d8d3df9c7991a9ee627f9883257dc38
+test("parse a swap on Mode (USDC for MNT) with SettlerMetaTxn", async () => {
+  const publicClient = createPublicClient({
+    chain: mantle,
+    transport: http(
+      `https://mantle-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  });
+
+  const transactionHash = `0x504118136b57d7a1ef7b3674505c32bf9d8d3df9c7991a9ee627f9883257dc38`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "USDC",
+      amount: "2",
+      address: "0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9",
+    },
+    tokenOut: {
+      symbol: "MNT",
+      amount: "1.737346835463007796",
+      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     },
   });
 });

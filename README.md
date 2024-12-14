@@ -85,6 +85,44 @@
       </div>
     </td>
   </tr>
+  <tr>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="coming soon" src="https://i.imgur.com/CexTjqF.png" width="22"/>
+        <br>🔜
+      </div>
+    </td>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="coming soon" src="https://i.imgur.com/LxajJAy.png" width="22"/>
+        <br>🔜
+      </div>
+    </td>    
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="coming soon" src="https://i.imgur.com/c5GLXZm.png" width="22"/>
+        <br>🔜
+      </div>
+    </td>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="coming soon" src="https://cdn.prod.website-files.com/63692bf32544bee8b1836ea6/637b01428c7bd8e16af26756_favicon-32.png" width="22"/>
+        <br>🔜
+      </div>
+    </td>    
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="coming soon" src="https://i.imgur.com/OPA8A9u.png" width="22"/>
+        <br>🔜
+      </div>
+    </td>    
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="coming soon" src="https://uc0b21458bb164b77e02b55e693f.previews.dropboxusercontent.com/p/thumb/ACd46XAdDQOjnDUQFKFEF15nMyLugKxfdnezVxHzCDAGt4bVB8l6AJVJB83hl1gSLMXlMtGzODSzMu-HaX-B5fzDVqvAcLTidJitmhGWq8qUjnLMAXE7hwYZJvU9QcKmwdJD9Qb9QyXzB-eGceNuj0b_IWLWL3vrQZguOjJWdMm9rT68SpLT7nG13gnxZxoXuCV5myYxOYVQ5zBx6DchblRIzFzeEpxuI4ciaH9phUCbP_4M5cV1aqSDBtwfWgbMHzTJ5nukSPY4-1hg2irDAFYgclLXV-pw_jfKmZgqKfW7HizolfD5-Gb1EL10Os2dfsurNu0FTqLrxYJrTZ7Qhzxzr1hwI9-m1Qo--3R2AezSNYgv4YGBy33sDvWhNgy-Xn8K1MhNtG8HMInuEYkaKv6XtVDJssG8wEbW1hDOfmqpaV2SMuWwPehX0Ry4dvJ6dN7axGNBU-Xcorl52AWan5C3727K9RaifMl2TAFvunoCNxtFghRjNpYuiV3Q9IBXd--O4Cca8K07bloVSH-ectkbJIp_tT4dI_yBL32qnG26fL4a1sGzKpcrZZCQsyq0fwVWll2yzru3k71EQRoIjvnuFcyvGOScYrnJOWmFp7d2eABwlG4-T3U8ZYvjn5NY2UYo9kUeCY-Ev--2WExLqfCKga_19tA6FGk8CMhuf_gvAE0hfsgmi3PYiqTjj1mviJIc_o3Mkx6eLMIXHHaTIxqjvP_V219UiimJgNwfreCM7wkIpkGW0BuRyBzAjfgW3C2hB2cJGF8OhBn-cKnrNEU1WSC-TVKrcPwlDH3ticPQOD7hXucL110aBmxY_KacBPI2Br4HioXKYTWsTfrRnVbjB0KpE0RWtstyryG-pMq-vA/p.png" width="22"/>
+        <br>🔜
+      </div>
+    </td>
+  </tr>
 </table>
 
 ## Overview

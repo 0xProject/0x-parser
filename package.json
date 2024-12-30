@@ -52,14 +52,14 @@
     "test": "vitest --coverage"
   },
   "peerDependencies": {
-    "viem": "^2.21.54"
+    "viem": "^2.22.1"
   },
   "devDependencies": {
-    "@types/node": "^22.10.1",
+    "@types/node": "^22.10.3",
     "@vitest/coverage-v8": "^2.1.8",
-    "abitype": "^1.0.7",
+    "abitype": "^1.0.8",
     "dotenv": "^16.4.7",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.24.2",
     "http-server": "^14.1.1",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"

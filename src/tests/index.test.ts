@@ -1279,8 +1279,6 @@ test("parse a swap on Worldchain (ETH for USDC.e) with Settler", async () => {
     transactionHash,
   });
 
-  console.log(result, "<--result");
-
   expect(result).toEqual({
     tokenIn: {
       symbol: "ETH",

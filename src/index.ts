@@ -189,7 +189,6 @@ export async function parseSwap({
         { symbol: "", amount: "", address: "" }
       );
 
-    console.log("B");
     return {
       tokenIn: {
         symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
@@ -209,7 +208,6 @@ export async function parseSwap({
   }
   /* v8 ignore stop */
 
-  console.log("A");
   return {
     tokenIn: {
       symbol: input.symbol,

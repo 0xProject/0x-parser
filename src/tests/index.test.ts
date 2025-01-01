@@ -16,6 +16,7 @@ import {
   arbitrum,
   optimism,
   mantle,
+  worldchain,
 } from "viem/chains";
 import { test, expect } from "vitest";
 import { parseSwap } from "../index";
@@ -642,9 +643,7 @@ test("parse a gasless swap on Optimism (USDC for OP) for execute", async () => {
   });
 });
 
-// TODO: remove skip or test different tx hash, RPC provider cannot fetch this transaction hash.
-// https://bscscan.com/tx/0xdda12da1e32c3320082355c985d6f2c6559169989de51e3cc83123395516c057
-test.skip("parse a swap on BNB Chain (ETH for USDC) for execute", async () => {
+test("parse a swap on BNB Chain (ETH for USDC) for execute", async () => {
   const publicClient = createPublicClient({
     chain: optimism,
     transport: http(
@@ -1230,6 +1229,68 @@ test("parse a swap on Mode (ezETH for MODE) with SettlerMetaTxn", async () => {
       symbol: "MODE",
       amount: "60.488654650393620538",
       address: "0xDfc7C877a950e49D2610114102175A06C2e3167a",
+    },
+  });
+});
+
+// https://worldscan.org/tx/0xc6b6a747910ff6ff6262f3a7067db5d48fb83d774f3556bee7654b020f0e875d
+test("parse a swap on Worldchain (USDC.e for WLD) with Settler", async () => {
+  const publicClient = createPublicClient({
+    chain: worldchain,
+    transport: http(
+      `https://worldchain-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0xc6b6a747910ff6ff6262f3a7067db5d48fb83d774f3556bee7654b020f0e875d`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "USDC.e",
+      amount: "0.8",
+      address: "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1",
+    },
+    tokenOut: {
+      symbol: "WLD",
+      amount: "0.382406307673532742",
+      address: "0x2cFc85d8E48F8EAB294be644d9E25C3030863003",
+    },
+  });
+});
+
+// https://worldscan.org/tx/0x4c095630a5b87cd2c04fcc2cf08940ed8251f6d451efc61e1e90b42775d4f051
+test("parse a swap on Worldchain (ETH for USDC.e) with Settler", async () => {
+  const publicClient = createPublicClient({
+    chain: worldchain,
+    transport: http(
+      `https://worldchain-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0x4c095630a5b87cd2c04fcc2cf08940ed8251f6d451efc61e1e90b42775d4f051`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  console.log(result, "<--result");
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "ETH",
+      amount: "0.001",
+      address: NATIVE_TOKEN_ADDRESS,
+    },
+    tokenOut: {
+      symbol: "USDC.e",
+      amount: "3.332454",
+      address: "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1",
     },
   });
 });

@@ -11,6 +11,7 @@ import {
   arbitrum,
   optimism,
   avalanche,
+  worldchain,
 } from "viem/chains";
 
 import type {
@@ -35,7 +36,8 @@ export type SupportedChainId =
   | typeof polygon.id
   | typeof arbitrum.id
   | typeof optimism.id
-  | typeof avalanche.id;
+  | typeof avalanche.id
+  | typeof worldchain.id;
 
 export interface EnrichLogsArgs {
   transactionReceipt: TransactionReceipt;

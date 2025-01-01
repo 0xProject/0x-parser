@@ -12,6 +12,7 @@ import {
   arbitrum,
   optimism,
   avalanche,
+  worldchain,
 } from "viem/chains";
 import { NATIVE_SYMBOL_BY_CHAIN_ID, NATIVE_TOKEN_ADDRESS } from "../constants";
 import type { Address } from "viem";
@@ -38,6 +39,7 @@ export function isChainIdSupported(
     arbitrum.id,
     optimism.id,
     avalanche.id,
+    worldchain.id,
   ];
   return supportedChainIds.includes(chainId);
 }

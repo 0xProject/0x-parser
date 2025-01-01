@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.0](https://github.com/0xProject/0x-parser/compare/v2.6.0...v2.7.0) (2025-01-01)
+
+
+### Features
+
+* worldchain support ([8186963](https://github.com/0xProject/0x-parser/commit/8186963ab8a5e91b1a1c51cd1dc0f81fa6f7fa86))
+
 ## [2.6.0](https://github.com/0xProject/0x-parser/compare/v2.5.0...v2.6.0) (2024-10-28)
 
 

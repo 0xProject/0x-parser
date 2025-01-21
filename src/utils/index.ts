@@ -107,12 +107,13 @@ export async function transferLogs({
       const decimals = results[midpoint + index].result as number;
       const amount =
         log.data === "0x" ? "0" : formatUnits(BigInt(log.data), decimals);
+      const amountRaw = log.data === "0x" ? 0n : BigInt(log.data);
       const { address, topics } = log;
       const { 1: fromHex, 2: toHex } = topics;
       const from = getAddress(convertHexToAddress(fromHex));
       const to = getAddress(convertHexToAddress(toHex));
 
-      return { to, from, symbol, amount, address, decimals };
+      return { to, from, symbol, amount, amountRaw, address, decimals };
     })
     .filter((log) => log.amount !== "0");
 

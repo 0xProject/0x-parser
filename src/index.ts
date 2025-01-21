@@ -86,7 +86,13 @@ export async function parseSwap({
     (log) => log.from.toLowerCase() === taker.toLowerCase()
   );
 
-  let input = fromTaker.length ? fromTaker[0] : logs[0];
+  let input = fromTaker.length
+    ? fromTaker.reduce((acc, curr) => ({
+        ...acc,
+        amount: formatUnits(acc.amountRaw + curr.amountRaw, curr.decimals),
+        amountRaw: acc.amountRaw + curr.amountRaw,
+      }))
+    : logs[0];
 
   let output =
     nativeAmountToTaker === "0"

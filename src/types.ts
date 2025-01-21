@@ -50,6 +50,7 @@ export interface EnrichedLog {
   amount: string;
   address: Address;
   decimals: number;
+  amountRaw: bigint;
 }
 
 export interface Trace {

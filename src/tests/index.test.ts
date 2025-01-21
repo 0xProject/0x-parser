@@ -550,6 +550,37 @@ test("parse a gasless swap on Base (DEGEN for USDC) for SettlerMetaTxn", async (
   });
 });
 
+// https://basescan.org/tx/0x3d032fdd216315c3dce7bcafeac0805ec18d27c7c9fdf43836cab7fb61332a6d
+test("parse a swap on Base (KEIRA for ETH) for Settler", async () => {
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0x3d032fdd216315c3dce7bcafeac0805ec18d27c7c9fdf43836cab7fb61332a6d";
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "KEIRA",
+      amount: "27538.512122127777968652",
+      address: "0x710eEc215b3bB653d42fC6e70E0531eA13F51A7A",
+    },
+    tokenOut: {
+      symbol: "ETH",
+      amount: "0.035509880980229712",
+      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    },
+  });
+});
+
 // https://arbiscan.io/tx/0xb2c05194e4ec9ae0f82098ec82a606df544e87c8d6b7726bbb4b1dcc023cb9d7
 test("parse a gasless swap on on Arbitrum (ARB for ETH)", async () => {
   const publicClient = createPublicClient({

@@ -1,6 +1,6 @@
 {
   "name": "@0x/0x-parser",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "🧾 Designed for 0x integrators: This library parses 0x transactions on EVM blockchains into a format that is both user-friendly and easy to understand.",
   "keywords": [
     "0x",

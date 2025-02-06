@@ -31,7 +31,7 @@ export async function parseSwap({
   transactionHash: Address;
   smartContractWallet?: Address;
 }) {
-  const chainId = await publicClient.getChainId();
+  const chainId = publicClient.chain.id;
 
   if (!isChainIdSupported(chainId)) {
     throw new Error(`chainId ${chainId} is unsupported…`);
@@ -46,9 +46,11 @@ export async function parseSwap({
     },
   }));
 
-  const trace = await client.traceCall({ hash });
-
-  const transaction = await publicClient.getTransaction({ hash });
+  const [trace, transaction, transactionReceipt] = await Promise.all([
+    client.traceCall({ hash }),
+    publicClient.getTransaction({ hash }),
+    publicClient.getTransactionReceipt({ hash }),
+  ]);
 
   const { from: taker, value, to } = transaction;
 
@@ -57,8 +59,6 @@ export async function parseSwap({
   const nativeAmountToTaker = calculateNativeTransfer(trace, {
     recipient: taker,
   });
-
-  const transactionReceipt = await publicClient.getTransactionReceipt({ hash });
 
   const isNativeSell = value > 0n;
 

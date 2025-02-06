@@ -13,3 +13,6 @@ coverage
 
 # environment variables
 .env
+
+# IDE
+.idea

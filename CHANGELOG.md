@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.8.0](https://github.com/0xProject/0x-parser/compare/v2.7.1...v2.8.0) (2025-02-12)
+
+
+### Features
+
+* unichain support ([0f49539](https://github.com/0xProject/0x-parser/commit/0f4953917e56127949abfe9a06bda8003384c7c1))
+
 ## [2.7.1](https://github.com/0xProject/0x-parser/compare/v2.7.0...v2.7.1) (2025-01-21)
 
 

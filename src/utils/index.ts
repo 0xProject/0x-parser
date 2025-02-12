@@ -11,6 +11,7 @@ import {
   polygon,
   arbitrum,
   optimism,
+  unichain,
   avalanche,
   worldchain,
 } from "viem/chains";
@@ -38,6 +39,7 @@ export function isChainIdSupported(
     mainnet.id,
     arbitrum.id,
     optimism.id,
+    unichain.id,
     avalanche.id,
     worldchain.id,
   ];

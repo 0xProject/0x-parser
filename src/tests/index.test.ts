@@ -1061,7 +1061,7 @@ test("parse a swap on Blast (YOLO for USDB) with execute", async () => {
     transport: http(
       `https://blast-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
-  });
+  }) as PublicClient<Transport, Chain>;
 
   const transactionHash = `0x2cdcf1c74ff01657a2d8540be3e820e21312fd5b929ae1dc887f1a45418a4bf4`;
 
@@ -1091,7 +1091,7 @@ test("parse a swap on Blast (ETH for ezETH) with execute", async () => {
     transport: http(
       `https://blast-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
-  });
+  }) as PublicClient<Transport, Chain>;
 
   const transactionHash = `0x62b094c45cc2506d60d44afa50bc54e699c09278be5050d8510a42ab1c8fa31f`;
 
@@ -1121,7 +1121,7 @@ test("parse a swap on Mantle (WETH for mETH) with execute", async () => {
     transport: http(
       `https://mantle-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
-  });
+  }) as PublicClient<Transport, Chain>;
 
   const transactionHash = `0xbd89bd8f580e5606c046feac8b0d72e321009cfed361c9919eb4845999ea79a4`;
 
@@ -1320,6 +1320,36 @@ test("parse a swap on Worldchain (ETH for USDC.e) with Settler", async () => {
       symbol: "USDC.e",
       amount: "3.332454",
       address: "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1",
+    },
+  });
+});
+
+// https://unichain.blockscout.com/tx/0xa0129a4f97833aefb12b85594a9bbe1861be0a207ac14f423588b7b5dbe1a6a6
+test("parse a swap on Unichain (WETH for USDC) with AllowanceHolder", async () => {
+  const publicClient = createPublicClient({
+    chain: worldchain,
+    transport: http(
+      `https://unichain-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0xa0129a4f97833aefb12b85594a9bbe1861be0a207ac14f423588b7b5dbe1a6a6`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "WETH",
+      amount: "0.003",
+      address: "0x4200000000000000000000000000000000000006",
+    },
+    tokenOut: {
+      symbol: "USDC",
+      amount: "7.812884",
+      address: "0x078D782b760474a361dDA0AF3839290b0EF57AD6",
     },
   });
 });

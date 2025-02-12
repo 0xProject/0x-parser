@@ -12,6 +12,7 @@ import {
   optimism,
   avalanche,
   worldchain,
+  unichain,
 } from "viem/chains";
 
 import type {
@@ -35,6 +36,7 @@ export type SupportedChainId =
   | typeof mainnet.id
   | typeof polygon.id
   | typeof arbitrum.id
+  | typeof unichain.id
   | typeof optimism.id
   | typeof avalanche.id
   | typeof worldchain.id;

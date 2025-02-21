@@ -12,6 +12,7 @@ import {
   optimism,
   avalanche,
   worldchain,
+  berachain,
   unichain,
 } from "viem/chains";
 
@@ -39,6 +40,7 @@ export type SupportedChainId =
   | typeof unichain.id
   | typeof optimism.id
   | typeof avalanche.id
+  | typeof berachain.id
   | typeof worldchain.id;
 
 export interface EnrichLogsArgs {

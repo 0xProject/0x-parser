@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.0](https://github.com/0xProject/0x-parser/compare/v2.8.0...v2.9.0) (2025-02-21)
+
+
+### Features
+
+* support parsing transactions on berachain ([34900e7](https://github.com/0xProject/0x-parser/commit/34900e74ef87b1555b2078b736c5e8eac3fb40e0))
+
 ## [2.8.0](https://github.com/0xProject/0x-parser/compare/v2.7.1...v2.8.0) (2025-02-12)
 
 

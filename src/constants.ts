@@ -12,6 +12,7 @@ import {
   unichain,
   optimism,
   avalanche,
+  berachain,
   worldchain,
 } from "viem/chains";
 import type { SupportedChainId } from "./types";
@@ -62,6 +63,7 @@ export const NATIVE_SYMBOL_BY_CHAIN_ID: { [key in SupportedChainId]: string } =
     [optimism.id]: optimism.nativeCurrency.symbol,
     [arbitrum.id]: arbitrum.nativeCurrency.symbol,
     [avalanche.id]: avalanche.nativeCurrency.symbol,
+    [berachain.id]: berachain.nativeCurrency.symbol,
     [worldchain.id]: worldchain.nativeCurrency.symbol,
   };
 

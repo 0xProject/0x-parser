@@ -17,6 +17,7 @@ import {
   optimism,
   mantle,
   worldchain,
+  berachain,
 } from "viem/chains";
 import { test, expect } from "vitest";
 import { parseSwap } from "../index";
@@ -1350,6 +1351,36 @@ test("parse a swap on Unichain (WETH for USDC) with AllowanceHolder", async () =
       symbol: "USDC",
       amount: "7.812884",
       address: "0x078D782b760474a361dDA0AF3839290b0EF57AD6",
+    },
+  });
+});
+
+// https://berascan.com/tx/0xaf644cef00ca79ee0365218d02cf238c2b4a5e9a1b1e7cfccaee1542fb19211b
+test("parse a swap on Berachain (WETH for WBERA) with AllowanceHolder", async () => {
+  const publicClient = createPublicClient({
+    chain: berachain,
+    transport: http(
+      `https://berachain-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0xaf644cef00ca79ee0365218d02cf238c2b4a5e9a1b1e7cfccaee1542fb19211b`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "WETH",
+      amount: "0.0025",
+      address: "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590",
+    },
+    tokenOut: {
+      symbol: "WBERA",
+      amount: "1.116831193710334426",
+      address: "0x6969696969696969696969696969696969696969",
     },
   });
 });

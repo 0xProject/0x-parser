@@ -264,7 +264,7 @@ test("throws an error for unsupported chains)", async () => {
     transport: http("https://rpc.ankr.com/celo"),
   });
 
-  expect(async () => {
+  await expect(async () => {
     await parseSwap({
       publicClient,
       transactionHash,
@@ -716,7 +716,7 @@ test("throws when smart contract wallet is not passed", async () => {
   const transactionHash =
     "0x756289cdedd4c007268ef208fe2758a9fb6efd49fb241397b67089512b497662";
 
-  expect(async () => {
+  await expect(async () => {
     await parseSwap({
       publicClient,
       transactionHash,

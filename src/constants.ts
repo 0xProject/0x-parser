@@ -48,6 +48,24 @@ export const SETTLER_META_TXN_ABI = [
 
 export const FUNCTION_SELECTORS = { EXECUTE_META_TXN: "0xfd3ad6d4" };
 
+export const SUPPORTED_CHAINS = [
+  bsc,
+  base,
+  mode,
+  blast,
+  linea,
+  scroll,
+  mantle,
+  mainnet,
+  polygon,
+  arbitrum,
+  unichain,
+  optimism,
+  avalanche,
+  berachain,
+  worldchain,
+];
+
 export const NATIVE_SYMBOL_BY_CHAIN_ID: { [key in SupportedChainId]: string } =
   {
     [bsc.id]: bsc.nativeCurrency.symbol,

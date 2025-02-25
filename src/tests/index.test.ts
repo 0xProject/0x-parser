@@ -19,7 +19,7 @@ import {
   worldchain,
   berachain,
 } from "viem/chains";
-import { test, expect } from "vitest";
+import { vi, test, expect } from "vitest";
 import { parseSwap } from "../index";
 import { NATIVE_TOKEN_ADDRESS } from "../constants";
 
@@ -1383,4 +1383,18 @@ test("parse a swap on Berachain (WETH for WBERA) with AllowanceHolder", async ()
       address: "0x6969696969696969696969696969696969696969",
     },
   });
+});
+
+// https://etherscan.io/tx/0x25f24a7e6ec93abc99dca56a0ef2de1999deb17f67e6ed91cad1271757fff810
+test("logs a warning for reverted transactions)", async () => {
+  const warnSpy = vi.spyOn(console, "warn");
+  const transactionHash = `0x25f24a7e6ec93abc99dca56a0ef2de1999deb17f67e6ed91cad1271757fff810`;
+  await parseSwap({ publicClient, transactionHash });
+
+  expect(warnSpy).toHaveBeenCalled();
+  expect(warnSpy).toHaveBeenCalledWith(
+    `Unable to parse. Transaction ${transactionHash} on Ethereum has reverted.`
+  );
+
+  warnSpy.mockRestore();
 });

@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.0](https://github.com/0xProject/0x-parser/compare/v2.9.0...v2.10.0) (2025-02-25)
+
+
+### Features
+
+* log warning for reverted transactions ([4d0ab07](https://github.com/0xProject/0x-parser/commit/4d0ab07afc53e39ab607f22a8cca21e976197ca2))
+
 ## [2.9.0](https://github.com/0xProject/0x-parser/compare/v2.8.0...v2.9.0) (2025-02-21)
 
 

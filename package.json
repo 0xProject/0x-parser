@@ -1,6 +1,6 @@
 {
   "name": "@0x/0x-parser",
-  "version": "2.7.1",
+  "version": "2.10.0",
   "description": "🧾 Designed for 0x integrators: This library parses 0x transactions on EVM blockchains into a format that is both user-friendly and easy to understand.",
   "keywords": [
     "0x",
@@ -52,16 +52,16 @@
     "test": "vitest --coverage"
   },
   "peerDependencies": {
-    "viem": "^2.22.1"
+    "viem": "^2.23.4"
   },
   "devDependencies": {
-    "@types/node": "^22.10.3",
-    "@vitest/coverage-v8": "^2.1.8",
+    "@types/node": "^22.13.5",
+    "@vitest/coverage-v8": "^3.0.6",
     "abitype": "^1.0.8",
     "dotenv": "^16.4.7",
-    "esbuild": "^0.24.2",
+    "esbuild": "^0.25.0",
     "http-server": "^14.1.1",
-    "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.6"
   }
 }

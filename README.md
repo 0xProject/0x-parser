@@ -94,19 +94,19 @@
     </td>
     <td style="width:100px; text-align:center;">
       <div align="center">
-        <img alt="coming soon" src="https://i.imgur.com/CexTjqF.png" width="22"/>
-        <br>🔜
-      </div>
-    </td>
-    <td style="width:100px; text-align:center;">
-      <div align="center">
-        <img alt="coming soon" src="https://i.imgur.com/LxajJAy.png" width="22"/>
-        <br>🔜
+        <img alt="Unichain" src="https://i.imgur.com/LxajJAy.png" width="22"/>
+        <br>Unichain
       </div>
     </td>    
     <td style="width:100px; text-align:center;">
       <div align="center">
-        <img alt="coming soon" src="https://i.imgur.com/c5GLXZm.png" width="22"/>
+        <img alt="coming soon" src="https://www.berachain.com/icon.svg" width="24"/>
+        <br>Berachain
+      </div>
+    </td>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="coming soon" src="https://i.imgur.com/CexTjqF.png" width="22"/>
         <br>🔜
       </div>
     </td>

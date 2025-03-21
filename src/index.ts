@@ -6,6 +6,7 @@ import {
   decodeFunctionData,
 } from "viem";
 import {
+  SUPPORTED_CHAINS,
   MULTICALL3_ADDRESS,
   FUNCTION_SELECTORS,
   ERC_4337_ENTRY_POINT,
@@ -59,6 +60,15 @@ export async function parseSwap({
   const nativeAmountToTaker = calculateNativeTransfer(trace, {
     recipient: taker,
   });
+
+  const transactionReceipt = await publicClient.getTransactionReceipt({ hash });
+
+  if (transactionReceipt.status === "reverted") {
+    const chain = SUPPORTED_CHAINS.find((chain) => chain.id === chainId);
+    const message = `Unable to parse. Transaction ${hash} on ${chain?.name} has reverted.`;
+    console.warn(message);
+    return null;
+  }
 
   const isNativeSell = value > 0n;
 
@@ -159,7 +169,6 @@ export async function parseSwap({
         };
       } /* v8 ignore start */ else {
         // Unknown if this case actually happens. If it does, please file a bug report here: https://github.com/0xProject/0x-parser/issues/new/choose".
-        output = { symbol: "", amount: "", address: "" };
         console.error(
           "File a bug report here, including the expected results (URL to a block explorer) and the unexpected results: https://github.com/0xProject/0x-parser/issues/new/choose."
         );

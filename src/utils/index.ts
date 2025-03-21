@@ -11,7 +11,9 @@ import {
   polygon,
   arbitrum,
   optimism,
+  unichain,
   avalanche,
+  berachain,
   worldchain,
 } from "viem/chains";
 import { NATIVE_SYMBOL_BY_CHAIN_ID, NATIVE_TOKEN_ADDRESS } from "../constants";
@@ -38,7 +40,9 @@ export function isChainIdSupported(
     mainnet.id,
     arbitrum.id,
     optimism.id,
+    unichain.id,
     avalanche.id,
+    berachain.id,
     worldchain.id,
   ];
   return supportedChainIds.includes(chainId);

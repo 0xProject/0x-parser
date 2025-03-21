@@ -9,8 +9,10 @@ import {
   mainnet,
   polygon,
   arbitrum,
+  unichain,
   optimism,
   avalanche,
+  berachain,
   worldchain,
 } from "viem/chains";
 import type { SupportedChainId } from "./types";
@@ -46,6 +48,24 @@ export const SETTLER_META_TXN_ABI = [
 
 export const FUNCTION_SELECTORS = { EXECUTE_META_TXN: "0xfd3ad6d4" };
 
+export const SUPPORTED_CHAINS = [
+  bsc,
+  base,
+  mode,
+  blast,
+  linea,
+  scroll,
+  mantle,
+  mainnet,
+  polygon,
+  arbitrum,
+  unichain,
+  optimism,
+  avalanche,
+  berachain,
+  worldchain,
+];
+
 export const NATIVE_SYMBOL_BY_CHAIN_ID: { [key in SupportedChainId]: string } =
   {
     [bsc.id]: bsc.nativeCurrency.symbol,
@@ -57,9 +77,11 @@ export const NATIVE_SYMBOL_BY_CHAIN_ID: { [key in SupportedChainId]: string } =
     [mantle.id]: mantle.nativeCurrency.symbol,
     [mainnet.id]: mainnet.nativeCurrency.symbol,
     [polygon.id]: polygon.nativeCurrency.symbol,
+    [unichain.id]: unichain.nativeCurrency.symbol,
     [optimism.id]: optimism.nativeCurrency.symbol,
     [arbitrum.id]: arbitrum.nativeCurrency.symbol,
     [avalanche.id]: avalanche.nativeCurrency.symbol,
+    [berachain.id]: berachain.nativeCurrency.symbol,
     [worldchain.id]: worldchain.nativeCurrency.symbol,
   };
 

@@ -17,8 +17,11 @@ import {
   optimism,
   mantle,
   worldchain,
+  berachain,
+  bsc,
+  celo,
 } from "viem/chains";
-import { test, expect } from "vitest";
+import { vi, test, expect } from "vitest";
 import { parseSwap } from "../index";
 import { NATIVE_TOKEN_ADDRESS } from "../constants";
 
@@ -259,11 +262,11 @@ test("throws an error for unsupported chains)", async () => {
     "0x615c5089f772a8f2074750e8c6070013d288af7681435aba1771f6bfc63d1286";
 
   const publicClient = createPublicClient({
-    chain: mainnet,
+    chain: celo,
     transport: http("https://rpc.ankr.com/celo"),
-  });
+  }) as unknown as PublicClient<Transport, Chain>;
 
-  expect(async () => {
+  await expect(async () => {
     await parseSwap({
       publicClient,
       transactionHash,
@@ -676,7 +679,7 @@ test("parse a gasless swap on Optimism (USDC for OP) for execute", async () => {
 
 test("parse a swap on BNB Chain (ETH for USDC) for execute", async () => {
   const publicClient = createPublicClient({
-    chain: optimism,
+    chain: bsc,
     transport: http(
       `https://bnb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
@@ -715,7 +718,7 @@ test("throws when smart contract wallet is not passed", async () => {
   const transactionHash =
     "0x756289cdedd4c007268ef208fe2758a9fb6efd49fb241397b67089512b497662";
 
-  expect(async () => {
+  await expect(async () => {
     await parseSwap({
       publicClient,
       transactionHash,
@@ -914,7 +917,7 @@ test("parse a swap on Polygon (USDC for WPOL) with smart contract wallet", async
 // https://bscscan.com/tx/0xfd4730866f81a7007a586c21b97f56d3f1e62bbba7ebb65e52032676466a8ec1
 test("parse a swap on BNB Chain (BNB for USDT) with smart contract wallet", async () => {
   const publicClient = createPublicClient({
-    chain: optimism,
+    chain: bsc,
     transport: http(
       `https://bnb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
@@ -945,7 +948,7 @@ test("parse a swap on BNB Chain (BNB for USDT) with smart contract wallet", asyn
 // https://bscscan.com/tx/0x5f8839d369b61c5325a4f5406f55e26310722744aa3177b62924e077cb705432
 test("parse a swap on BNB Chain (USDT for BNB) with smart contract wallet", async () => {
   const publicClient = createPublicClient({
-    chain: optimism,
+    chain: bsc,
     transport: http(
       `https://bnb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
@@ -1061,7 +1064,7 @@ test("parse a swap on Blast (YOLO for USDB) with execute", async () => {
     transport: http(
       `https://blast-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
-  });
+  }) as PublicClient<Transport, Chain>;
 
   const transactionHash = `0x2cdcf1c74ff01657a2d8540be3e820e21312fd5b929ae1dc887f1a45418a4bf4`;
 
@@ -1091,7 +1094,7 @@ test("parse a swap on Blast (ETH for ezETH) with execute", async () => {
     transport: http(
       `https://blast-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
-  });
+  }) as PublicClient<Transport, Chain>;
 
   const transactionHash = `0x62b094c45cc2506d60d44afa50bc54e699c09278be5050d8510a42ab1c8fa31f`;
 
@@ -1117,11 +1120,11 @@ test("parse a swap on Blast (ETH for ezETH) with execute", async () => {
 // https://mantlescan.xyz/tx/0xbd89bd8f580e5606c046feac8b0d72e321009cfed361c9919eb4845999ea79a4
 test("parse a swap on Mantle (WETH for mETH) with execute", async () => {
   const publicClient = createPublicClient({
-    chain: blast,
+    chain: mantle,
     transport: http(
-      `https://mantle-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+      `https://blissful-snowy-owl.mantle-mainnet.quiknode.pro/${process.env.QUICKNODE_MANTLE_API_KEY}/`
     ),
-  });
+  }) as PublicClient<Transport, Chain>;
 
   const transactionHash = `0xbd89bd8f580e5606c046feac8b0d72e321009cfed361c9919eb4845999ea79a4`;
 
@@ -1145,11 +1148,11 @@ test("parse a swap on Mantle (WETH for mETH) with execute", async () => {
 });
 
 // https://mantlescan.xyz/tx/0x504118136b57d7a1ef7b3674505c32bf9d8d3df9c7991a9ee627f9883257dc38
-test("parse a swap on Mode (USDC for MNT) with SettlerMetaTxn", async () => {
+test("parse a swap on Mantle (USDC for MNT) with SettlerMetaTxn", async () => {
   const publicClient = createPublicClient({
     chain: mantle,
     transport: http(
-      `https://mantle-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+      `https://blissful-snowy-owl.mantle-mainnet.quiknode.pro/${process.env.QUICKNODE_MANTLE_API_KEY}/`
     ),
   });
 
@@ -1322,4 +1325,78 @@ test("parse a swap on Worldchain (ETH for USDC.e) with Settler", async () => {
       address: "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1",
     },
   });
+});
+
+// https://unichain.blockscout.com/tx/0xa0129a4f97833aefb12b85594a9bbe1861be0a207ac14f423588b7b5dbe1a6a6
+test("parse a swap on Unichain (WETH for USDC) with AllowanceHolder", async () => {
+  const publicClient = createPublicClient({
+    chain: worldchain,
+    transport: http(
+      `https://unichain-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0xa0129a4f97833aefb12b85594a9bbe1861be0a207ac14f423588b7b5dbe1a6a6`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "WETH",
+      amount: "0.003",
+      address: "0x4200000000000000000000000000000000000006",
+    },
+    tokenOut: {
+      symbol: "USDC",
+      amount: "7.812884",
+      address: "0x078D782b760474a361dDA0AF3839290b0EF57AD6",
+    },
+  });
+});
+
+// https://berascan.com/tx/0xaf644cef00ca79ee0365218d02cf238c2b4a5e9a1b1e7cfccaee1542fb19211b
+test("parse a swap on Berachain (WETH for WBERA) with AllowanceHolder", async () => {
+  const publicClient = createPublicClient({
+    chain: berachain,
+    transport: http(
+      `https://berachain-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash = `0xaf644cef00ca79ee0365218d02cf238c2b4a5e9a1b1e7cfccaee1542fb19211b`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "WETH",
+      amount: "0.0025",
+      address: "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590",
+    },
+    tokenOut: {
+      symbol: "WBERA",
+      amount: "1.116831193710334426",
+      address: "0x6969696969696969696969696969696969696969",
+    },
+  });
+});
+
+// https://etherscan.io/tx/0x25f24a7e6ec93abc99dca56a0ef2de1999deb17f67e6ed91cad1271757fff810
+test("logs a warning for reverted transactions)", async () => {
+  const warnSpy = vi.spyOn(console, "warn");
+  const transactionHash = `0x25f24a7e6ec93abc99dca56a0ef2de1999deb17f67e6ed91cad1271757fff810`;
+  await parseSwap({ publicClient, transactionHash });
+
+  expect(warnSpy).toHaveBeenCalled();
+  expect(warnSpy).toHaveBeenCalledWith(
+    `Unable to parse. Transaction ${transactionHash} on Ethereum has reverted.`
+  );
+
+  warnSpy.mockRestore();
 });

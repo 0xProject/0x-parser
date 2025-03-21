@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.1](https://github.com/0xProject/0x-parser/compare/v2.10.0...v2.10.1) (2025-03-21)
+
+
+### Bug Fixes
+
+* added batch call + delete useless on-chain call ([#75](https://github.com/0xProject/0x-parser/issues/75)) ([bce9f9f](https://github.com/0xProject/0x-parser/commit/bce9f9fa08aec3723c13158296770e67e26cb021))
+
 ## [2.10.0](https://github.com/0xProject/0x-parser/compare/v2.9.0...v2.10.0) (2025-02-25)
 
 

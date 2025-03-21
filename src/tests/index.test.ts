@@ -18,6 +18,8 @@ import {
   mantle,
   worldchain,
   berachain,
+  bsc,
+  celo,
 } from "viem/chains";
 import { vi, test, expect } from "vitest";
 import { parseSwap } from "../index";
@@ -260,9 +262,9 @@ test("throws an error for unsupported chains)", async () => {
     "0x615c5089f772a8f2074750e8c6070013d288af7681435aba1771f6bfc63d1286";
 
   const publicClient = createPublicClient({
-    chain: mainnet,
+    chain: celo,
     transport: http("https://rpc.ankr.com/celo"),
-  });
+  }) as unknown as PublicClient<Transport, Chain>;
 
   await expect(async () => {
     await parseSwap({
@@ -677,7 +679,7 @@ test("parse a gasless swap on Optimism (USDC for OP) for execute", async () => {
 
 test("parse a swap on BNB Chain (ETH for USDC) for execute", async () => {
   const publicClient = createPublicClient({
-    chain: optimism,
+    chain: bsc,
     transport: http(
       `https://bnb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
@@ -915,7 +917,7 @@ test("parse a swap on Polygon (USDC for WPOL) with smart contract wallet", async
 // https://bscscan.com/tx/0xfd4730866f81a7007a586c21b97f56d3f1e62bbba7ebb65e52032676466a8ec1
 test("parse a swap on BNB Chain (BNB for USDT) with smart contract wallet", async () => {
   const publicClient = createPublicClient({
-    chain: optimism,
+    chain: bsc,
     transport: http(
       `https://bnb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
@@ -946,7 +948,7 @@ test("parse a swap on BNB Chain (BNB for USDT) with smart contract wallet", asyn
 // https://bscscan.com/tx/0x5f8839d369b61c5325a4f5406f55e26310722744aa3177b62924e077cb705432
 test("parse a swap on BNB Chain (USDT for BNB) with smart contract wallet", async () => {
   const publicClient = createPublicClient({
-    chain: optimism,
+    chain: bsc,
     transport: http(
       `https://bnb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
     ),
@@ -1118,9 +1120,9 @@ test("parse a swap on Blast (ETH for ezETH) with execute", async () => {
 // https://mantlescan.xyz/tx/0xbd89bd8f580e5606c046feac8b0d72e321009cfed361c9919eb4845999ea79a4
 test("parse a swap on Mantle (WETH for mETH) with execute", async () => {
   const publicClient = createPublicClient({
-    chain: blast,
+    chain: mantle,
     transport: http(
-      `https://mantle-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+      `https://blissful-snowy-owl.mantle-mainnet.quiknode.pro/${process.env.QUICKNODE_MANTLE_API_KEY}/`
     ),
   }) as PublicClient<Transport, Chain>;
 
@@ -1146,11 +1148,11 @@ test("parse a swap on Mantle (WETH for mETH) with execute", async () => {
 });
 
 // https://mantlescan.xyz/tx/0x504118136b57d7a1ef7b3674505c32bf9d8d3df9c7991a9ee627f9883257dc38
-test("parse a swap on Mode (USDC for MNT) with SettlerMetaTxn", async () => {
+test("parse a swap on Mantle (USDC for MNT) with SettlerMetaTxn", async () => {
   const publicClient = createPublicClient({
     chain: mantle,
     transport: http(
-      `https://mantle-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+      `https://blissful-snowy-owl.mantle-mainnet.quiknode.pro/${process.env.QUICKNODE_MANTLE_API_KEY}/`
     ),
   });
 

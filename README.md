@@ -165,6 +165,8 @@ npm install @0x/0x-parser
 ```typescript
 import { parseSwap } from "@0x/0x-parser";
 import { createPublicClient } from "viem";
+import { http } from "viem";
+import { mainnet } from "viem/chains";
 
 async function main() {
   const RPC_URL = `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`;

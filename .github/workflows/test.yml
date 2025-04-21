@@ -16,6 +16,7 @@ jobs:
           ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
           QUICKNODE_API_KEY: ${{ secrets.QUICKNODE_API_KEY }}
           QUICKNODE_MANTLE_API_KEY: ${{ secrets.QUICKNODE_MANTLE_API_KEY }}
+          QUICKNODE_BNB_CHAIN_API_KEY: ${{ secrets.QUICKNODE_BNB_CHAIN_API_KEY }}
       - uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

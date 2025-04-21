@@ -681,7 +681,7 @@ test("parse a swap on BNB Chain (ETH for USDC) for execute", async () => {
   const publicClient = createPublicClient({
     chain: bsc,
     transport: http(
-      `https://bnb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+      `https://attentive-twilight-flower.bsc.quiknode.pro/${process.env.QUICKNODE_BNB_CHAIN_API_KEY}/`
     ),
   }) as PublicClient<Transport, Chain>;
 
@@ -919,7 +919,7 @@ test("parse a swap on BNB Chain (BNB for USDT) with smart contract wallet", asyn
   const publicClient = createPublicClient({
     chain: bsc,
     transport: http(
-      `https://bnb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+      `https://attentive-twilight-flower.bsc.quiknode.pro/${process.env.QUICKNODE_BNB_CHAIN_API_KEY}/`
     ),
   }) as PublicClient<Transport, Chain>;
 
@@ -950,7 +950,7 @@ test("parse a swap on BNB Chain (USDT for BNB) with smart contract wallet", asyn
   const publicClient = createPublicClient({
     chain: bsc,
     transport: http(
-      `https://bnb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+      `https://attentive-twilight-flower.bsc.quiknode.pro/${process.env.QUICKNODE_BNB_CHAIN_API_KEY}/`
     ),
   }) as PublicClient<Transport, Chain>;
 

@@ -86,6 +86,30 @@ test("parses swapped amounts case 1 (default)", async () => {
   });
 });
 
+// https://etherscan.io/tx/0x761521a243ca56338b8bcbcf0d4bfc230ff349bb36e31472ac1d850977bdc484
+test("parses swapped amounts for meta transaction", async () => {
+  const transactionHash =
+    "0x761521a243ca56338b8bcbcf0d4bfc230ff349bb36e31472ac1d850977bdc484";
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "ZRX",
+      amount: "833.3332",
+      address: "0xE41d2489571d322189246DaFA5ebDe1F4699F498",
+    },
+    tokenOut: {
+      symbol: "ETH",
+      amount: "0.08832649392868776",
+      address: NATIVE_TOKEN_ADDRESS,
+    },
+  });
+});
+
 // https://etherscan.io/tx/0x76b744ab42b05b30624bd5027b4f7da841cdc357bb1d6ee74e3d9e049dd8a126
 test("parses swapped amounts case 2 (default)", async () => {
   const transactionHash =
@@ -1182,7 +1206,7 @@ test("parse a swap on Mode (ETH for BEAST) with Settler", async () => {
   const publicClient = createPublicClient({
     chain: mode,
     transport: http(
-      `https://fluent-boldest-water.mode-mainnet.quiknode.pro/${process.env.QUICKNODE_API_KEY}`
+      `https://nameless-still-sound.mode-mainnet.quiknode.pro/${process.env.QUICKNODE_MODE_API_KEY}`
     ),
   }) as PublicClient<Transport, Chain>;
 
@@ -1212,7 +1236,7 @@ test("parse a swap on Mode (BEAST for ezETH) with Settler", async () => {
   const publicClient = createPublicClient({
     chain: mode,
     transport: http(
-      `https://fluent-boldest-water.mode-mainnet.quiknode.pro/${process.env.QUICKNODE_API_KEY}`
+      `https://nameless-still-sound.mode-mainnet.quiknode.pro/${process.env.QUICKNODE_MODE_API_KEY}`
     ),
   }) as PublicClient<Transport, Chain>;
 
@@ -1242,7 +1266,7 @@ test("parse a swap on Mode (ezETH for MODE) with SettlerMetaTxn", async () => {
   const publicClient = createPublicClient({
     chain: mode,
     transport: http(
-      `https://fluent-boldest-water.mode-mainnet.quiknode.pro/${process.env.QUICKNODE_API_KEY}`
+      `https://nameless-still-sound.mode-mainnet.quiknode.pro/${process.env.QUICKNODE_MODE_API_KEY}`
     ),
   }) as PublicClient<Transport, Chain>;
 

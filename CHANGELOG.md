@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.2](https://github.com/0xProject/0x-parser/compare/v2.10.1...v2.10.2) (2025-06-07)
+
+
+### Bug Fixes
+
+* use log that has taker from transfer for meta txn ([9020b47](https://github.com/0xProject/0x-parser/commit/9020b4710001f380ccc3841aeed219db85fc7018))
+
 ## [2.10.1](https://github.com/0xProject/0x-parser/compare/v2.10.0...v2.10.1) (2025-03-21)
 
 

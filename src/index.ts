@@ -150,9 +150,15 @@ export async function parseSwap({
 
     const { 3: msgSender } = args;
 
+    const logsFromTaker = logs.filter((log) => log.from === msgSender);
+
     const nativeAmountToTaker = calculateNativeTransfer(trace, {
       recipient: msgSender,
     });
+
+    if (logsFromTaker.length) {
+      input = logsFromTaker[0];
+    }
 
     if (nativeAmountToTaker === "0") {
       output = logs[logs.length - 1];

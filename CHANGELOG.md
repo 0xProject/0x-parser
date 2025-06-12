@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.3](https://github.com/0xProject/0x-parser/compare/v2.10.2...v2.10.3) (2025-06-12)
+
+
+### Bug Fixes
+
+* account for msgSender for metaTxn is used with multicall ([d5c94d6](https://github.com/0xProject/0x-parser/commit/d5c94d6fa2b8438d99a9f779d918372437ebb215))
+
 ## [2.10.2](https://github.com/0xProject/0x-parser/compare/v2.10.1...v2.10.2) (2025-06-07)
 
 

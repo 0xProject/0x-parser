@@ -329,6 +329,37 @@ test("parse a gasless swap on Base (DAI for USDC)", async () => {
   });
 });
 
+// https://basescan.org/tx/0xb1ac9977d28e750add3b1a1ebdc95e56a51a9af7fc3d66fa7c011686eac455e6
+test("parse a gasless swap on Base (USDC for BRETT) via metaTxn multicall", async () => {
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(
+      `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0xb1ac9977d28e750add3b1a1ebdc95e56a51a9af7fc3d66fa7c011686eac455e6";
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "USDC",
+      amount: "1000",
+      address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    },
+    tokenOut: {
+      symbol: "BRETT",
+      amount: "18260.873189681406728218",
+      address: "0x532f27101965dd16442E59d40670FaF5eBB142E4",
+    },
+  });
+});
+
 // https://basescan.org/tx/0xa09cb1606e30c3aed8a842723fd6c23cecd838a59f750ab3dbc5ef2c7486e696
 test("parse a swap on Base (USDC for DAI)", async () => {
   const publicClient = createPublicClient({

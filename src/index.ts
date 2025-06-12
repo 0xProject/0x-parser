@@ -127,12 +127,16 @@ export async function parseSwap({
     const takerForGaslessApprovalSwap =
       settlerArgs[0].recipient.toLowerCase() as Address;
 
+    const msgSender = settlerArgs[3];
+
     const nativeAmountToTaker = calculateNativeTransfer(trace, {
       recipient: takerForGaslessApprovalSwap,
     });
 
     if (nativeAmountToTaker === "0") {
-      output = output = logs[logs.length - 1];
+      [output] = logs.filter(
+        (log) => log.to.toLowerCase() === msgSender.toLowerCase()
+      );
     } else {
       output = {
         symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],

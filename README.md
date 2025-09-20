@@ -106,6 +106,12 @@
     </td>
     <td style="width:100px; text-align:center;">
       <div align="center">
+        <img alt="Plasma" src="https://cdn.prod.website-files.com/68762d4ac364502c1ae1924b/68b159e46687e6c50b2fe2af_XPL.svg" width="24"/>
+        <br>Plasma
+      </div>
+    </td>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
         <img alt="coming soon" src="https://i.imgur.com/CexTjqF.png" width="22"/>
         <br>🔜
       </div>
@@ -116,13 +122,14 @@
         <br>🔜
       </div>
     </td>    
+  </tr>
+  <tr>
     <td style="width:100px; text-align:center;">
       <div align="center">
         <img alt="coming soon" src="https://i.imgur.com/OPA8A9u.png" width="22"/>
         <br>🔜
       </div>
     </td>    
-    
   </tr>
 </table>
 

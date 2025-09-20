@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.11.0](https://github.com/0xProject/0x-parser/compare/v2.10.3...v2.11.0) (2025-09-20)
+
+
+### Features
+
+* introduce support for plasma ([#88](https://github.com/0xProject/0x-parser/issues/88)) ([ac85b13](https://github.com/0xProject/0x-parser/commit/ac85b13a75bda7650b533a6e604d7124228f4aec))
+* update dependencies ([#86](https://github.com/0xProject/0x-parser/issues/86)) ([e84596f](https://github.com/0xProject/0x-parser/commit/e84596f19fa50b8d8ffbe082ab7f9d89df07a22b))
+
 ## [2.10.3](https://github.com/0xProject/0x-parser/compare/v2.10.2...v2.10.3) (2025-06-12)
 
 

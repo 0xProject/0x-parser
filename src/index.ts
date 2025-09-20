@@ -119,30 +119,32 @@ export async function parseSwap({
       data: transaction.input,
     });
 
-    const { args: settlerArgs } = decodeFunctionData({
-      abi: SETTLER_META_TXN_ABI,
-      data: multicallArgs[0][1].callData,
-    });
+    if (multicallArgs[0]) {
+      const { args: settlerArgs } = decodeFunctionData({
+        abi: SETTLER_META_TXN_ABI,
+        data: multicallArgs[0][1].callData,
+      });
 
-    const takerForGaslessApprovalSwap =
-      settlerArgs[0].recipient.toLowerCase() as Address;
+      const takerForGaslessApprovalSwap =
+        settlerArgs[0].recipient.toLowerCase() as Address;
 
-    const msgSender = settlerArgs[3];
+      const msgSender = settlerArgs[3];
 
-    const nativeAmountToTaker = calculateNativeTransfer(trace, {
-      recipient: takerForGaslessApprovalSwap,
-    });
+      const nativeAmountToTaker = calculateNativeTransfer(trace, {
+        recipient: takerForGaslessApprovalSwap,
+      });
 
-    if (nativeAmountToTaker === "0") {
-      [output] = logs.filter(
-        (log) => log.to.toLowerCase() === msgSender.toLowerCase()
-      );
-    } else {
-      output = {
-        symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
-        amount: nativeAmountToTaker,
-        address: NATIVE_TOKEN_ADDRESS,
-      };
+      if (nativeAmountToTaker === "0") {
+        [output] = logs.filter(
+          (log) => log.to.toLowerCase() === msgSender.toLowerCase()
+        );
+      } else {
+        output = {
+          symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
+          amount: nativeAmountToTaker,
+          address: NATIVE_TOKEN_ADDRESS,
+        };
+      }
     }
   }
 

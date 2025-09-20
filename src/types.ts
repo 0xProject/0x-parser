@@ -6,6 +6,7 @@ import {
   linea,
   scroll,
   mantle,
+  plasma,
   mainnet,
   polygon,
   arbitrum,
@@ -34,6 +35,7 @@ export type SupportedChainId =
   | typeof linea.id
   | typeof scroll.id
   | typeof mantle.id
+  | typeof plasma.id
   | typeof mainnet.id
   | typeof polygon.id
   | typeof arbitrum.id

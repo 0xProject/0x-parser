@@ -135,7 +135,7 @@
 
 ## Overview
 
-This library is designed for [0x](https://0x.org/docs/introduction/introduction-to-0x) integrators, simplifying the complex task of parsing [0x transactions](https://0x.org/docs/next/introduction/introduction-to-0x#the-0x-ecosystem) into a format that is both user-friendly and easy to understand. When swapping tokens, one of the challenges is that the trade can experience slippage through Automated Market Makers ([AMMs](https://0x.org/post/what-is-an-automated-market-maker-amm)). This makes the final swap amounts difficult to predict prior to executing the trade. However, this library overcomes that challenge by parsing the transaction receipt and event logs to accurately identify the final swap amounts.
+This library is designed for [0x](https://0x.org/docs/introduction/introduction-to-0x) integrators, simplifying the complex task of parsing [0x transactions](https://0x.org/docs/introduction/introduction-to-0x#the-0x-ecosystem) into a format that is both user-friendly and easy to understand. When swapping tokens, one of the challenges is that the trade can experience slippage through Automated Market Makers ([AMMs](https://0x.org/post/what-is-an-automated-market-maker-amm)). This makes the final swap amounts difficult to predict prior to executing the trade. However, this library overcomes that challenge by parsing the transaction receipt and event logs to accurately identify the final swap amounts.
 
 ### Demo
 
@@ -147,7 +147,7 @@ Try out the parser in a [live code environment](https://codesandbox.io/p/sandbox
 
 ## Requirements
 
-0x-parser relies on the `debug_traceTransaction` Ethereum JSON-RPC method to parse 0x transactions. Ensure that your RPC node [supports](https://docs.alchemy.com/reference/debug-tracetransaction) [this](https://www.quicknode.com/docs/ethereum/debug_traceTransaction) [method](https://docs.infura.io/api/networks/linea/json-rpc-methods/debug/debug_tracetransaction).
+0x-parser relies on the `debug_traceTransaction` Ethereum JSON-RPC method to parse 0x transactions. Ensure that your RPC node [supports](https://docs.alchemy.com/reference/debug-tracetransaction) [this](https://www.quicknode.com/docs/ethereum/debug_traceTransaction) [method](https://docs.metamask.io/services/reference/linea/json-rpc-methods/debug/debug_tracetransaction).
 
 ## Installation
 

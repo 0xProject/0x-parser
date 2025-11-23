@@ -15,6 +15,7 @@ import {
   avalanche,
   berachain,
   worldchain,
+  monad
 } from "viem/chains";
 import type { SupportedChainId } from "./types";
 
@@ -65,6 +66,7 @@ export const SUPPORTED_CHAINS = [
   avalanche,
   berachain,
   worldchain,
+  monad,
 ];
 
 export const NATIVE_SYMBOL_BY_CHAIN_ID: { [key in SupportedChainId]: string } =
@@ -76,6 +78,7 @@ export const NATIVE_SYMBOL_BY_CHAIN_ID: { [key in SupportedChainId]: string } =
     [linea.id]: linea.nativeCurrency.symbol,
     [scroll.id]: scroll.nativeCurrency.symbol,
     [mantle.id]: mantle.nativeCurrency.symbol,
+    [monad.id]: monad.nativeCurrency.symbol,
     [plasma.id]: plasma.nativeCurrency.symbol,
     [mainnet.id]: mainnet.nativeCurrency.symbol,
     [polygon.id]: polygon.nativeCurrency.symbol,

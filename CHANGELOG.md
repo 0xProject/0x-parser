@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.12.0](https://github.com/0xProject/0x-parser/compare/v2.11.0...v2.12.0) (2025-11-23)
+
+
+### Features
+
+* add support for monad ([#90](https://github.com/0xProject/0x-parser/issues/90)) ([ee12c85](https://github.com/0xProject/0x-parser/commit/ee12c8577ec44343c98003e9ef1dbe34b50bab7e))
+
 ## [2.11.0](https://github.com/0xProject/0x-parser/compare/v2.10.3...v2.11.0) (2025-09-20)
 
 

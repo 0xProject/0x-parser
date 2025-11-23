@@ -60,6 +60,12 @@
         <br>Mantle
       </div>
     </td>
+        <td style="width:100px; text-align:center;">
+      <div align="center">
+        <img alt="mantle" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/monad/info/logo.png" width="22"/>
+        <br>Monad
+      </div>
+    </td>
     <td style="width:100px; text-align:center;">
       <div align="center">
         <img alt="optimism" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/optimism/info/logo.png" width="22"/>

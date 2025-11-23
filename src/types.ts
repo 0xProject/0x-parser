@@ -15,6 +15,7 @@ import {
   worldchain,
   berachain,
   unichain,
+  monad
 } from "viem/chains";
 
 import type {
@@ -31,6 +32,7 @@ export type SupportedChainId =
   | typeof bsc.id
   | typeof base.id
   | typeof mode.id
+  | typeof monad.id
   | typeof blast.id
   | typeof linea.id
   | typeof scroll.id

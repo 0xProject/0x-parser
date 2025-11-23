@@ -16,6 +16,7 @@ import {
   avalanche,
   berachain,
   worldchain,
+  monad
 } from "viem/chains";
 import { NATIVE_SYMBOL_BY_CHAIN_ID, NATIVE_TOKEN_ADDRESS } from "../constants";
 import type { Address } from "viem";
@@ -33,6 +34,7 @@ export function isChainIdSupported(
     bsc.id,
     base.id,
     mode.id,
+    monad.id,
     blast.id,
     linea.id,
     scroll.id,

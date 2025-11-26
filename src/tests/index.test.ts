@@ -1455,27 +1455,25 @@ test("logs a warning for reverted transactions)", async () => {
 
   warnSpy.mockRestore();
 });
-const baseClient = createPublicClient({
-  chain: base,
-  transport: http(process.env.BASE_MAINNET_RPC || "https://mainnet.base.org"),
-}) as PublicClient<Transport, Chain>;
 
-test("should parse complex Base AERO->USDC swap", async () => {
+test("parse a swap on Ethereum (USDC for WMON) with SettlerIntent", async () => {
+  const transactionHash = "0x7eea91c5c715ef4bb1e39ddf4c7832113693e87c18392740353d5ae669406a46";
+
   const result = await parseSwap({
-    publicClient: baseClient,
-    transactionHash: "0x701a78e3d6fe85f45b488c8dd77f589ccb98f609620cd9abeb03c8e926f70f96",
+    publicClient: publicClient, 
+    transactionHash,
   });
   
   expect(result).toEqual({
     tokenIn: {
-      symbol: "AERO",
-      amount: "89686.243289387883323057", 
-      address: "0x940181a94a35a4569e4529a3cdfb74e38fd98631",
+      symbol: "USDC",
+      amount: "1000.080833", 
+      address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     },
     tokenOut: {
-      symbol: "USDC",
-      amount: "69089.327359", 
-      address: "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+      symbol: "WMON", 
+      amount: "22204.573291811240325155", 
+      address: "0x6917037f8944201b2648198a89906edf863b9517",
     },
   });
-}); 
+});

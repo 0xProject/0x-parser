@@ -18,6 +18,7 @@ jobs:
           QUICKNODE_MANTLE_API_KEY: ${{ secrets.QUICKNODE_MANTLE_API_KEY }}
           QUICKNODE_BNB_CHAIN_API_KEY: ${{ secrets.QUICKNODE_BNB_CHAIN_API_KEY }}
           QUICKNODE_MODE_API_KEY: ${{ secrets.QUICKNODE_MODE_API_KEY }}
+          BASE_MAINNET_RPC: ${{ secrets.BASE_MAINNET_RPC }}
       - uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

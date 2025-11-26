@@ -1456,6 +1456,7 @@ test("logs a warning for reverted transactions)", async () => {
   warnSpy.mockRestore();
 });
 
+//https://etherscan.io/tx/0x7eea91c5c715ef4bb1e39ddf4c7832113693e87c18392740353d5ae669406a46
 test("parse a swap on Ethereum (USDC for WMON) with SettlerIntent", async () => {
   const transactionHash = "0x7eea91c5c715ef4bb1e39ddf4c7832113693e87c18392740353d5ae669406a46";
 
@@ -1474,6 +1475,37 @@ test("parse a swap on Ethereum (USDC for WMON) with SettlerIntent", async () => 
       symbol: "WMON", 
       amount: "22204.573291811240325155", 
       address: "0x6917037f8944201b2648198a89906edf863b9517",
+    },
+  });
+});
+
+// https://optimistic.etherscan.io/tx/0xdee6f4fea0250f297ed9663c4ca4479e8a253c62e16faa60759e25832cd1f34f
+test("parse a swap on Optimism (wstETH for ETH) via Balancer pool", async () => {
+  const publicClient = createPublicClient({
+    chain: optimism,
+    transport: http(
+      `https://opt-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0xdee6f4fea0250f297ed9663c4ca4479e8a253c62e16faa60759e25832cd1f34f";
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "wstETH",
+      amount: "0.008868",
+      address: "0x1f32b1c2345538c0c6f582fcb022739c4a194ebb",
+    },
+    tokenOut: {
+      symbol: "WETH",
+      amount: "0.010698199301849867",
+      address: "0x4200000000000000000000000000000000000006",
     },
   });
 });

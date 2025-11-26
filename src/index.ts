@@ -19,9 +19,6 @@ import {
   isChainIdSupported,
   calculateNativeTransfer,
   parseSmartContractWalletTx,
-  calculateNetTransfers,
-  findLargestInflow,
-  findLargestOutflow,
 } from "./utils";
 import type { Hash, Chain, Address, Transport, PublicClient } from "viem";
 import type { TraceTransactionSchema } from "./types";

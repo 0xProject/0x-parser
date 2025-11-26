@@ -60,7 +60,7 @@
         <br>Mantle
       </div>
     </td>
-        <td style="width:100px; text-align:center;">
+    <td style="width:100px; text-align:center;">
       <div align="center">
         <img alt="mantle" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/monad/info/logo.png" width="22"/>
         <br>Monad
@@ -84,14 +84,14 @@
         <br>Scroll
       </div>
     </td>
+  </tr>
+  <tr>
     <td style="width:100px; text-align:center;">
       <div align="center">
         <img alt="coming soon" src="https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/mode/info/logo.png" width="22"/>
         <br>Mode
       </div>
     </td>
-  </tr>
-  <tr>
     <td style="width:100px; text-align:center;">
       <div align="center">
         <img alt="Worldchain" src="https://cdn.prod.website-files.com/6503306c491d20f69e484470/6718ce22ee5879d832765fd6_66ced64f18a10922ffcff77d_65d8bce782514cfb6c149b7a_1VQdZPHJ_400x400.webp" width="22"/>
@@ -121,15 +121,15 @@
         <img alt="coming soon" src="https://i.imgur.com/CexTjqF.png" width="22"/>
         <br>🔜
       </div>
-    </td>
+    </td>   
+  </tr>
+  <tr>
     <td style="width:100px; text-align:center;">
       <div align="center">
         <img alt="coming soon" src="https://cdn.prod.website-files.com/63692bf32544bee8b1836ea6/637b01428c7bd8e16af26756_favicon-32.png" width="22"/>
         <br>🔜
       </div>
-    </td>    
-  </tr>
-  <tr>
+    </td> 
     <td style="width:100px; text-align:center;">
       <div align="center">
         <img alt="coming soon" src="https://i.imgur.com/OPA8A9u.png" width="22"/>

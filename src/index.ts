@@ -19,6 +19,9 @@ import {
   isChainIdSupported,
   calculateNativeTransfer,
   parseSmartContractWalletTx,
+  calculateNetTransfers,
+  findLargestInflow,
+  findLargestOutflow,
 } from "./utils";
 import type { Hash, Chain, Address, Transport, PublicClient } from "viem";
 import type { TraceTransactionSchema } from "./types";
@@ -223,6 +226,39 @@ export async function parseSwap({
       tokenOut,
     };
   }
+  // Multiplex and Multihop txns parsing    
+    const userAddress = smartContractWallet || taker;
+    const netTransfers = calculateNetTransfers(logs, userAddress);
+    const tokenInTransfer = findLargestOutflow(netTransfers);
+    const tokenOutTransfer = findLargestInflow(netTransfers);
+
+    if (tokenInTransfer && tokenOutTransfer) {
+      const tokenInLog = logs.find(log => 
+        log.address.toLowerCase() === tokenInTransfer.tokenAddress.toLowerCase()
+      );
+      const tokenOutLog = logs.find(log => 
+        log.address.toLowerCase() === tokenOutTransfer.tokenAddress.toLowerCase()
+      );
+      
+      return {
+        tokenIn: {
+          symbol: tokenInLog?.symbol || "UNKNOWN",
+          amount: formatUnits(
+            BigInt(Math.abs(Number(tokenInTransfer.netAmount))), 
+            tokenInLog?.decimals || 18
+          ),
+          address: tokenInTransfer.tokenAddress,
+        },
+        tokenOut: {
+          symbol: tokenOutLog?.symbol || "UNKNOWN", 
+          amount: formatUnits(
+            tokenOutTransfer.netAmount, 
+            tokenOutLog?.decimals || 18
+          ),
+          address: tokenOutTransfer.tokenAddress,
+        },
+      };
+    }
 
   /* v8 ignore start */
   if (!output) {

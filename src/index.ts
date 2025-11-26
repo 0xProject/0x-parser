@@ -224,14 +224,23 @@ export async function parseSwap({
     };
   }
 
-  /* v8 ignore start */
-  if (!output) {
-    console.error(
-      "File a bug report here, including the expected results (URL to a block explorer) and the unexpected results: https://github.com/0xProject/0x-parser/issues/new/choose."
-    );
-    return null;
-  }
-  /* v8 ignore stop */
+if (!output) {
+  if (!logs.length) /* v8 ignore next */ return null;    
+    const firstTransfer = logs[0];
+    const lastTransfer = logs[logs.length - 1];
+    return {
+      tokenIn: {
+        symbol: firstTransfer.symbol,
+        address: firstTransfer.address.toLowerCase(),
+        amount: firstTransfer.amount
+      },
+      tokenOut: {
+        symbol: lastTransfer.symbol,
+        address: lastTransfer.address.toLowerCase(),
+        amount: lastTransfer.amount
+      }
+    };
+}
 
   return {
     tokenIn: {

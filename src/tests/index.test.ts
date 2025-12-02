@@ -1469,12 +1469,12 @@ test("parse a swap on Ethereum (USDC for WMON) with SettlerIntent", async () => 
     tokenIn: {
       symbol: "USDC",
       amount: "1000.080833", 
-      address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     },
     tokenOut: {
       symbol: "WMON", 
       amount: "22204.573291811240325155", 
-      address: "0x6917037f8944201b2648198a89906edf863b9517",
+      address: "0x6917037F8944201b2648198a89906Edf863B9517",
     },
   });
 });
@@ -1500,12 +1500,36 @@ test("parse a swap on Optimism (wstETH for ETH) via Balancer pool", async () => 
     tokenIn: {
       symbol: "wstETH",
       amount: "0.008868",
-      address: "0x1f32b1c2345538c0c6f582fcb022739c4a194ebb",
+      address: "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb",
     },
     tokenOut: {
       symbol: "WETH",
       amount: "0.010698199301849867",
       address: "0x4200000000000000000000000000000000000006",
+    },
+  });
+});
+
+// https://etherscan.io/tx/0x967cb342227a2541a845058862e70833d638bf5bb7ce229c6506466dbb43a004
+test.only("parse a swap on Mainnet (TRG for SHITCOIN)", async () => {
+  const transactionHash =
+    "0x967cb342227a2541a845058862e70833d638bf5bb7ce229c6506466dbb43a004" as `0x${string}`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "TRG",
+      amount: "5053634.405791388940070628",
+      address: "0x93eEB426782BD88fCD4B48D7b0368CF061044928",
+    },
+    tokenOut: {
+      symbol: "SHITCOIN",
+      amount: "881342.949331124",
+      address: "0x4fD1b29d1aAFeA37A2d19E7d912b6eda44dBd82C",
     },
   });
 });

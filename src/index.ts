@@ -226,17 +226,16 @@ export async function parseSwap({
 
 if (!output) {
   if (!logs.length) /* v8 ignore next */ return null;    
-    const firstTransfer = logs[0];
     const lastTransfer = logs[logs.length - 1];
     return {
       tokenIn: {
-        symbol: firstTransfer.symbol,
-        address: firstTransfer.address.toLowerCase(),
-        amount: firstTransfer.amount
+        symbol: input.symbol,
+        amount: input.amount,
+        address: input.address,
       },
       tokenOut: {
         symbol: lastTransfer.symbol,
-        address: lastTransfer.address.toLowerCase(),
+        address: lastTransfer.address,
         amount: lastTransfer.amount
       }
     };

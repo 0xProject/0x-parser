@@ -7,12 +7,14 @@ import {
 } from "viem";
 import {
   SUPPORTED_CHAINS,
-  MULTICALL3_ADDRESS,
+  FORWARDING_MULTICALL_ABI,
   FUNCTION_SELECTORS,
   ERC_4337_ENTRY_POINT,
   NATIVE_TOKEN_ADDRESS,
   SETTLER_META_TXN_ABI,
   NATIVE_SYMBOL_BY_CHAIN_ID,
+  FORWARDING_MULTICALL_ADDRESS,
+  MULTICALL3_ADDRESS,
 } from "./constants";
 import {
   transferLogs,
@@ -37,26 +39,16 @@ export async function parseSwap({
   if (!isChainIdSupported(chainId)) {
     throw new Error(`chainId ${chainId} is unsupported…`);
   }
-// This code extends the viem publicClient with a custom method called traceCall.
+
   const client = publicClient.extend((client) => ({
     async traceCall(args: { hash: Hash }) {
       return client.request<TraceTransactionSchema>({
-        method: "debug_traceTransaction", //replays the txn & returns execution data
-        /**
-         * The callTracer returns a tree of all internal calls made during execution, including:
-            Contract-to-contract calls
-            Internal ETH transfers
-            Call depth, gas used, return values
-         */
+        method: "debug_traceTransaction",
         params: [args.hash, { tracer: "callTracer" }],
-        //
       });
     },
   }));
 
-  // trace - ETH transfers, contract calls
-  // transaction- from, to, value, input calldata
-  // transactionReceipt - status, gas used, logs emitted
   const [trace, transaction, transactionReceipt] = await Promise.all([
     client.traceCall({ hash }),
     publicClient.getTransaction({ hash }),
@@ -64,13 +56,11 @@ export async function parseSwap({
   ]);
 
   const { from: taker, value, to } = transaction;
-  // The Issue: FOR SETTLERINTENT TXNS only - The taker address passed into calculateNativeTransfer is not the actual takers address, causing nativeAmountToTaker to be 0 when it shouldn't be
-  // Potential Solution: we need to determine if the txn is a settlerIntent txn, if so we 
-  // can determine the taker from the to address in the last trace call.
-  const actualTaker =  trace.calls[trace.calls.length-1].to;
-  //Scans the execution trace for any internal ETH transfers to the taker's address
+
+  const isToERC4337 = to === ERC_4337_ENTRY_POINT.toLowerCase();
+
   const nativeAmountToTaker = calculateNativeTransfer(trace, {
-    recipient: taker, // for Settler Intent txns we should use actualTaker
+    recipient: taker,
   });
 
   if (transactionReceipt.status === "reverted") {
@@ -86,9 +76,7 @@ export async function parseSwap({
     publicClient,
     transactionReceipt,
   });
-  // if a Smart wallet, then the way in which we determine the taker is different than traditional EOA's. 
-  // The actual taker is the smart contract embedded in the wallet
-  const isToERC4337 = to === ERC_4337_ENTRY_POINT.toLowerCase();
+
   if (isToERC4337) {
     if (!smartContractWallet) {
       throw new Error(
@@ -126,7 +114,40 @@ export async function parseSwap({
           amount: nativeAmountToTaker,
           address: NATIVE_TOKEN_ADDRESS,
         };
+  if (to?.toLowerCase() === FORWARDING_MULTICALL_ADDRESS.toLowerCase()) {
+    const { args: multicallArgs } = decodeFunctionData({
+      abi: FORWARDING_MULTICALL_ABI,
+      data: transaction.input,
+    });
 
+    if (multicallArgs && Array.isArray(multicallArgs) && multicallArgs[0] && Array.isArray(multicallArgs[0])) {
+      const { args: settlerArgs } = decodeFunctionData({
+        abi: SETTLER_META_TXN_ABI,
+        data: multicallArgs[0][1]?.data,
+      });
+
+      const recipient =
+        settlerArgs[0].recipient.toLowerCase() as Address;
+
+      const msgSender = settlerArgs[3];
+
+      const nativeAmountToTaker = calculateNativeTransfer(trace, {
+        recipient,
+      });
+
+      if (nativeAmountToTaker === "0") {
+        [output] = logs.filter(
+          (log) => log.to.toLowerCase() === msgSender.toLowerCase()
+        );
+      } else {
+        output = {
+          symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
+          amount: nativeAmountToTaker,
+          address: NATIVE_TOKEN_ADDRESS,
+        };
+      }
+    }
+  }
   if (to?.toLowerCase() === MULTICALL3_ADDRESS.toLowerCase()) {
     const { args: multicallArgs } = decodeFunctionData({
       abi: multicall3Abi,
@@ -136,7 +157,7 @@ export async function parseSwap({
     if (multicallArgs[0]) {
       const { args: settlerArgs } = decodeFunctionData({
         abi: SETTLER_META_TXN_ABI,
-        data: multicallArgs[0][1].callData,
+        data: multicallArgs[0][1]?.callData,
       });
 
       const takerForGaslessApprovalSwap =
@@ -238,22 +259,14 @@ export async function parseSwap({
     };
   }
 
-if (!output) {
-  if (!logs.length) /* v8 ignore next */ return null;    
-    const lastTransfer = logs[logs.length - 1];
-    return {
-      tokenIn: {
-        symbol: input.symbol,
-        amount: input.amount,
-        address: input.address,
-      },
-      tokenOut: {
-        symbol: lastTransfer.symbol,
-        address: lastTransfer.address,
-        amount: lastTransfer.amount
-      }
-    };
-}
+  /* v8 ignore start */
+  if (!output) {
+    console.error(
+      "File a bug report here, including the expected results (URL to a block explorer) and the unexpected results: https://github.com/0xProject/0x-parser/issues/new/choose."
+    );
+    return null;
+  }
+  /* v8 ignore stop */
 
   return {
     tokenIn: {

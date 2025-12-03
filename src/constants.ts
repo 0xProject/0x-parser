@@ -19,6 +19,71 @@ import {
 } from "viem/chains";
 import type { SupportedChainId } from "./types";
 
+
+export const FORWARDING_MULTICALL_ABI = [
+  {
+    "type": "receive",
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "multicall",
+    "inputs": [
+      {
+        "name": "calls",
+        "type": "tuple[]",
+        "internalType": "struct IMultiCall.Call[]",
+        "components": [
+          {
+            "name": "target",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "revertPolicy",
+            "type": "uint8",
+            "internalType": "enum IMultiCall.RevertPolicy"
+          },
+          {
+            "name": "value",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "data",
+            "type": "bytes",
+            "internalType": "bytes"
+          }
+        ]
+      },
+      {
+        "name": "contextdepth",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple[]",
+        "internalType": "struct IMultiCall.Result[]",
+        "components": [
+          {
+            "name": "success",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "data",
+            "type": "bytes",
+            "internalType": "bytes"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "payable"
+  }
+]
 export const SETTLER_META_TXN_ABI = [
   {
     inputs: [
@@ -92,6 +157,8 @@ export const NATIVE_SYMBOL_BY_CHAIN_ID: { [key in SupportedChainId]: string } =
 
 export const NATIVE_TOKEN_ADDRESS = `0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`;
 
+export const FORWARDING_MULTICALL_ADDRESS = `0x00000000000000cf9e3c5a26621af382fa17f24f`;
 export const MULTICALL3_ADDRESS = `0xcA11bde05977b3631167028862bE2a173976CA11`;
+
 
 export const ERC_4337_ENTRY_POINT = `0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789`;

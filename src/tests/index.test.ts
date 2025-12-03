@@ -1503,15 +1503,15 @@ test("parse a swap on Optimism (wstETH for ETH) via Balancer pool", async () => 
       address: "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb",
     },
     tokenOut: {
-      symbol: "WETH",
-      amount: "0.010698199301849867",
-      address: "0x4200000000000000000000000000000000000006",
+      symbol: "ETH",
+      amount: "0.010671015314389981",
+      address: NATIVE_TOKEN_ADDRESS,
     },
   });
 });
 
 // https://etherscan.io/tx/0x967cb342227a2541a845058862e70833d638bf5bb7ce229c6506466dbb43a004
-test.only("parse a swap on Mainnet (TRG for SHITCOIN)", async () => {
+test("parse a swap on Mainnet (TRG for SHITCOIN)", async () => {
   const transactionHash =
     "0x967cb342227a2541a845058862e70833d638bf5bb7ce229c6506466dbb43a004" as `0x${string}`;
 

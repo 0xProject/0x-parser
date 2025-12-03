@@ -37,16 +37,26 @@ export async function parseSwap({
   if (!isChainIdSupported(chainId)) {
     throw new Error(`chainId ${chainId} is unsupported…`);
   }
-
+// This code extends the viem publicClient with a custom method called traceCall.
   const client = publicClient.extend((client) => ({
     async traceCall(args: { hash: Hash }) {
       return client.request<TraceTransactionSchema>({
-        method: "debug_traceTransaction",
+        method: "debug_traceTransaction", //replays the txn & returns execution data
+        /**
+         * The callTracer returns a tree of all internal calls made during execution, including:
+            Contract-to-contract calls
+            Internal ETH transfers
+            Call depth, gas used, return values
+         */
         params: [args.hash, { tracer: "callTracer" }],
+        //
       });
     },
   }));
 
+  // trace - ETH transfers, contract calls
+  // transaction- from, to, value, input calldata
+  // transactionReceipt - status, gas used, logs emitted
   const [trace, transaction, transactionReceipt] = await Promise.all([
     client.traceCall({ hash }),
     publicClient.getTransaction({ hash }),
@@ -54,11 +64,13 @@ export async function parseSwap({
   ]);
 
   const { from: taker, value, to } = transaction;
-
-  const isToERC4337 = to === ERC_4337_ENTRY_POINT.toLowerCase();
-
+  // The Issue: FOR SETTLERINTENT TXNS only - The taker address passed into calculateNativeTransfer is not the actual takers address, causing nativeAmountToTaker to be 0 when it shouldn't be
+  // Potential Solution: we need to determine if the txn is a settlerIntent txn, if so we 
+  // can determine the taker from the to address in the last trace call.
+  const actualTaker =  trace.calls[trace.calls.length-1].to;
+  //Scans the execution trace for any internal ETH transfers to the taker's address
   const nativeAmountToTaker = calculateNativeTransfer(trace, {
-    recipient: taker,
+    recipient: taker, // for Settler Intent txns we should use actualTaker
   });
 
   if (transactionReceipt.status === "reverted") {
@@ -74,7 +86,9 @@ export async function parseSwap({
     publicClient,
     transactionReceipt,
   });
-
+  // if a Smart wallet, then the way in which we determine the taker is different than traditional EOA's. 
+  // The actual taker is the smart contract embedded in the wallet
+  const isToERC4337 = to === ERC_4337_ENTRY_POINT.toLowerCase();
   if (isToERC4337) {
     if (!smartContractWallet) {
       throw new Error(

@@ -5,7 +5,7 @@
 
 ### Features
 
-* add last transfer heuristic for transactions which fail to parse ([#93](https://github.com/0xProject/0x-parser/issues/93)) ([f68007e](https://github.com/0xProject/0x-parser/commit/f68007ef00637b4d65e8f762aa4a0af0c9cae3d0))
+* Support transactions sent to forwarding multicall address ([#93](https://github.com/0xProject/0x-parser/issues/93)) ([f68007e](https://github.com/0xProject/0x-parser/commit/f68007ef00637b4d65e8f762aa4a0af0c9cae3d0))
 
 ## [2.12.0](https://github.com/0xProject/0x-parser/compare/v2.11.0...v2.12.0) (2025-11-23)
 

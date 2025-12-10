@@ -1455,3 +1455,81 @@ test("logs a warning for reverted transactions)", async () => {
 
   warnSpy.mockRestore();
 });
+
+//https://etherscan.io/tx/0x7eea91c5c715ef4bb1e39ddf4c7832113693e87c18392740353d5ae669406a46
+test("parse a swap on Ethereum (USDC for WMON) with SettlerIntent", async () => {
+  const transactionHash = "0x7eea91c5c715ef4bb1e39ddf4c7832113693e87c18392740353d5ae669406a46";
+
+  const result = await parseSwap({
+    publicClient: publicClient, 
+    transactionHash,
+  });
+  
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "USDC",
+      amount: "1000.080833", 
+      address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    },
+    tokenOut: {
+      symbol: "WMON", 
+      amount: "22204.573291811240325155", 
+      address: "0x6917037F8944201b2648198a89906Edf863B9517",
+    },
+  });
+});
+
+// https://optimistic.etherscan.io/tx/0xdee6f4fea0250f297ed9663c4ca4479e8a253c62e16faa60759e25832cd1f34f
+test("parse a swap on Optimism (wstETH for ETH) via Balancer pool", async () => {
+  const publicClient = createPublicClient({
+    chain: optimism,
+    transport: http(
+      `https://opt-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0xdee6f4fea0250f297ed9663c4ca4479e8a253c62e16faa60759e25832cd1f34f";
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "wstETH",
+      amount: "0.008868",
+      address: "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb",
+    },
+    tokenOut: {
+      symbol: "ETH",
+      amount: "0.010671015314389981",
+      address: NATIVE_TOKEN_ADDRESS,
+    },
+  });
+});
+
+// https://etherscan.io/tx/0x967cb342227a2541a845058862e70833d638bf5bb7ce229c6506466dbb43a004
+test("parse a swap on Mainnet (TRG for SHITCOIN)", async () => {
+  const transactionHash =
+    "0x967cb342227a2541a845058862e70833d638bf5bb7ce229c6506466dbb43a004" as `0x${string}`;
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "TRG",
+      amount: "5053634.405791388940070628",
+      address: "0x93eEB426782BD88fCD4B48D7b0368CF061044928",
+    },
+    tokenOut: {
+      symbol: "SHITCOIN",
+      amount: "881342.949331124",
+      address: "0x4fD1b29d1aAFeA37A2d19E7d912b6eda44dBd82C",
+    },
+  });
+});

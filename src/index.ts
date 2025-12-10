@@ -7,12 +7,14 @@ import {
 } from "viem";
 import {
   SUPPORTED_CHAINS,
-  MULTICALL3_ADDRESS,
+  FORWARDING_MULTICALL_ABI,
   FUNCTION_SELECTORS,
   ERC_4337_ENTRY_POINT,
   NATIVE_TOKEN_ADDRESS,
   SETTLER_META_TXN_ABI,
   NATIVE_SYMBOL_BY_CHAIN_ID,
+  FORWARDING_MULTICALL_ADDRESS,
+  MULTICALL3_ADDRESS,
 } from "./constants";
 import {
   transferLogs,
@@ -112,7 +114,40 @@ export async function parseSwap({
           amount: nativeAmountToTaker,
           address: NATIVE_TOKEN_ADDRESS,
         };
+  if (to?.toLowerCase() === FORWARDING_MULTICALL_ADDRESS.toLowerCase()) {
+    const { args: multicallArgs } = decodeFunctionData({
+      abi: FORWARDING_MULTICALL_ABI,
+      data: transaction.input,
+    });
 
+    if (multicallArgs && Array.isArray(multicallArgs) && multicallArgs[0] && Array.isArray(multicallArgs[0])) {
+      const { args: settlerArgs } = decodeFunctionData({
+        abi: SETTLER_META_TXN_ABI,
+        data: multicallArgs[0][1]?.data,
+      });
+
+      const recipient =
+        settlerArgs[0].recipient.toLowerCase() as Address;
+
+      const msgSender = settlerArgs[3];
+
+      const nativeAmountToTaker = calculateNativeTransfer(trace, {
+        recipient,
+      });
+
+      if (nativeAmountToTaker === "0") {
+        [output] = logs.filter(
+          (log) => log.to.toLowerCase() === msgSender.toLowerCase()
+        );
+      } else {
+        output = {
+          symbol: NATIVE_SYMBOL_BY_CHAIN_ID[chainId],
+          amount: nativeAmountToTaker,
+          address: NATIVE_TOKEN_ADDRESS,
+        };
+      }
+    }
+  }
   if (to?.toLowerCase() === MULTICALL3_ADDRESS.toLowerCase()) {
     const { args: multicallArgs } = decodeFunctionData({
       abi: multicall3Abi,
@@ -122,7 +157,7 @@ export async function parseSwap({
     if (multicallArgs[0]) {
       const { args: settlerArgs } = decodeFunctionData({
         abi: SETTLER_META_TXN_ABI,
-        data: multicallArgs[0][1].callData,
+        data: multicallArgs[0][1]?.callData,
       });
 
       const takerForGaslessApprovalSwap =

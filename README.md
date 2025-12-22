@@ -185,7 +185,7 @@ async function main() {
   const RPC_URL = `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`;
 
   // You can pass any transaction hash that you got after submitted a 0x transaction:
-  // https://etherscan.io/address/0x2fc205711fc933ef6e5bcc0bf6e6a9bfc220b2d8073aea4f41305882f485669d
+  // https://etherscan.io/tx/0x2fc205711fc933ef6e5bcc0bf6e6a9bfc220b2d8073aea4f41305882f485669d
   const transactionHash = `0x2fc205711fc933ef6e5bcc0bf6e6a9bfc220b2d8073aea4f41305882f485669d`;
 
   const publicClient = createPublicClient({

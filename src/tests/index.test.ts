@@ -20,6 +20,7 @@ import {
   berachain,
   bsc,
   celo,
+  abstract,
 } from "viem/chains";
 import { vi, test, expect } from "vitest";
 import { parseSwap } from "../index";
@@ -1530,6 +1531,37 @@ test("parse a swap on Mainnet (TRG for SHITCOIN)", async () => {
       symbol: "SHITCOIN",
       amount: "881342.949331124",
       address: "0x4fD1b29d1aAFeA37A2d19E7d912b6eda44dBd82C",
+    },
+  });
+});
+
+// https://abscan.org/tx/0x89d0b2806d53d06a9b7f8105c041ec2d114f6b75ce3ea85a8c7bdb4ce8ae3d5a
+test("parse a swap on Abstract (PENGU for USDC.e)", async () => {
+  const publicClient = createPublicClient({
+    chain: abstract,
+    transport: http(
+      `https://abstract-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+    ),
+  }) as PublicClient<Transport, Chain>;
+
+  const transactionHash =
+    "0x89d0b2806d53d06a9b7f8105c041ec2d114f6b75ce3ea85a8c7bdb4ce8ae3d5a";
+
+  const result = await parseSwap({
+    publicClient,
+    transactionHash,
+  });
+
+  expect(result).toEqual({
+    tokenIn: {
+      symbol: "PENGU",
+      amount: "313.635629165192342644",
+      address: "0x9eBe3A824Ca958e4b3Da772D2065518F009CBa62",
+    },
+    tokenOut: {
+      symbol: "USDC.e",
+      amount: "2.98552",
+      address: "0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1",
     },
   });
 });

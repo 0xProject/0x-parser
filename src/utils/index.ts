@@ -16,7 +16,8 @@ import {
   avalanche,
   berachain,
   worldchain,
-  monad
+  monad,
+  abstract,
 } from "viem/chains";
 import { NATIVE_SYMBOL_BY_CHAIN_ID, NATIVE_TOKEN_ADDRESS } from "../constants";
 import type { Address } from "viem";
@@ -48,6 +49,7 @@ export function isChainIdSupported(
     avalanche.id,
     berachain.id,
     worldchain.id,
+    abstract.id,
   ];
   return supportedChainIds.includes(chainId);
 }

@@ -118,12 +118,18 @@
     </td>
     <td style="width:100px; text-align:center;">
       <div align="center">
+        <img alt="Abstract" src="https://www.abs.xyz/favicon.ico" width="24"/>
+        <br>Abstract
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
         <img alt="coming soon" src="https://i.imgur.com/CexTjqF.png" width="22"/>
         <br>🔜
       </div>
     </td>   
-  </tr>
-  <tr>
     <td style="width:100px; text-align:center;">
       <div align="center">
         <img alt="coming soon" src="https://cdn.prod.website-files.com/63692bf32544bee8b1836ea6/637b01428c7bd8e16af26756_favicon-32.png" width="22"/>

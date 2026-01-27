@@ -118,12 +118,12 @@ export async function transferLogs({
 
       // zkSync-style system contracts can emit Transfer-like logs for native accounting,
       // but those addresses do not implement ERC20 metadata, so skip them here.
-      if (symbol == null || decimals == null) {
+      if (symbol == null || decimals == null || typeof decimals !== "number") {
         return null;
       }
 
       const amount =
-        log.data === "0x" ? "0" : formatUnits(BigInt(log.data), decimals as number);
+        log.data === "0x" ? "0" : formatUnits(BigInt(log.data), decimals);
       const amountRaw = log.data === "0x" ? 0n : BigInt(log.data);
       const { address, topics } = log;
       const { 1: fromHex, 2: toHex } = topics;

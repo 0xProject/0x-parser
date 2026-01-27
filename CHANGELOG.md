@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.14.0](https://github.com/0xProject/0x-parser/compare/v2.13.0...v2.14.0) (2026-01-27)
+
+
+### Features
+
+* add support for Abstract chain ([#97](https://github.com/0xProject/0x-parser/issues/97)) ([c51a61c](https://github.com/0xProject/0x-parser/commit/c51a61c8aac597cbd6835ad09a84a0998df8456b))
+
+
+### Bug Fixes
+
+* use quicknode provider for test on Abstract chain ([#99](https://github.com/0xProject/0x-parser/issues/99)) ([cd4ae5e](https://github.com/0xProject/0x-parser/commit/cd4ae5e39b38016234f95ed9e7da4ca0340ed94a))
+
 ## [2.13.0](https://github.com/0xProject/0x-parser/compare/v2.12.0...v2.13.0) (2025-12-10)
 
 

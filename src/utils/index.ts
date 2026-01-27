@@ -16,7 +16,8 @@ import {
   avalanche,
   berachain,
   worldchain,
-  monad
+  monad,
+  abstract,
 } from "viem/chains";
 import { NATIVE_SYMBOL_BY_CHAIN_ID, NATIVE_TOKEN_ADDRESS } from "../constants";
 import type { Address } from "viem";
@@ -48,6 +49,7 @@ export function isChainIdSupported(
     avalanche.id,
     berachain.id,
     worldchain.id,
+    abstract.id,
   ];
   return supportedChainIds.includes(chainId);
 }
@@ -111,8 +113,15 @@ export async function transferLogs({
   const midpoint = Math.floor(results.length / 2);
   const enrichedLogs = transferLogsAddresses
     .map((log, index) => {
-      const symbol = results[index].result as string;
-      const decimals = results[midpoint + index].result as number;
+      const symbol = results[index].result;
+      const decimals = results[midpoint + index].result;
+
+      // zkSync-style system contracts can emit Transfer-like logs for native accounting,
+      // but those addresses do not implement ERC20 metadata, so skip them here.
+      if (symbol == null || decimals == null || typeof decimals !== "number") {
+        return null;
+      }
+
       const amount =
         log.data === "0x" ? "0" : formatUnits(BigInt(log.data), decimals);
       const amountRaw = log.data === "0x" ? 0n : BigInt(log.data);
@@ -123,7 +132,7 @@ export async function transferLogs({
 
       return { to, from, symbol, amount, amountRaw, address, decimals };
     })
-    .filter((log) => log.amount !== "0");
+    .filter((log): log is EnrichedLog => log != null && log.amount !== "0")
 
   return enrichedLogs;
 }

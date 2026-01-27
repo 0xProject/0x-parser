@@ -15,7 +15,8 @@ import {
   worldchain,
   berachain,
   unichain,
-  monad
+  monad,
+  abstract,
 } from "viem/chains";
 
 import type {
@@ -45,7 +46,8 @@ export type SupportedChainId =
   | typeof optimism.id
   | typeof avalanche.id
   | typeof berachain.id
-  | typeof worldchain.id;
+  | typeof worldchain.id
+  | typeof abstract.id;
 
 export interface EnrichLogsArgs {
   transactionReceipt: TransactionReceipt;

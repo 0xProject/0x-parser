@@ -1540,7 +1540,7 @@ test("parse a swap on Abstract (PENGU for USDC.e)", async () => {
   const publicClient = createPublicClient({
     chain: abstract,
     transport: http(
-      `https://abstract-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+      `https://serene-convincing-replica.abstract-mainnet.quiknode.pro/${process.env.QUICKNODE_ABSTRACT_API_KEY}/`
     ),
   }) as PublicClient<Transport, Chain>;
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.14.1](https://github.com/0xProject/0x-parser/compare/v2.14.0...v2.14.1) (2026-03-16)
+
+
+### Bug Fixes
+
+* use bigint accumulator in native sell reduce ([#103](https://github.com/0xProject/0x-parser/issues/103)) ([e74ca40](https://github.com/0xProject/0x-parser/commit/e74ca40090cfaa1c3335439e7a00002348daf0c5))
+
 ## [2.14.0](https://github.com/0xProject/0x-parser/compare/v2.13.0...v2.14.0) (2026-01-27)
 
 

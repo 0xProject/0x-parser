@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.14.2](https://github.com/0xProject/0x-parser/compare/v2.14.1...v2.14.2) (2026-03-16)
+
+
+### Bug Fixes
+
+* update transitive deps ([#105](https://github.com/0xProject/0x-parser/issues/105)) ([41b75c4](https://github.com/0xProject/0x-parser/commit/41b75c433939200baef0d64e222bd0d55f81f09a))
+
 ## [2.14.1](https://github.com/0xProject/0x-parser/compare/v2.14.0...v2.14.1) (2026-03-16)
 
 

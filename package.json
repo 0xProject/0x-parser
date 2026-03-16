@@ -68,7 +68,7 @@
     "dotenv": "^17.2.2",
     "esbuild": "^0.25.10",
     "http-server": "^14.1.1",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   }
 }

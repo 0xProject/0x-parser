@@ -256,7 +256,11 @@ export async function parseSwap({
         address: NATIVE_TOKEN_ADDRESS,
         amount: nativeSellAmount,
       },
-      tokenOut,
+      tokenOut: {
+        symbol: tokenOut.symbol,
+        amount: tokenOut.amount,
+        address: tokenOut.address,
+      },
     };
   }
 

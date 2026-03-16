@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.14.3](https://github.com/0xProject/0x-parser/compare/v2.14.2...v2.14.3) (2026-03-16)
+
+
+### Bug Fixes
+
+* update typescript dep ([#108](https://github.com/0xProject/0x-parser/issues/108)) ([153bea4](https://github.com/0xProject/0x-parser/commit/153bea4c271a8e817487a386020d0f509b7d728a))
+
 ## [2.14.2](https://github.com/0xProject/0x-parser/compare/v2.14.1...v2.14.2) (2026-03-16)
 
 

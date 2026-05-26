@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.14.4](https://github.com/0xProject/0x-parser/compare/v2.14.3...v2.14.4) (2026-05-26)
+
+
+### Bug Fixes
+
+* republish with rebuilt dist artifacts ([#110](https://github.com/0xProject/0x-parser/issues/110)) ([6513df1](https://github.com/0xProject/0x-parser/commit/6513df1ea285d6a874eb3518b4939789f77b5ae0))
+
 ## [2.14.3](https://github.com/0xProject/0x-parser/compare/v2.14.2...v2.14.3) (2026-03-16)
 
 

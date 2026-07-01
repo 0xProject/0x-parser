@@ -18,6 +18,7 @@ import {
   monad,
   abstract,
 } from "viem/chains";
+import { robinhoodChain } from "./constants";
 
 import type {
   Hex,
@@ -47,7 +48,8 @@ export type SupportedChainId =
   | typeof avalanche.id
   | typeof berachain.id
   | typeof worldchain.id
-  | typeof abstract.id;
+  | typeof abstract.id
+  | typeof robinhoodChain.id;
 
 export interface EnrichLogsArgs {
   transactionReceipt: TransactionReceipt;

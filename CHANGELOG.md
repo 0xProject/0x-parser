@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.15.0](https://github.com/0xProject/0x-parser/compare/v2.14.4...v2.15.0) (2026-07-01)
+
+
+### Features
+
+* add support for Robinhood chain ([#115](https://github.com/0xProject/0x-parser/issues/115)) ([46a9894](https://github.com/0xProject/0x-parser/commit/46a98948662f01442b6aa11b574d3b6e473facee))
+
+
+### Bug Fixes
+
+* bump github actions to node24 runtimes ([#113](https://github.com/0xProject/0x-parser/issues/113)) ([d419e97](https://github.com/0xProject/0x-parser/commit/d419e97047bf9eb060620cc3f209aca842b34d2d))
+* include plasma in SUPPORTED_CHAINS ([#116](https://github.com/0xProject/0x-parser/issues/116)) ([71f70b9](https://github.com/0xProject/0x-parser/commit/71f70b9f106846ae9bf4faba9ace2a5f25c180b0))
+
 ## [2.14.4](https://github.com/0xProject/0x-parser/compare/v2.14.3...v2.14.4) (2026-05-26)
 
 

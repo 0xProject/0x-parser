@@ -144,6 +144,7 @@ export const SUPPORTED_CHAINS = [
   linea,
   scroll,
   mantle,
+  plasma,
   mainnet,
   polygon,
   arbitrum,

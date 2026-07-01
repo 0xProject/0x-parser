@@ -126,6 +126,12 @@
   <tr>
     <td style="width:100px; text-align:center;">
       <div align="center">
+        <img alt="Robinhood Chain" src="https://robinhood.com/favicon.ico" width="24"/>
+        <br>Robinhood
+      </div>
+    </td>
+    <td style="width:100px; text-align:center;">
+      <div align="center">
         <img alt="coming soon" src="https://i.imgur.com/CexTjqF.png" width="22"/>
         <br>🔜
       </div>

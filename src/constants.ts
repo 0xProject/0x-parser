@@ -1,3 +1,4 @@
+import { defineChain } from "viem";
 import {
   bsc,
   base,
@@ -19,6 +20,25 @@ import {
   abstract,
 } from "viem/chains";
 import type { SupportedChainId } from "./types";
+
+// Robinhood Chain is not exported from viem/chains, so we define it locally.
+export const robinhoodChain = defineChain({
+  id: 4663,
+  name: "Robinhood Chain",
+  nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+  rpcUrls: {
+    default: { http: ["https://rpc.chain.robinhood.com"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "Blockscout",
+      url: "https://robinhoodchain.blockscout.com",
+    },
+  },
+  contracts: {
+    multicall3: { address: "0xca11bde05977b3631167028862be2a173976ca11" },
+  },
+});
 
 
 export const FORWARDING_MULTICALL_ABI = [
@@ -134,6 +154,7 @@ export const SUPPORTED_CHAINS = [
   worldchain,
   monad,
   abstract,
+  robinhoodChain,
 ];
 
 export const NATIVE_SYMBOL_BY_CHAIN_ID: { [key in SupportedChainId]: string } =
@@ -156,6 +177,7 @@ export const NATIVE_SYMBOL_BY_CHAIN_ID: { [key in SupportedChainId]: string } =
     [berachain.id]: berachain.nativeCurrency.symbol,
     [worldchain.id]: worldchain.nativeCurrency.symbol,
     [abstract.id]: abstract.nativeCurrency.symbol,
+    [robinhoodChain.id]: robinhoodChain.nativeCurrency.symbol,
   };
 
 export const NATIVE_TOKEN_ADDRESS = `0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`;

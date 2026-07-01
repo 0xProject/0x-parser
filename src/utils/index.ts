@@ -19,7 +19,11 @@ import {
   monad,
   abstract,
 } from "viem/chains";
-import { NATIVE_SYMBOL_BY_CHAIN_ID, NATIVE_TOKEN_ADDRESS } from "../constants";
+import {
+  NATIVE_SYMBOL_BY_CHAIN_ID,
+  NATIVE_TOKEN_ADDRESS,
+  robinhoodChain,
+} from "../constants";
 import type { Address } from "viem";
 import type {
   Trace,
@@ -50,6 +54,7 @@ export function isChainIdSupported(
     berachain.id,
     worldchain.id,
     abstract.id,
+    robinhoodChain.id,
   ];
   return supportedChainIds.includes(chainId);
 }

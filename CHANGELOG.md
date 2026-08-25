@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.15.1](https://github.com/0xProject/0x-parser/compare/v2.15.0...v2.15.1) (2026-08-25)
+
+
+### Bug Fixes
+
+* migrate release-please to googleapis/release-please-action@v5 ([#117](https://github.com/0xProject/0x-parser/issues/117)) ([aeb7dd8](https://github.com/0xProject/0x-parser/commit/aeb7dd89d2744692fbd0d478e54b944b480c085b))
+
 ## [2.15.0](https://github.com/0xProject/0x-parser/compare/v2.14.4...v2.15.0) (2026-07-01)
 
 

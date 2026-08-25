@@ -7,11 +7,10 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@v3
+      - uses: googleapis/release-please-action@v5
         id: release
         with:
           release-type: node
-          package-name: "@0x/0x-parser"
       # The logic below handles the npm publication:
       - uses: actions/checkout@v6
         # these if statements ensure that a publication only occurs when
